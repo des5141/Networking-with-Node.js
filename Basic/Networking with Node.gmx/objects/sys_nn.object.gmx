@@ -33,9 +33,6 @@ status = NN.status_disconnected;
 inbox = ds_queue_create();
 global.list = ds_list_create();
 
-//Set timeout
-network_set_config(network_config_connect_timeout, 100);
-
 temp_buffer = "";
 reading_length = 0;
 read = false;
@@ -192,9 +189,12 @@ enum NN{
     insig_ping = 2,
     insig_user_leave = 3,
     insig_user_join = 4,
+    insig_user_position = 5,
     
     outsig_login = 0,
     outsig_ping = 1,
+    outsig_user_position = 2,
+    
     
     status_disconnected = -1,
     status_connecting = 0,

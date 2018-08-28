@@ -2,9 +2,9 @@
 <object>
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
-  <visible>-1</visible>
+  <visible>0</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -25,12 +25,50 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Auto Login
-with (obj_network) {
-    login_as = "device" + string(irandom_range(1000000, 9999999));
-    event_user(1);
+            <string>///Variables
+global.shake_it = 0
+global.shake_time = 2
+target_x = x
+target_y = y
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///View movement
+x += floor((target_x - x)/8)
+y += floor((target_y - y)/8)
+
+global.shake_it=global.shake_it-global.shake_time
+
+if global.shake_it &lt; 0
+{global.shake_it=0}
+
+view_xview = x-view_wview/2-global.shake_it+random(global.shake_it*2)
+view_yview = y-view_hview/2-global.shake_it+random(global.shake_it*2)
+
+if(room == rm_connecting)or(room == rm_login)
+{
+    view_xview = 0;
+    view_yview = 0;
 }
-instance_destroy();
 </string>
           </argument>
         </arguments>

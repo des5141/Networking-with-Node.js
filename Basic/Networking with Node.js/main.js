@@ -45,10 +45,12 @@ Author: yuto
 	const outsig_ping = 2;
 	const outsig_user_leave = 3;
 	const outsig_user_join = 4;
+	const outsig_user_position = 5;
 
 	//Server-bound signal IDs
 	const insig_login = 0;
 	const insig_ping = 1;
+	const insig_user_position = 2;
 }
 { //Server information
 	console.log("Networking with Node.js".data);
@@ -94,7 +96,7 @@ Author: yuto
 						var json_data = JSON.parse(buffer_reading_string);
 						var id = json_data.id;
 						var msg = json_data.msg;
-						console.log("Message :".data + buffer_reading_string);
+						//console.log("Message :".data + buffer_reading_string);
 						buffer_reading_string = "";
 
 						//Route into different functions
@@ -111,13 +113,12 @@ Author: yuto
 									//Name already taken
 									if (authenticated_users.findUserByName(msg) != null) {
 										send_id_message(dsocket, outsig_login_refused, "");
-										console.log("Name rejected.");
 									}
 									//Name OK
 									else {
 										var new_user = User.create(msg, dsocket);
 										authenticated_users.addUser(new_user);
-										console.log("New user added:", new_user.name, "(" + new_user.uuid + ")");
+										console.log("New user joined :".data, new_user.name, "(" + new_user.uuid + ")");
 										//Tell user to come in
 										var new_user_announcement = JSON.stringify({
 											name: new_user.name,
@@ -134,27 +135,32 @@ Author: yuto
 								}
 							break;
 							
-							//Shout message
-							case insig_shout:
-								//Authenticated users only
+							//Invalid message ID
+							default:
+								console.log("Invaild ID".error);
+							break;
+
+							case insig_user_position:
 								var from_user;
 								if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
-									//Relay it to everyone else
-									var message_announcement = JSON.stringify({
-										from: from_user.name,
-										msg: msg
+
+									// 유저 정보를 받아온다! 클라이언트로부터
+									user_uuid = json_data.user_uuid;
+									user_x = json_data.user_x;
+									user_y = json_data.user_y;
+
+									var user_position = JSON.stringify({
+										uuid: user_uuid,
+										x: user_x,
+										y: user_y
 									});
+
 									authenticated_users.each(function(user) {
-										if (user.uuid != from_user.uuid) {
-											send_id_message(user.socket, outsig_shout_relay, message_announcement);
+										if ((user.uuid != from_user.uuid)&&(user.space == from_user.space)) {
+											send_id_message(user.socket, outsig_user_position, user_position);
 										}
 									});
 								}
-							break;
-							
-							//Invalid message ID
-							default:
-								console.log("Discarded garbage (invalid ID).");
 							break;
 						}
 					}
@@ -171,7 +177,7 @@ Author: yuto
 		//Respond for authenticated users only
 		var quitter;
 		if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
-			console.log("Removing user:", quitter.name, "(" + quitter.uuid + ")");
+			console.log("Removing user   :".data, quitter.name, "(" + quitter.uuid + ")");
 			//Let everyone else know the user is leaving
 			var logout_announcement = JSON.stringify({
 				name: quitter.name,

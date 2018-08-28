@@ -25,7 +25,9 @@
   <objects name="objects">
     <objects name="Client">
       <object>objects\sys_nn</object>
-      <object>objects\obj_controller</object>
+      <object>objects\obj_network</object>
+      <object>objects\obj_client</object>
+      <object>objects\obj_view</object>
       <object>objects\obj_login</object>
     </objects>
   </objects>
