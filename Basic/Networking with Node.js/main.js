@@ -46,11 +46,13 @@ Author: yuto
 	const outsig_user_leave = 3;
 	const outsig_user_join = 4;
 	const outsig_user_position = 5;
+	const outsig_user_space = 6;
 
 	//Server-bound signal IDs
 	const insig_login = 0;
 	const insig_ping = 1;
 	const insig_user_position = 2;
+	const insig_user_space = 3;
 }
 { //Server information
 	console.log("Networking with Node.js".data);
@@ -116,7 +118,7 @@ Author: yuto
 									}
 									//Name OK
 									else {
-										var new_user = User.create(msg, dsocket);
+										var new_user = User.create(msg, 0, dsocket);
 										authenticated_users.addUser(new_user);
 										console.log("New user joined :".data, new_user.name, "(" + new_user.uuid + ")");
 										//Tell user to come in
@@ -160,6 +162,15 @@ Author: yuto
 											send_id_message(user.socket, outsig_user_position, user_position);
 										}
 									});
+								}
+							break;
+
+							case insig_user_space:
+								var from_user;
+								if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
+									from_user.space = msg;
+									send_id_message(dsocket, outsig_user_space, from_user.space);
+									console.log("User space moved:".data, from_user.name, "is go to".data, from_user.space);
 								}
 							break;
 						}

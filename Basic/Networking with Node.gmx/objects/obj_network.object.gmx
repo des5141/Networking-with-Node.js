@@ -31,6 +31,7 @@ only_single();
 //Set reference
 application_surface_enable(false);
 device_mouse_dbclick_enable(false);
+randomize();
 
 //Whether a connection (or an attempt) is active
 active = false;
@@ -49,6 +50,10 @@ global.out_ping = 2000;
 
 //Set timeout
 network_set_config(network_config_connect_timeout, 200);
+
+//Set space
+space = 0;
+to_space = 0;
 
 alarm[0] = room_speed;
 </string>
@@ -288,13 +293,29 @@ if (status == NN.status_connected) {
                             check = false;
                             target_x = user_x;
                             target_y = user_y;
-                            alarm[1] = room_speed * 2;
+                            alarm[1] = room_speed;
                         }
                     }
                     
                     if(check){
                         var ins = instance_create(user_x, user_y, obj_client);
                         ins.control = user_uuid;
+                    }
+                }
+            break;
+            
+            //Space changed check
+            case NN.insig_user_space:
+                space = message_body;
+                
+                with(obj_client)
+                {
+                    if(control == other.login_uuid)
+                    {
+                        x = xstart;
+                        y = ystart;
+                    }else{
+                        instance_destroy();
                     }
                 }
             break;
@@ -366,7 +387,7 @@ if(my_ping - ping &gt; 0)
     draw_set_halign(fa_left)
     draw_set_valign(fa_top)
     draw_set_alpha(0.5)
-    draw_text(5, 5, "ping " + string(my_ping - ping))
+    draw_text(5, 5, "ping " + string(my_ping - ping) + "#space " + string(space))
     draw_set_alpha(1)
 }
 </string>

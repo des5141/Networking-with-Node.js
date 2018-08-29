@@ -190,10 +190,12 @@ enum NN{
     insig_user_leave = 3,
     insig_user_join = 4,
     insig_user_position = 5,
+    insig_user_space = 6,
     
     outsig_login = 0,
     outsig_ping = 1,
     outsig_user_position = 2,
+    outsig_user_space = 3,
     
     
     status_disconnected = -1,

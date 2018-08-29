@@ -5,7 +5,9 @@
   </Configs>
   <NewExtensions/>
   <sounds name="sound"/>
-  <sprites name="sprites"/>
+  <sprites name="sprites">
+    <sprite>sprites\sprite0</sprite>
+  </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -29,6 +31,7 @@
       <object>objects\obj_client</object>
       <object>objects\obj_view</object>
       <object>objects\obj_login</object>
+      <object>objects\obj_portal</object>
     </objects>
   </objects>
   <rooms name="rooms">
