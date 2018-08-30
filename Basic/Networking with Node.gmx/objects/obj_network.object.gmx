@@ -319,6 +319,7 @@ if (status == NN.status_connected) {
                     }
                 }
             break;
+            
         }
     }
 }

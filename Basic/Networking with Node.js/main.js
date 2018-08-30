@@ -47,6 +47,7 @@ Author: yuto
 	const outsig_user_join = 4;
 	const outsig_user_position = 5;
 	const outsig_user_space = 6;
+	const outsig_server_talk = 7;
 
 	//Server-bound signal IDs
 	const insig_login = 0;
@@ -71,6 +72,21 @@ Author: yuto
 	sock.send("㏆" + json_string.length + "®" + json_string);
 }
 }
+
+{ //Server event - step
+	! function step() {
+		//Send all
+		//authenticated_users.each(function(user) {
+			//send_id_message(user.socket, [OUTSIG], [MSG]);
+		//});
+		
+		//While
+		setTimeout(function() {
+			step();
+		}, 14);
+	}()
+}
+
 { //Message processing
 	server.onConnection(function(dsocket) {
 		// When get the messages
