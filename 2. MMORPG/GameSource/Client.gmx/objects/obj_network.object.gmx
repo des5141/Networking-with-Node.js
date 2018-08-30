@@ -27,6 +27,7 @@
             <kind>1</kind>
             <string>///Setup
 only_single();
+global.map_unit = ds_list_create();
 
 //Set reference
 application_surface_enable(false);
@@ -85,6 +86,30 @@ alarm[0] = room_speed;
             <string>///Connect to the server
 
 event_user(15); //Connect attempt
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Destroy
+ds_list_destroy(global.map_unit);
 </string>
           </argument>
         </arguments>
@@ -489,12 +514,17 @@ for(i = 0; i &lt; height; i++)
     }
 }
 
+draw_set_halign(fa_center);
 var j;
-for(i = 0; i &lt; player_max; i ++)
+if(ds_list_size(global.map_unit) &gt; 0)
 {
-    name = ds_list_find_value(global.map_unit, i*3);
-    draw_sprite(sprite3, 0, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64)  
-    draw_text(real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, name)      
+    for(i = 0; i &lt; player_max; i ++)
+    {
+        draw_rectangle(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, true);
+        name = ds_list_find_value(global.map_unit, i*3);
+        draw_sprite(sprite3, 0, real(ds_list_find_value(global.map_unit, i*3+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 32)  
+        draw_text(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*3+2))*64 - 20, name)      
+    }
 }
 </string>
           </argument>
@@ -522,6 +552,142 @@ for(i = 0; i &lt; player_max; i ++)
 if (!active) {
     event_user(15); //Connect attempt
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="40">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Space move
+
+    //Construct message
+    var json_data = ds_map_create();
+    ds_map_add(json_data, "id", NN.outsig_user_operation);
+    ds_map_add(json_data, "msg", "down");
+    var body = json_encode(json_data);
+    ds_map_destroy(json_data);
+    
+    //Send message
+    nn_send_message(body);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="39">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Space move
+
+    //Construct message
+    var json_data = ds_map_create();
+    ds_map_add(json_data, "id", NN.outsig_user_operation);
+    ds_map_add(json_data, "msg", "right");
+    var body = json_encode(json_data);
+    ds_map_destroy(json_data);
+    
+    //Send message
+    nn_send_message(body);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="38">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Space move
+
+    //Construct message
+    var json_data = ds_map_create();
+    ds_map_add(json_data, "id", NN.outsig_user_operation);
+    ds_map_add(json_data, "msg", "up");
+    var body = json_encode(json_data);
+    ds_map_destroy(json_data);
+    
+    //Send message
+    nn_send_message(body);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="37">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Space move
+
+    //Construct message
+    var json_data = ds_map_create();
+    ds_map_add(json_data, "id", NN.outsig_user_operation);
+    ds_map_add(json_data, "msg", "left");
+    var body = json_encode(json_data);
+    ds_map_destroy(json_data);
+    
+    //Send message
+    nn_send_message(body);
+
 </string>
           </argument>
         </arguments>

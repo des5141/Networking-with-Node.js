@@ -38,7 +38,6 @@
       <object>objects\obj_login</object>
       <object>objects\obj_portal</object>
     </objects>
-    <object>objects\object7</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_connecting</room>

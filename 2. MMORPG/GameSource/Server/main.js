@@ -76,6 +76,7 @@ Author: yuto
 	const insig_ping = 1;
 	const insig_user_position = 2;
 	const insig_user_space = 3;
+	const insig_user_operation = 4;
 }
 { //Server information
 	console.log("Networking with Node.js".data);
@@ -114,15 +115,47 @@ Author: yuto
 					break;
 					
 				case "up":
+					if(user.y-1 >= 0)
+					{
+						if(array[user.y-1][user.x] == 1)
+						{
+							user.y--;
+							user.control = "";
+						}
+					}
 					break;
 					
 				case "down":
+					if(user.y+1 < array_height)
+					{
+						if(array[user.y+1][user.x] == 1)
+						{
+							user.y++;
+							user.control = "";
+						}
+					}
 					break;
 					
 				case "left":
+					if(user.x-1 >= 0)
+					{
+						if(array[user.y][user.x-1] == 1)
+						{
+							user.x--;
+							user.control = "";
+						}
+					}
 					break;
 					
 				case "right":
+					if(user.x+1 < array_width)
+					{
+						if(array[user.y][user.x+1] == 1)
+						{
+							user.x++;
+							user.control = "";
+						}
+					}
 					break;
 			}
 			
@@ -149,7 +182,7 @@ Author: yuto
 		//While
 		setTimeout(function() {
 			step();
-		}, 500);
+		}, 200);
 	}()
 }
 
@@ -216,6 +249,15 @@ Author: yuto
 											}
 										});
 									}
+								}
+							break;
+							
+							//Processing the user operation
+							case insig_user_operation:
+								var from_user;
+								if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
+										from_user.control = msg;
+										console.log(msg);
 								}
 							break;
 							
