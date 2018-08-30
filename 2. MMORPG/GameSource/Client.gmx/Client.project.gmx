@@ -8,6 +8,7 @@
   <sprites name="sprites">
     <sprite>sprites\spr_target</sprite>
     <sprite>sprites\spr_tiles</sprite>
+    <sprite>sprites\sprite3</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\back_tile00</background>
@@ -23,6 +24,7 @@
       <script>scripts\nn_get_message.gml</script>
     </scripts>
     <script>scripts\only_single.gml</script>
+    <script>scripts\string_split.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>
@@ -36,6 +38,7 @@
       <object>objects\obj_login</object>
       <object>objects\obj_portal</object>
     </objects>
+    <object>objects\object7</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_connecting</room>

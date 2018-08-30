@@ -37,6 +37,7 @@ Author: yuto
 		var array_height = 5;
 		var array = [];
 		var array_save = "";
+		var max_space = 10;
 		var split = require('string-split');
 		var fs = require('fs');
 		fs.readFile('map/map.txt', 'utf8', function(err, data){
@@ -97,13 +98,51 @@ Author: yuto
 { //Server event - step
 	! function step() {
 		//Send all
-		var json_string = JSON.stringify({
-			map: array_save,
-			width: array_width,
-			height: array_height
-		});
+		var player_info = new Array();
+		var player_max = new Array();
+		for(i = 0; i < max_space; i++)
+		{
+			player_info[i] = "";
+			player_max[i] = 0;
+		}
 		
 		authenticated_users.each(function(user) {
+			//Operation about user step
+			switch(user.control)
+			{
+				case "none":
+					break;
+					
+				case "up":
+					break;
+					
+				case "down":
+					break;
+					
+				case "left":
+					break;
+					
+				case "right":
+					break;
+			}
+			
+			//Save the users state in packet
+			var x = user.x;
+			var y = user.y;
+			player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#";
+			player_max[user.space]++;
+		});
+			
+		authenticated_users.each(function(user) {
+			
+			var json_string = JSON.stringify({
+				map: array_save,
+				width: array_width,
+				height: array_height,
+				player_max: player_max[user.space],
+				player_info : player_info[user.space]
+			});
+			
 			send_id_message(user.socket, outsig_user_map, json_string);
 		});
 		

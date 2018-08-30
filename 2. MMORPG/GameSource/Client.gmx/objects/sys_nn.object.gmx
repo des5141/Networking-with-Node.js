@@ -32,6 +32,7 @@ status = NN.status_disconnected;
 //Message queue
 inbox = ds_queue_create();
 global.list = ds_list_create();
+global.map_unit = ds_list_create();
 
 temp_buffer = "";
 reading_length = 0;
@@ -63,6 +64,8 @@ reading_length_string = "";
 
 //Message queue
 ds_queue_destroy(inbox);
+ds_list_destroy(global.list);
+ds_list_destroy(global.map_unit);
 </string>
           </argument>
         </arguments>

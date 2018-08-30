@@ -6,7 +6,10 @@ function create(name, space, socket) {
 		uuid: uuid_v4(), //UUID
 		name: name, //User name
 		socket: socket, //User's socket
-		space: space //User's space
+		space: space, //User's space
+		x: 3,
+		y: 3,
+		control: "none"
 	};
 }
 

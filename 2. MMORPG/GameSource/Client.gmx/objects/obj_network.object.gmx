@@ -58,6 +58,8 @@ to_space = 0;
 map = "";
 width = 0;
 height = 0;
+player_max = 0;
+player_info = "";
 
 alarm[0] = room_speed;
 </string>
@@ -327,11 +329,15 @@ if (status == NN.status_connected) {
             //Map load
             case NN.insig_user_map:
                 var json_data = json_decode(message_body);
-                
+                ds_list_clear(global.map_unit);
                 map = ds_map_find_value(json_data, "map");
                 width = ds_map_find_value(json_data, "width");
                 height = ds_map_find_value(json_data, "height");
+                player_max = ds_map_find_value(json_data, "player_max");
+                player_info = ds_map_find_value(json_data, "player_info");
+                string_split(player_info, "#", global.map_unit);
                 
+                show_debug_message(player_info)
                 //with(obj_tiles){instance_destroy()}
                 
                 
@@ -482,6 +488,14 @@ for(i = 0; i &lt; height; i++)
         }
     }
 }
+
+var j;
+for(i = 0; i &lt; player_max; i ++)
+{
+    name = ds_list_find_value(global.map_unit, i*3);
+    draw_sprite(sprite3, 0, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64)  
+    draw_text(real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, name)      
+}
 </string>
           </argument>
         </arguments>
@@ -508,6 +522,42 @@ for(i = 0; i &lt; height; i++)
 if (!active) {
     event_user(15); //Connect attempt
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="32">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Space move
+
+    obj_network.to_space = ++obj_network.space;
+    
+    //Construct message
+    var json_data = ds_map_create();
+    ds_map_add(json_data, "id", NN.outsig_user_space);
+    ds_map_add(json_data, "msg", obj_network.to_space);
+    var body = json_encode(json_data);
+    ds_map_destroy(json_data);
+    
+    //Send message
+    nn_send_message(body);
+
 </string>
           </argument>
         </arguments>
