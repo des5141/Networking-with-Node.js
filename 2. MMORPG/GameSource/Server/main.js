@@ -33,7 +33,7 @@ Author: yuto
 		var buffer_string = "";
 		var buffer_reading_string = "";
 		var i = 0, j = 0;
-		var array_width = 6;
+		var array_width = 9;
 		var array_height = 5;
 		var array = [];
 		var array_save = "";
@@ -167,15 +167,36 @@ Author: yuto
 		});
 			
 		authenticated_users.each(function(user) {
+			var user_map = "";
+			var i, j;
+			var base_x = user.x - 7;
+			var base_y = user.y - 7;
+			for(i = 0; i < 15; i++)
+			{
+				for(j = 0; j < 15; j++)
+				{
+					if((user.y-7+i >= 0)&&(user.y-7+i < array_height)&&(user.x-7+j >= 0)&&(user.x-7+j < array_width))
+					{
+						//This is map inside
+						user_map += array[user.y-7+i][user.x-7+j];
+					}else{
+						//This is map outside
+						user_map += "0";
+					}
+				}
+			}
+			
 			
 			var json_string = JSON.stringify({
 				map: array_save,
 				width: array_width,
 				height: array_height,
 				player_max: player_max[user.space],
-				player_info : player_info[user.space]
+				player_info : player_info[user.space],
+				user_x : user.x,
+				user_y : user.y
 			});
-			
+			//console.log(user_map);
 			send_id_message(user.socket, outsig_user_map, json_string);
 		});
 		
@@ -257,7 +278,6 @@ Author: yuto
 								var from_user;
 								if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
 										from_user.control = msg;
-										console.log(msg);
 								}
 							break;
 							
