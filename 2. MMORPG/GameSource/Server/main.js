@@ -36,25 +36,60 @@ Author: yuto
 		var array_width = 9;
 		var array_height = 5;
 		var array = [];
-		var array_save = "";
+		var array_save = [];
 		var max_space = 10;
+		
+		var strArray = "";
 		var split = require('string-split');
 		var fs = require('fs');
-		fs.readFile('map/map.txt', 'utf8', function(err, data){
-			/*array_save = data;
-			console.log(array_save);*/
+		
+		fs.readFile('map/map0.txt', 'utf8', function(err, data){
 			strArray = split('\n', data);
-			
+			array[0] = new Array();
+			array_save[0] = new Array();
 			for(i = 0; i < array_height; i++)
 			{
-				array[i] = new Array();
+				array[0][i] = new Array();
 				for(j = 0; j < array_width; j++)
 				{
-					array[i][j] = strArray[i][j];
-					array_save += array[i][j];
+					array[0][i][j] = strArray[i][j];
+					array_save[0] += array[0][i][j];
 				}
 			}
 		});
+		
+		fs.readFile('map/map1.txt', 'utf8', function(err, data){
+			strArray = split('\n', data);
+			array[1] = new Array();
+			array_save[1] = new Array();
+			for(i = 0; i < array_height; i++)
+			{
+				array[1][i] = new Array();
+				for(j = 0; j < array_width; j++)
+				{
+					array[1][i][j] = strArray[i][j];
+					array_save[1] += array[1][i][j];
+				}
+			}
+		});
+		
+		fs.readFile('map/map2.txt', 'utf8', function(err, data){
+			strArray = split('\n', data);
+			array[2] = new Array();
+			array_save[2] = new Array();
+			for(i = 0; i < array_height; i++)
+			{
+				array[2][i] = new Array();
+				for(j = 0; j < array_width; j++)
+				{
+					array[2][i][j] = strArray[i][j];
+					array_save[2] += array[2][i][j];
+				}
+			}
+		});
+		
+		
+		
 	}
 	{ //Runtime tables
 		var authenticated_users = UserBox.create();
@@ -117,7 +152,7 @@ Author: yuto
 				case "up":
 					if(user.y-1 >= 0)
 					{
-						if(array[user.y-1][user.x] == 1)
+						if(array[user.space][user.y-1][user.x] == 1)
 						{
 							user.y--;
 							user.control = "";
@@ -128,7 +163,7 @@ Author: yuto
 				case "down":
 					if(user.y+1 < array_height)
 					{
-						if(array[user.y+1][user.x] == 1)
+						if(array[user.space][user.y+1][user.x] == 1)
 						{
 							user.y++;
 							user.control = "";
@@ -139,7 +174,7 @@ Author: yuto
 				case "left":
 					if(user.x-1 >= 0)
 					{
-						if(array[user.y][user.x-1] == 1)
+						if(array[user.space][user.y][user.x-1] == 1)
 						{
 							user.x--;
 							user.control = "";
@@ -150,7 +185,7 @@ Author: yuto
 				case "right":
 					if(user.x+1 < array_width)
 					{
-						if(array[user.y][user.x+1] == 1)
+						if(array[user.space][user.y][user.x+1] == 1)
 						{
 							user.x++;
 							user.control = "";
@@ -178,7 +213,7 @@ Author: yuto
 					if((user.y-7+i >= 0)&&(user.y-7+i < array_height)&&(user.x-7+j >= 0)&&(user.x-7+j < array_width))
 					{
 						//This is map inside
-						user_map += array[user.y-7+i][user.x-7+j];
+						user_map += array[user.space][user.y-7+i][user.x-7+j];
 					}else{
 						//This is map outside
 						user_map += "0";
@@ -188,7 +223,7 @@ Author: yuto
 			
 			
 			var json_string = JSON.stringify({
-				map: array_save,
+				map: array_save[user.space],
 				width: array_width,
 				height: array_height,
 				player_max: player_max[user.space],
