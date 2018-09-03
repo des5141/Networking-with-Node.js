@@ -148,8 +148,7 @@ if(cluster.isMaster)
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
 							{
-								user.control = message.uuid;
-								console.log(user.uuid , message.uuid);
+								user.control = message.operator;
 							}
 						});
 					break;
@@ -168,7 +167,7 @@ if(cluster.isMaster)
 		});
 	//}
 	
-	/*
+	
 	//{ Server event - step
 		! function step() {
 			//Send all
@@ -284,7 +283,7 @@ if(cluster.isMaster)
 			}, 200);
 		}()
 	//}
-	*/
+	
 }
 
 else if(cluster.isWorker){
@@ -443,7 +442,6 @@ else if(cluster.isWorker){
 									{
 										//from_user.control = msg;
 										process.send({type : 'operator', to : 'master', uuid : from_user.uuid, operator : msg});
-										console.log("operator");
 									}
 								break;
 								
