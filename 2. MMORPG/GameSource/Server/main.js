@@ -88,6 +88,7 @@ Author: yuto
 	var tcp_port = 5833;
 	var ip = '127.0.0.1';
 //}
+a = 10;
 
 // Main code is start from here !
 if(cluster.isMaster)
@@ -121,11 +122,16 @@ if(cluster.isMaster)
 				switch(message.type)
 				{
 					case 'login':
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+								console.log("already");
+						});
 						console.log("logined - ".gray + message.uuid + "(".gray + message.name +")".gray);
 						var new_user = User.create(message.name, 0, -1, message.uuid);
+						authenticated_users.addUser(new_user);
 						for(var id in cluster.workers)
 						{
-							cluster.workers[id].send({type : 'login', to : 'worker', uuid : new_user.uuid, name : msg});
+							cluster.workers[id].send({type : 'login', to : 'worker', uuid : message.uuid, name : message.name});
 						}
 					break;
 					
@@ -136,6 +142,16 @@ if(cluster.isMaster)
 						{
 							cluster.workers[id].send({type : 'quit', to : 'worker', uuid : message.uuid});
 						}
+					break;
+					
+					case 'operator':
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+							{
+								user.control = message.uuid;
+								console.log(user.uuid , message.uuid);
+							}
+						});
 					break;
 					
 					default:
@@ -151,62 +167,8 @@ if(cluster.isMaster)
 			}
 		});
 	//}
-}
-
-if(cluster.isWorker){	
-	//{ Data get from master server
-		process.on('message', function(message) {
-			if(message.to == 'master')
-			{
-				switch(message.type)
-				{
-					case 'login'
-					
-					break;
-					
-					case 'quit'
-					
-					break;
-				}
-			}
-		});
-	//}
-	//{ Sample of send the data to master worker
-		//process.send(process.pid + " 가 보냅니다");
-	//}
-
-	//{ Signal setting
-		//Client-bound signal IDs
-		const outsig_login_refused = 0;
-		const outsig_login_accepted = 1;
-		const outsig_ping = 2;
-		const outsig_user_leave = 3;
-		const outsig_user_join = 4;
-		const outsig_user_position = 5;
-		const outsig_user_space = 6;
-		const outsig_user_map = 7;
-
-		//Server-bound signal IDs
-		const insig_login = 0;
-		const insig_ping = 1;
-		const insig_user_position = 2;
-		const insig_user_space = 3;
-		const insig_user_operation = 4;
-		
-	//} Signal setting
-	//{ Server run
-		var server = require('./classes/server.js').createServer();
-	//}
-	//{ Send message
-		function send_id_message(sock, id, msg) {
-		var json_string = JSON.stringify({
-			id: id,
-			msg: msg
-		});
-		
-		sock.send("㏆" + json_string.length + "®" + json_string);
-		}
-	//}
+	
+	/*
 	//{ Server event - step
 		! function step() {
 			//Send all
@@ -308,7 +270,12 @@ if(cluster.isWorker){
 					user_y : user.y
 				});
 				//console.log(user_map);
-				send_id_message(user.socket, outsig_user_map, json_string);
+				//send_id_message(user.socket, outsig_user_map, json_string);
+				
+				for(var id in cluster.workers)
+				{
+					cluster.workers[id].send({type : 'map', to : 'worker', json : json_string, uuid : user.uuid});
+				}
 			});
 			
 			//While
@@ -316,6 +283,94 @@ if(cluster.isWorker){
 				step();
 			}, 200);
 		}()
+	//}
+	*/
+}
+
+else if(cluster.isWorker){
+	//{ Data get from master server
+		process.on('message', function(message) {
+			if(message.to == 'worker')
+			{
+				switch(message.type)
+				{
+					case 'login':
+						var check = 1;
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+							{
+								check = -1;
+							}
+						});
+						
+						if(check == 1)
+						{
+							console.log("login - ".gray + message.uuid + "|".gray + process.pid);
+							var new_user = User.create(message.name, 0, -1, message.uuid);
+							authenticated_users.addUser(new_user);
+						}
+					break;
+					
+					case 'quit':
+						var check = -1;
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+							{
+								check = 1;
+							}
+						});
+						
+						if(check == 1)
+						{
+							console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
+							authenticated_users.removeUser(message.uuid);
+						}
+					break;
+					
+					case 'map':
+						authenticated_users.each(function(user) {
+							if((message.uuid == user.uuid)&&(user.mine == 1))
+							{
+								send_id_message(user.socket, outsig_user_map, message.json);
+							}
+						});
+					break;
+				}
+			}
+		});
+	//}
+
+	//{ Signal setting
+		//Client-bound signal IDs
+		const outsig_login_refused = 0;
+		const outsig_login_accepted = 1;
+		const outsig_ping = 2;
+		const outsig_user_leave = 3;
+		const outsig_user_join = 4;
+		const outsig_user_position = 5;
+		const outsig_user_space = 6;
+		const outsig_user_map = 7;
+
+		//Server-bound signal IDs
+		const insig_login = 0;
+		const insig_ping = 1;
+		const insig_user_position = 2;
+		const insig_user_space = 3;
+		const insig_user_operation = 4;
+		
+	//} Signal setting
+	//{ Server run
+		var server = require('./classes/server.js').createServer();
+	//}
+	//{ Send message
+		function send_id_message(sock, id, msg) {
+		var json_string = JSON.stringify({
+			id: id,
+			msg: msg
+		});
+		
+		sock.send("㏆" + json_string.length + "®" + json_string);
+		}
 	//}
 	//{ Message processing
 		server.onConnection(function(dsocket) {
@@ -366,8 +421,8 @@ if(cluster.isWorker){
 										else {
 											var new_user = User.create(msg, 0, dsocket, -1);
 											authenticated_users.addUser(new_user);
+											new_user.mine = 1;
 											console.log("New user joined :".data, new_user.name, "(" + new_user.uuid + ")");
-											process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : msg});
 											
 											//Tell user to come in
 											var new_user_announcement = JSON.stringify({
@@ -375,12 +430,8 @@ if(cluster.isWorker){
 												uuid: new_user.uuid
 											});
 											send_id_message(dsocket, outsig_login_accepted, new_user_announcement);
-											//Announce to other users
-											authenticated_users.each(function(user) {
-												if (user.uuid != new_user.uuid) {
-													send_id_message(user.socket, outsig_user_join, new_user_announcement);
-												}
-											});
+											
+											process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : new_user.name});
 										}
 									}
 								break;
@@ -388,16 +439,14 @@ if(cluster.isWorker){
 								//Processing the user operation
 								case insig_user_operation:
 									var from_user;
-									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
-											from_user.control = msg;
+									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null)
+									{
+										//from_user.control = msg;
+										process.send({type : 'operator', to : 'master', uuid : from_user.uuid, operator : msg});
+										console.log("operator");
 									}
 								break;
 								
-								//Invalid message ID
-								default:
-									console.log("Invaild ID".error);
-								break;
-
 								case insig_user_position:
 									var from_user;
 									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
@@ -428,6 +477,12 @@ if(cluster.isWorker){
 										send_id_message(dsocket, outsig_user_space, from_user.space);
 										console.log("User space moved:".data, from_user.name, "is go to".data, from_user.space);
 									}
+								break;
+								
+								
+								//Invalid message ID
+								default:
+									console.log("Invaild ID".error);
 								break;
 							}
 						}
