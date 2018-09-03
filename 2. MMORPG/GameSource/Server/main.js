@@ -4,134 +4,178 @@ Author: yuto
 (C) YUTO SOFT, 2018
 */
 
-//Requires
-var cluster = require('cluster');
-var os = require('os');
-var Colors = require('colors');
+//{ Requires
+	var cluster = require('cluster');
+	var os = require('os');
+	var Colors = require('colors');
+	var split = require('string-split');
+	var fs = require('fs');
+	var User = require('./classes/user.js');
+	var UserBox = require('./classes/user_box.js');
+//}
+//{ Setup console colors
+	Colors.setTheme({
+		asome:'rainbow',
+		input:'gray',
+		verbose:'cyan',
+		prompt:'gray',
+		info:'green',
+		data: 'gray',
+		help:'cyan',
+		warn:'yellow',
+		debug: 'blue',
+		error: 'red'
+	});
+//}
+//{ Setup variables
+	var authenticated_users = UserBox.create();
+	var temp_buffer = "";
+	var buffer_string = "";
+	var buffer_reading_string = "";
+	var i = 0, j = 0;
+	var array_width = 9;
+	var array_height = 5;
+	var array = [];
+	var array_save = [];
+	var max_space = 10;
+	var strArray = "";
+	fs.readFile('map/map0.txt', 'utf8', function(err, data){
+		strArray = split('\n', data);
+		array[0] = new Array();
+		array_save[0] = new Array();
+		for(i = 0; i < array_height; i++)
+		{
+			array[0][i] = new Array();
+			for(j = 0; j < array_width; j++)
+			{
+				array[0][i][j] = strArray[i][j];
+				array_save[0] += array[0][i][j];
+			}
+		}
+	});
+			
+	fs.readFile('map/map1.txt', 'utf8', function(err, data){
+		strArray = split('\n', data);
+		array[1] = new Array();
+		array_save[1] = new Array();
+		for(i = 0; i < array_height; i++)
+		{
+			array[1][i] = new Array();
+			for(j = 0; j < array_width; j++)
+			{
+				array[1][i][j] = strArray[i][j];
+				array_save[1] += array[1][i][j];
+			}
+		}
+	});
+			
+	fs.readFile('map/map2.txt', 'utf8', function(err, data){
+		strArray = split('\n', data);
+		array[2] = new Array();
+		array_save[2] = new Array();
+		for(i = 0; i < array_height; i++)
+		{
+			array[2][i] = new Array();
+			for(j = 0; j < array_width; j++)
+			{
+				array[2][i][j] = strArray[i][j];
+				array_save[2] += array[2][i][j];
+			}
+		}
+	});
+//}
+//{ Setup server information
+	var tcp_port = 5833;
+	var ip = '127.0.0.1';
+//}
 
-//Set console colors
-Colors.setTheme({
-	asome:'rainbow',
-	input:'gray',
-	verbose:'cyan',
-	prompt:'gray',
-	info:'green',
-	data: 'gray',
-	help:'cyan',
-	warn:'yellow',
-	debug: 'blue',
-	error: 'red'
-});
-
+// Main code is start from here !
 if(cluster.isMaster)
 {	
-	//Server information
-	console.log("Networking with Node.js".data);
-	console.log(" - Node.js Server".data, "version 1.0");
-	
-    //CPU의 갯수만큼 워커 생성
-    os.cpus().forEach(function (cpu) {
-        cluster.fork();
-    });
-	
-	//워커가 죽으면,
-    cluster.on('exit', function(worker, code, signal) {
+	//{ Server information
+		console.log("Networking with Node.js".data);
+		console.log(" - Node.js Server".data, "version 1.0");
+	//}
+	//{ Make worker as much as count of cpu
+		os.cpus().forEach(function (cpu) {
+			cluster.fork();
+		});
+	//}
+	//{ If suddenly, worker died
+		cluster.on('exit', function(worker, code, signal) {
 
-        //종료된 클러스터 로그
-        console.log('워커 종료 : ' + worker.id);
+			//Died worker
+			console.log('Worker died - '.error + "processer".gray + worker.id);
 
-        if (code == 200) {
-            //종료 코드가 200인 경우, 워커 재생성
-            cluster.fork();
-        }
-    });
-	
-	cluster.on('message', function (worker, message) {
-		console.log('마스터가 ' + worker.process.pid + ' 워커로부터 받은 메시지 : ' + message);
-	});
-}else{
-	//마스터가 보낸 메시지 처리
-    process.on('message', function(message) {
-        console.log('워커가 마스터에게 받은 메시지 : ' + message);
-    });
+			if (code == 200) {
+				//종료 코드가 200인 경우, 워커 재생성
+				cluster.fork();
+			}
+		});
+	//}
+	//{ Get message from worker's
+		cluster.on('message', function (worker, message) {
+			if(message.to == 'master')
+			{
+				//Message to master
+				switch(message.type)
+				{
+					case 'login':
+						console.log("logined - ".gray + message.uuid + "(".gray + message.name +")".gray);
+						var new_user = User.create(message.name, 0, -1, message.uuid);
+						for(var id in cluster.workers)
+						{
+							cluster.workers[id].send({type : 'login', to : 'worker', uuid : new_user.uuid, name : msg});
+						}
+					break;
+					
+					case 'quit':
+						console.log("quit - ".gray + message.uuid);
+						authenticated_users.removeUser(message.uuid);
+						for(var id in cluster.workers)
+						{
+							cluster.workers[id].send({type : 'quit', to : 'worker', uuid : message.uuid});
+						}
+					break;
+					
+					default:
+						console.log("Wrong message type from process message".error, "-".gray, message.type);
+					break;
+				}
+			}
+			
+			if(message.to == 'worker')
+			{
+				//Message to worker
+				
+			}
+		});
+	//}
+}
 
-	//{ Basic setting
-		//Setup server information
-			var tcp_port = 5833; //TCP port
-			var ip = '127.0.0.1'; //IP address
-		//Import classes
-			var User = require('./classes/user.js');
-			var UserBox = require('./classes/user_box.js');
-			
-		//Set variables
-			var temp_buffer = "";
-			var buffer_string = "";
-			var buffer_reading_string = "";
-			var i = 0, j = 0;
-			var array_width = 9;
-			var array_height = 5;
-			var array = [];
-			var array_save = [];
-			var max_space = 10;
-			
-			var strArray = "";
-			var split = require('string-split');
-			var fs = require('fs');
-			
-			fs.readFile('map/map0.txt', 'utf8', function(err, data){
-				strArray = split('\n', data);
-				array[0] = new Array();
-				array_save[0] = new Array();
-				for(i = 0; i < array_height; i++)
+if(cluster.isWorker){	
+	//{ Data get from master server
+		process.on('message', function(message) {
+			if(message.to == 'master')
+			{
+				switch(message.type)
 				{
-					array[0][i] = new Array();
-					for(j = 0; j < array_width; j++)
-					{
-						array[0][i][j] = strArray[i][j];
-						array_save[0] += array[0][i][j];
-					}
+					case 'login'
+					
+					break;
+					
+					case 'quit'
+					
+					break;
 				}
-			});
-			
-			fs.readFile('map/map1.txt', 'utf8', function(err, data){
-				strArray = split('\n', data);
-				array[1] = new Array();
-				array_save[1] = new Array();
-				for(i = 0; i < array_height; i++)
-				{
-					array[1][i] = new Array();
-					for(j = 0; j < array_width; j++)
-					{
-						array[1][i][j] = strArray[i][j];
-						array_save[1] += array[1][i][j];
-					}
-				}
-			});
-			
-			fs.readFile('map/map2.txt', 'utf8', function(err, data){
-				strArray = split('\n', data);
-				array[2] = new Array();
-				array_save[2] = new Array();
-				for(i = 0; i < array_height; i++)
-				{
-					array[2][i] = new Array();
-					for(j = 0; j < array_width; j++)
-					{
-						array[2][i][j] = strArray[i][j];
-						array_save[2] += array[2][i][j];
-					}
-				}
-			});
-			
-			
-			
-		
-		//Runtime tables
-			var authenticated_users = UserBox.create();
-		
-	
-	
-	//Signal setting
+			}
+		});
+	//}
+	//{ Sample of send the data to master worker
+		//process.send(process.pid + " 가 보냅니다");
+	//}
+
+	//{ Signal setting
 		//Client-bound signal IDs
 		const outsig_login_refused = 0;
 		const outsig_login_accepted = 1;
@@ -149,11 +193,11 @@ if(cluster.isMaster)
 		const insig_user_space = 3;
 		const insig_user_operation = 4;
 		
-	//} Basic setting
-	{ //Server run
+	//} Signal setting
+	//{ Server run
 		var server = require('./classes/server.js').createServer();
-	}
-	{ //Send message
+	//}
+	//{ Send message
 		function send_id_message(sock, id, msg) {
 		var json_string = JSON.stringify({
 			id: id,
@@ -161,9 +205,9 @@ if(cluster.isMaster)
 		});
 		
 		sock.send("㏆" + json_string.length + "®" + json_string);
-	}
-	}
-	{ //Server event - step
+		}
+	//}
+	//{ Server event - step
 		! function step() {
 			//Send all
 			var player_info = new Array();
@@ -272,8 +316,8 @@ if(cluster.isMaster)
 				step();
 			}, 200);
 		}()
-	}
-	{ //Message processing
+	//}
+	//{ Message processing
 		server.onConnection(function(dsocket) {
 			// When get the messages
 			dsocket.onMessage(function(data) {
@@ -320,9 +364,11 @@ if(cluster.isMaster)
 										}
 										//Name OK
 										else {
-											var new_user = User.create(msg, 0, dsocket);
+											var new_user = User.create(msg, 0, dsocket, -1);
 											authenticated_users.addUser(new_user);
 											console.log("New user joined :".data, new_user.name, "(" + new_user.uuid + ")");
+											process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : msg});
+											
 											//Tell user to come in
 											var new_user_announcement = JSON.stringify({
 												name: new_user.name,
@@ -399,6 +445,7 @@ if(cluster.isMaster)
 			var quitter;
 			if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
 				console.log("Removing user   :".data, quitter.name, "(" + quitter.uuid + ")");
+				process.send({type : 'quit', to : 'master', uuid : quitter.uuid});
 				//Let everyone else know the user is leaving
 				var logout_announcement = JSON.stringify({
 					name: quitter.name,
@@ -414,8 +461,8 @@ if(cluster.isMaster)
 			}
 		});
 	});
-	}
-	{ //Boot the server
+	//}
+	//{ Boot the server
 		server.listen(tcp_port, ip);
-	}
+	//}
 }
