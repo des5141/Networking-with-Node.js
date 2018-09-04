@@ -92,6 +92,41 @@ event_user(15); //Connect attempt
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Global variables setup
+global.can_inventory = true;
+global.hp = 100;
+global.nickname = "유토";
+global.gold = 0;
+global.level = 1;
+global.str = 0;
+global.int = 0;
+global.dex = 0;
+global.con = 0;
+global.wis = 0;
+global.state_point = 0;
+global.version_checked = 1;
+global._font = font_add_sprite_ext(sprFont, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, 57)
+global._font2 = font_add_sprite_ext(sprFontBorder, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, 57)
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="1" enumb="0">
       <action>
@@ -368,7 +403,7 @@ if (status == NN.status_connected) {
                 
                 obj_view.target_x = my_x*64+32;
                 obj_view.target_y = my_y*64+32;
-                show_debug_message(string(my_x) + " , " + string(my_y));
+                //show_debug_message(string(my_x) + " , " + string(my_y));
                 string_split(player_info, "#", global.map_unit);
                 
                 //show_debug_message(player_info)
@@ -520,6 +555,11 @@ for(i = 0; i &lt; height; i++)
         {
             draw_sprite(spr_tiles, 0, (j-1)*64, i*64);
         }
+        
+        if(string_char_at(map, i*width + j) == "2")
+        {
+            draw_sprite(spr_tiles, 1, (j-1)*64, i*64);
+        }
     }
 }
 
@@ -586,17 +626,7 @@ if (!active) {
           <argument>
             <kind>1</kind>
             <string>///Space move
-
-    //Construct message
-    var json_data = ds_map_create();
-    ds_map_add(json_data, "id", NN.outsig_user_operation);
-    ds_map_add(json_data, "msg", "down");
-    var body = json_encode(json_data);
-    ds_map_destroy(json_data);
-    
-    //Send message
-    nn_send_message(body);
-
+send_operation("down");
 </string>
           </argument>
         </arguments>
@@ -620,17 +650,7 @@ if (!active) {
           <argument>
             <kind>1</kind>
             <string>///Space move
-
-    //Construct message
-    var json_data = ds_map_create();
-    ds_map_add(json_data, "id", NN.outsig_user_operation);
-    ds_map_add(json_data, "msg", "right");
-    var body = json_encode(json_data);
-    ds_map_destroy(json_data);
-    
-    //Send message
-    nn_send_message(body);
-
+send_operation("right");
 </string>
           </argument>
         </arguments>
@@ -654,17 +674,7 @@ if (!active) {
           <argument>
             <kind>1</kind>
             <string>///Space move
-
-    //Construct message
-    var json_data = ds_map_create();
-    ds_map_add(json_data, "id", NN.outsig_user_operation);
-    ds_map_add(json_data, "msg", "up");
-    var body = json_encode(json_data);
-    ds_map_destroy(json_data);
-    
-    //Send message
-    nn_send_message(body);
-
+send_operation("up");
 </string>
           </argument>
         </arguments>
@@ -688,17 +698,7 @@ if (!active) {
           <argument>
             <kind>1</kind>
             <string>///Space move
-
-    //Construct message
-    var json_data = ds_map_create();
-    ds_map_add(json_data, "id", NN.outsig_user_operation);
-    ds_map_add(json_data, "msg", "left");
-    var body = json_encode(json_data);
-    ds_map_destroy(json_data);
-    
-    //Send message
-    nn_send_message(body);
-
+send_operation("left");
 </string>
           </argument>
         </arguments>

@@ -1,0 +1,62 @@
+///vmKey_eng_getCode_lower(index)
+
+switch argument0{
+case 0:
+return ord('q');
+case 1:
+return ord('w');
+case 2:
+return ord('e');
+case 3:
+return ord('r');
+case 4:
+return ord('t');
+case 5:
+return ord('y');
+case 6:
+return ord('u');
+case 7:
+return ord('i');
+case 8:
+return ord('o');
+case 9:
+return ord('p');
+case 10:
+return ord('a');
+case 11:
+return ord('s');
+case 12:
+return ord('d');
+case 13:
+return ord('f');
+case 14:
+return ord('g');
+case 15:
+return ord('h');
+case 16:
+return ord('j');
+case 17:
+return ord('k');
+case 18:
+return ord('l');
+case 20:
+return ord('z');
+case 21:
+return ord('x');
+case 22:
+return ord('c');
+case 23:
+return ord('v');
+case 24:
+return ord('b');
+case 25:
+return ord('n');
+case 26:
+return ord('m');
+case 30:
+return ord(' ');
+case 31:
+return ord('.');
+default:
+return -1;
+}

@@ -1,0 +1,62 @@
+///vmKey_kor_getCode_lower(index)
+
+switch argument0{
+case 0:
+return ord('ㅃ');
+case 1:
+return ord('ㅉ');
+case 2:
+return ord('ㄸ');
+case 3:
+return ord('ㄲ');
+case 4:
+return ord('ㅆ');
+case 5:
+return ord('ㅛ');
+case 6:
+return ord('ㅕ');
+case 7:
+return ord('ㅑ');
+case 8:
+return ord('ㅒ');
+case 9:
+return ord('ㅖ');
+case 10:
+return ord('ㅁ');
+case 11:
+return ord('ㄴ');
+case 12:
+return ord('ㅇ');
+case 13:
+return ord('ㄹ');
+case 14:
+return ord('ㅎ');
+case 15:
+return ord('ㅗ');
+case 16:
+return ord('ㅓ');
+case 17:
+return ord('ㅏ');
+case 18:
+return ord('ㅣ');
+case 20:
+return ord('ㅋ');
+case 21:
+return ord('ㅌ');
+case 22:
+return ord('ㅊ');
+case 23:
+return ord('ㅍ');
+case 24:
+return ord('ㅠ');
+case 25:
+return ord('ㅜ');
+case 26:
+return ord('ㅡ');
+case 30:
+return ord(' ');
+case 31:
+return ord('.');
+default:
+return -1;
+}

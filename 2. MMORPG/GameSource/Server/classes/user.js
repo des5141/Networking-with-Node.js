@@ -11,8 +11,8 @@ function create(name, space, socket, uuid) {
 		name: name, //User name
 		socket: socket, //User's socket
 		space: space, //User's space
-		x: 3,
-		y: 3,
+		x: 0,
+		y: 0,
 		control: "none",
 		mine: 0
 	};

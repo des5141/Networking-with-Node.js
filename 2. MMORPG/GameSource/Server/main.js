@@ -88,9 +88,9 @@ Author: yuto
 	var tcp_port = 5833;
 	var ip = '127.0.0.1';
 //}
-a = 10;
 
-// Main code is start from here !
+
+//Main code is start from here !
 if(cluster.isMaster)
 {	
 	//{ Server information
@@ -109,7 +109,6 @@ if(cluster.isMaster)
 			console.log('Worker died - '.error + "processer".gray + worker.id);
 
 			if (code == 200) {
-				//종료 코드가 200인 경우, 워커 재생성
 				cluster.fork();
 			}
 		});
@@ -122,12 +121,26 @@ if(cluster.isMaster)
 				switch(message.type)
 				{
 					case 'login':
+						//console.log("logined - ".gray + message.uuid + "(".gray + message.name +")".gray);
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
 								console.log("already");
 						});
-						console.log("logined - ".gray + message.uuid + "(".gray + message.name +")".gray);
 						var new_user = User.create(message.name, 0, -1, message.uuid);
+						
+						var i, j;
+						for(i = 0; i < array_height; i++)
+						{
+							for(j = 0; j < array_width; j++)
+							{
+								if(array[0][i][j] == "2")
+								{
+									new_user.x = j;
+									new_user.y = i;
+								}
+							}
+						}
+						
 						authenticated_users.addUser(new_user);
 						for(var id in cluster.workers)
 						{
@@ -136,7 +149,7 @@ if(cluster.isMaster)
 					break;
 					
 					case 'quit':
-						console.log("quit - ".gray + message.uuid);
+						//console.log("quit - ".gray + message.uuid);
 						authenticated_users.removeUser(message.uuid);
 						for(var id in cluster.workers)
 						{
@@ -153,6 +166,27 @@ if(cluster.isMaster)
 						});
 					break;
 					
+					case 'space':
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+							{
+								user.space = message.space;
+								var i, j;
+								for(i = 0; i < array_height; i++)
+								{
+									for(j = 0; j < array_width; j++)
+									{
+										if(array[user.space][i][j] == "2")
+										{
+											user.x = j;
+											user.y = i;
+										}
+									}
+								}
+							}
+						});
+					break;
+					
 					default:
 						console.log("Wrong message type from process message".error, "-".gray, message.type);
 					break;
@@ -162,7 +196,10 @@ if(cluster.isMaster)
 			if(message.to == 'worker')
 			{
 				//Message to worker
-				
+				for(var id in cluster.workers)
+				{
+					cluster.workers[id].send(message);
+				}
 			}
 		});
 	//}
@@ -189,7 +226,7 @@ if(cluster.isMaster)
 					case "up":
 						if(user.y-1 >= 0)
 						{
-							if(array[user.space][user.y-1][user.x] == 1)
+							if(array[user.space][user.y-1][user.x] != 0)
 							{
 								user.y--;
 								user.control = "";
@@ -200,7 +237,7 @@ if(cluster.isMaster)
 					case "down":
 						if(user.y+1 < array_height)
 						{
-							if(array[user.space][user.y+1][user.x] == 1)
+							if(array[user.space][user.y+1][user.x] != 0)
 							{
 								user.y++;
 								user.control = "";
@@ -211,7 +248,7 @@ if(cluster.isMaster)
 					case "left":
 						if(user.x-1 >= 0)
 						{
-							if(array[user.space][user.y][user.x-1] == 1)
+							if(array[user.space][user.y][user.x-1] != 0)
 							{
 								user.x--;
 								user.control = "";
@@ -222,7 +259,7 @@ if(cluster.isMaster)
 					case "right":
 						if(user.x+1 < array_width)
 						{
-							if(array[user.space][user.y][user.x+1] == 1)
+							if(array[user.space][user.y][user.x+1] != 0)
 							{
 								user.x++;
 								user.control = "";
@@ -286,7 +323,8 @@ if(cluster.isMaster)
 	
 }
 
-else if(cluster.isWorker){
+if(cluster.isWorker)
+{
 	//{ Data get from master server
 		process.on('message', function(message) {
 			if(message.to == 'worker')
@@ -304,7 +342,7 @@ else if(cluster.isWorker){
 						
 						if(check == 1)
 						{
-							console.log("login - ".gray + message.uuid + "|".gray + process.pid);
+							//console.log("login - ".gray + message.uuid + "|".gray + process.pid);
 							var new_user = User.create(message.name, 0, -1, message.uuid);
 							authenticated_users.addUser(new_user);
 						}
@@ -321,7 +359,7 @@ else if(cluster.isWorker){
 						
 						if(check == 1)
 						{
-							console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
+							//console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
 							authenticated_users.removeUser(message.uuid);
 						}
 					break;
@@ -471,9 +509,10 @@ else if(cluster.isWorker){
 								case insig_user_space:
 									var from_user;
 									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
-										from_user.space = msg;
-										send_id_message(dsocket, outsig_user_space, from_user.space);
-										console.log("User space moved:".data, from_user.name, "is go to".data, from_user.space);
+										//from_user.space = msg;
+										//send_id_message(dsocket, outsig_user_space, from_user.space);
+										//console.log("User space moved:".data, from_user.name, "is go to".data, from_user.space);
+										process.send({type : 'space', to : 'master', uuid : from_user.uuid, space : msg});
 									}
 								break;
 								
