@@ -196,12 +196,13 @@ enum NN{
     insig_user_space = 6,
     insig_user_map = 7,
     
+    
     outsig_login = 0,
     outsig_ping = 1,
     outsig_user_position = 2,
     outsig_user_space = 3,
     outsig_user_operation = 4,
-    
+    outsig_register = 5,
     
     status_disconnected = -1,
     status_connecting = 0,

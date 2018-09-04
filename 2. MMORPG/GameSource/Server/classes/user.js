@@ -1,6 +1,6 @@
 var uuid_v4 = require('uuid-v4');
 
-function create(name, space, socket, uuid) {
+function create(name, socket, id, uuid, space) {
 	//Interface
 	if(uuid == -1)
 	{
@@ -14,7 +14,8 @@ function create(name, space, socket, uuid) {
 		x: 0,
 		y: 0,
 		control: "none",
-		mine: 0
+		mine: 0,
+		id: id
 	};
 }
 

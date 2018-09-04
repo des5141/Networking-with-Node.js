@@ -84,7 +84,7 @@ if(mouse_check_button_released(mb_left))
                     default:
                         //Construct message
                         var json_data = ds_map_create();
-                        ds_map_add(json_data, "id", outsig_register);
+                        ds_map_add(json_data, "id", NN.outsig_register);
                         ds_map_add(json_data, "user_id", obj_id.text);
                         ds_map_add(json_data, "user_pass", obj_pass.text);
                         ds_map_add(json_data, "msg", obj_name.text);

@@ -154,7 +154,7 @@ var fff;
 for(fff = 0; fff &lt; 4; fff++)
 {
     draw_set_font(font_keyboard_string);
-    if(string_width(vmKey_getFullstring(_str)) &lt; 360)
+    if(string_width(vmKey_getFullstring(_str)) &lt; 330)
     {
     for(var i=0;i&lt;32;i++){
     if vmKey_getLineY(i)==0{

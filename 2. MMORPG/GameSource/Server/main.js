@@ -126,7 +126,8 @@ if(cluster.isMaster)
 							if(user.uuid == message.uuid)
 								console.log("already");
 						});
-						var new_user = User.create(message.name, 0, -1, message.uuid);
+						
+						var new_user = User.create(message.name, -1, message.id, message.uuid, 0);
 						
 						var i, j;
 						for(i = 0; i < array_height; i++)
@@ -144,7 +145,7 @@ if(cluster.isMaster)
 						authenticated_users.addUser(new_user);
 						for(var id in cluster.workers)
 						{
-							cluster.workers[id].send({type : 'login', to : 'worker', uuid : message.uuid, name : message.name});
+							cluster.workers[id].send({type : 'login', to : 'worker', uuid : message.uuid, name : message.name, id : message.id});
 						}
 					break;
 					
@@ -342,8 +343,9 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							//console.log("login - ".gray + message.uuid + "|".gray + process.pid);
-							var new_user = User.create(message.name, 0, -1, message.uuid);
+							console.log("login - ".gray + message.uuid + "|".gray + process.pid);
+							//var new_user = User.create(message.name, 0, -1, message.uuid);
+							var new_user = User.create(message.name, -1, message.id, message.uuid, 0);
 							authenticated_users.addUser(new_user);
 						}
 					break;
@@ -359,7 +361,7 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							//console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
+							console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
 							authenticated_users.removeUser(message.uuid);
 						}
 					break;
@@ -394,6 +396,7 @@ if(cluster.isWorker)
 		const insig_user_position = 2;
 		const insig_user_space = 3;
 		const insig_user_operation = 4;
+		const insig_user_register = 5;
 		
 	//} Signal setting
 	//{ Server run
@@ -448,30 +451,132 @@ if(cluster.isWorker)
 
 								//Sign-in request
 								case insig_login:
-									//Unauthenticated users only
+									// Unauthenticated users only
 									if (authenticated_users.findUserBySocket(dsocket) == null) {
-										//Name already taken
-										if (authenticated_users.findUserByName(msg) != null) {
-											send_id_message(dsocket, outsig_login_refused, "");
-										}
-										//Name OK
-										else {
-											var new_user = User.create(msg, 0, dsocket, -1);
-											authenticated_users.addUser(new_user);
-											new_user.mine = 1;
-											console.log("New user joined :".data, new_user.name, "(" + new_user.uuid + ")");
-											
-											//Tell user to come in
-											var new_user_announcement = JSON.stringify({
-												name: new_user.name,
-												uuid: new_user.uuid
-											});
-											send_id_message(dsocket, outsig_login_accepted, new_user_announcement);
-											
-											process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : new_user.name});
-										}
+
+										can = false;
+
+										user_id = json_data.user_id;
+										user_pass = json_data.user_pass;
+
+										var fs = require('fs');
+										fs.exists('Accounts/'+user_id+'.txt', function(exists){
+											if(exists)
+											{
+												var split = require('string-split');
+												fs.readFile('Accounts/'+user_id+'.txt', 'utf8', function(err, data){
+													var strArray = split('\n', data);
+													if(user_pass == strArray[1])
+													{
+														//Name already taken
+														if (authenticated_users.findUserById(strArray[0]) != null) {
+															send_id_message(dsocket, outsig_login_refused, "이미 접속중인 계정입니다.");
+														}
+
+														// Name OK
+														else {
+															var new_user = User.create(strArray[2], dsocket, strArray[0], -1, 0);
+															authenticated_users.addUser(new_user);
+															console.log("New user added :".gray, new_user.name, "(" + new_user.uuid + ")");
+															// Tell user to come in
+															var new_user_announcement = JSON.stringify({
+																name: new_user.name,
+																uuid: new_user.uuid,
+																id: new_user.id
+															});
+															send_id_message(dsocket, outsig_login_accepted, new_user_announcement);
+															process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : new_user.name, id : new_user.id});
+															new_user.mine = 1;
+														}
+
+													}else{
+														// 로그인 실패
+														send_id_message(dsocket, outsig_login_refused, "로그인에 실패하였습니다.");
+													}
+												});
+
+											}else{
+												// 계정이 없어!
+												send_id_message(dsocket, outsig_login_refused, "존재하지 않는 계정입니다.");
+											}
+										});
 									}
 								break;
+								
+								case insig_user_register:
+									// Unauthenticated users only
+									if (authenticated_users.findUserBySocket(dsocket) == null) {
+
+										// 변수 설정
+										can = false;
+
+										// 유저 아이디와 비밀번호를 가져온다
+										var user_id = json_data.user_id;
+										var user_pass = json_data.user_pass;
+
+										var fs = require('fs');
+										fs.exists('Accounts/'+user_id+'.txt', function(exists){
+											if(exists)
+											{
+												send_id_message(dsocket, outsig_login_refused, "이미 존재하는 계정입니다.");
+
+											}else{
+												// 계정이 존재하지 않는다!
+														// ID OK
+														
+															fs.readFile('System/Nickname_list.txt', 'utf8', function(err, data){
+																var split = require('string-split');
+																var strArray = split('\n', data);
+																var each = require('node-each');
+																var check = true;
+
+																// 중복되는 닉네임이 있니?
+																each.each(strArray, function(el, i){
+																	if(el == msg)
+																	{
+																		check = false;
+																	}
+																});
+
+																// 체킹
+																if(check)
+																{
+																	// 없으면
+																	console.log("New register   :".gray, "ID :".gray, user_id, "| Password :".gray, user_pass, "| Nickname :".gray, msg);
+																	fs.writeFile('Accounts/'+user_id+'.txt', user_id + '\n' + user_pass + '\n' + msg, 'utf8', function(error){});
+																	var new_user = User.create(msg, dsocket, user_id, -1, 0);
+																	authenticated_users.addUser(new_user);
+
+																	console.log("New user added :".gray, new_user.name, "(" + new_user.uuid + ")");
+																	// Tell user to come in
+																	var new_user_announcement = JSON.stringify({
+																		name: new_user.name,
+																		uuid: new_user.uuid,
+																		id: new_user.id
+																	});
+
+																	send_id_message(dsocket, outsig_login_accepted, new_user_announcement);
+																	
+																	fs.appendFile('System/Nickname_list.txt', new_user.name + '\n', function(err){});
+																	process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : new_user.name, id : new_user.id});
+																	new_user.mine = 1;
+																}else{
+																	// 있네
+																	send_id_message(dsocket, outsig_login_refused, "이미 사용중인 닉네임 입니다.");
+																}
+															});
+
+															
+
+
+														
+
+											}
+										});
+									}
+									break;
+								
+								
 								
 								//Processing the user operation
 								case insig_user_operation:
