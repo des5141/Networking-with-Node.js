@@ -40,9 +40,10 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
+## 샘플에 포함되어있는 기능
 
-Explain how to run the automated tests for this system
+* 로그인, 회원가입
+* 클러스터링
 
 ### Break down into end to end tests
 
