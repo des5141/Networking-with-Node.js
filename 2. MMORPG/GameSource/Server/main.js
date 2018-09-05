@@ -121,7 +121,7 @@ if(cluster.isMaster)
 				switch(message.type)
 				{
 					case 'login':
-						//console.log("logined - ".gray + message.uuid + "(".gray + message.name +")".gray);
+						console.log("Login user : ".gray + message.uuid + "(".gray + message.name +")".gray);
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
 								console.log("already");
@@ -150,7 +150,7 @@ if(cluster.isMaster)
 					break;
 					
 					case 'quit':
-						//console.log("quit - ".gray + message.uuid);
+						console.log("Removing user   :".data, "(" + message.uuid + ")");
 						authenticated_users.removeUser(message.uuid);
 						for(var id in cluster.workers)
 						{
@@ -343,7 +343,7 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							console.log("login - ".gray + message.uuid + "|".gray + process.pid);
+							//console.log("login - ".gray + message.uuid + "|".gray + process.pid);
 							//var new_user = User.create(message.name, 0, -1, message.uuid);
 							var new_user = User.create(message.name, -1, message.id, message.uuid, 0);
 							authenticated_users.addUser(new_user);
@@ -361,7 +361,7 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
+							//console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
 							authenticated_users.removeUser(message.uuid);
 						}
 					break;
@@ -465,7 +465,7 @@ if(cluster.isWorker)
 											{
 												var split = require('string-split');
 												fs.readFile('Accounts/'+user_id+'.txt', 'utf8', function(err, data){
-													var strArray = split('\n', data);
+													var strArray = split('#', data);
 													if(user_pass == strArray[1])
 													{
 														//Name already taken
@@ -526,7 +526,7 @@ if(cluster.isWorker)
 														
 															fs.readFile('System/Nickname_list.txt', 'utf8', function(err, data){
 																var split = require('string-split');
-																var strArray = split('\n', data);
+																var strArray = split('#', data);
 																var each = require('node-each');
 																var check = true;
 
@@ -543,7 +543,7 @@ if(cluster.isWorker)
 																{
 																	// 없으면
 																	console.log("New register   :".gray, "ID :".gray, user_id, "| Password :".gray, user_pass, "| Nickname :".gray, msg);
-																	fs.writeFile('Accounts/'+user_id+'.txt', user_id + '\n' + user_pass + '\n' + msg, 'utf8', function(error){});
+																	fs.writeFile('Accounts/'+user_id+'.txt', user_id + '#' + user_pass + '#' + msg, 'utf8', function(error){});
 																	var new_user = User.create(msg, dsocket, user_id, -1, 0);
 																	authenticated_users.addUser(new_user);
 
@@ -557,7 +557,7 @@ if(cluster.isWorker)
 
 																	send_id_message(dsocket, outsig_login_accepted, new_user_announcement);
 																	
-																	fs.appendFile('System/Nickname_list.txt', new_user.name + '\n', function(err){});
+																	fs.appendFile('System/Nickname_list.txt', new_user.name + '#', function(err){});
 																	process.send({type : 'login', to : 'master', uuid : new_user.uuid, name : new_user.name, id : new_user.id});
 																	new_user.mine = 1;
 																}else{
@@ -614,9 +614,6 @@ if(cluster.isWorker)
 								case insig_user_space:
 									var from_user;
 									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
-										//from_user.space = msg;
-										//send_id_message(dsocket, outsig_user_space, from_user.space);
-										//console.log("User space moved:".data, from_user.name, "is go to".data, from_user.space);
 										process.send({type : 'space', to : 'master', uuid : from_user.uuid, space : msg});
 									}
 								break;
@@ -641,7 +638,7 @@ if(cluster.isWorker)
 			//Respond for authenticated users only
 			var quitter;
 			if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
-				console.log("Removing user   :".data, quitter.name, "(" + quitter.uuid + ")");
+				//console.log("Removing user   :".data, quitter.name, "(" + quitter.uuid + ")");
 				process.send({type : 'quit', to : 'master', uuid : quitter.uuid});
 				//Let everyone else know the user is leaving
 				var logout_announcement = JSON.stringify({

@@ -1,1 +1,0 @@
-{"msg":1,"room":"rm_stage014","user_id":"m","x":0,"id":8,"space":"14","y":176.5}

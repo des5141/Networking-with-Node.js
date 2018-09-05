@@ -1,4 +1,1 @@
-none
-all
-m
-mm
+none#all#des#

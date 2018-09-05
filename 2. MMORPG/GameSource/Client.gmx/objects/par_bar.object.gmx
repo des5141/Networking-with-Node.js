@@ -134,7 +134,7 @@ for(fff = 0; fff &lt; 4; fff++)
         {
             if(device_mouse_y_to_gui(fff) &lt; 230)
             {
-                instance_destroy(obj_keyboard);
+                with(obj_keyboard){instance_destroy()}
             }
         }
     }
