@@ -4,6 +4,65 @@ Author: yuto
 (C) YUTO SOFT, 2018
 */
 
+//{ Others
+	//Stack 생성자 정의
+	function Stack() {
+
+		//스택의 요소가 저장되는 배열
+		this.dataStore = [];
+
+		//스택의 위치
+		this.top = -1;
+
+		//함수정의
+		this.push   = push;
+		this.pop    = pop;
+		this.peek   = peek;
+		this.clear  = clear;
+		this.length = length;
+	}
+
+	//스택에 요소를 추가
+	function push(element) {
+		this.top = this.top +1;
+		this.dataStore[this.top] = element;
+	}
+
+	//스택의 꼭대기의 요소를 반환한다.
+	//단 top이 감소하는것은 아니다.
+	function peek() {
+		return this.dataStore[this.top];
+	}
+
+	//스택 최상층의 요소를 반환한다.
+	function pop() {
+
+		//Stack underflow
+		if(this.top<=-1)
+		{
+			console.log("Stack underflow!!!");
+			return;
+		}
+		else
+		{
+			var popped = this.dataStore[this.top];
+			//top을 1 감소시킨다.
+			this.top = this.top -1;
+			return popped;        
+		}
+
+	}
+
+	//스택의 전체 요소를 삭제한다.
+	function clear() {
+		this.top = -1;
+	}
+
+	//스택에 저장된 데이터 수
+	function length() {
+		return this.top+1;
+	}
+//}
 //{ Requires
 	var cluster = require('cluster');
 	var os = require('os');
@@ -12,6 +71,7 @@ Author: yuto
 	var fs = require('fs');
 	var User = require('./classes/user.js');
 	var UserBox = require('./classes/user_box.js');
+	var sqrt = require('math-sqrt');
 //}
 //{ Setup console colors
 	Colors.setTheme({
@@ -120,8 +180,9 @@ if(cluster.isMaster)
 		});
 	//}
 	//{ Sample make monsters
-		var mon00 = Monster.create(1, 0, 1, 1);
+		var mon00 = Monster.create(1, 0, 1, 0);
 		map_monsters.addMonster(mon00);
+		var stackObj = new Stack();
 	//}
 	//{ Get message from worker's
 		cluster.on('message', function (worker, message) {
@@ -246,6 +307,7 @@ if(cluster.isMaster)
 			
 			authenticated_users.each(function(user) {
 				//Operation about user step
+				doit = true;
 				switch(user.control)
 				{
 					case "none":
@@ -256,8 +318,14 @@ if(cluster.isMaster)
 						{
 							if(array[user.space][user.y-1][user.x] != 0)
 							{
-								user.y--;
-								user.control = "";
+								map_monsters.each(function(monster){
+									if((user.y-1 != monster.y)&&(doit))
+									{
+										user.y--;
+										user.control = "";
+										doit = false;
+									}
+								});
 							}
 						}
 						break;
@@ -267,8 +335,14 @@ if(cluster.isMaster)
 						{
 							if(array[user.space][user.y+1][user.x] != 0)
 							{
-								user.y++;
-								user.control = "";
+								map_monsters.each(function(monster){
+									if((user.y+1 != monster.y)&&(doit))
+									{
+										user.y++;
+										user.control = "";
+										doit = false;
+									}
+								});
 							}
 						}
 						break;
@@ -278,9 +352,15 @@ if(cluster.isMaster)
 						{
 							if(array[user.space][user.y][user.x-1] != 0)
 							{
-								user.x--;
-								user.control = "";
-								user.xscale = -1;
+								map_monsters.each(function(monster){
+									if((user.x-1 != monster.x)&&(doit))
+									{
+										user.x--;
+										user.control = "";
+										user.xscale = -1;
+										doit = false;
+									}
+								});
 							}
 						}
 						break;
@@ -290,9 +370,15 @@ if(cluster.isMaster)
 						{
 							if(array[user.space][user.y][user.x+1] != 0)
 							{
-								user.x++;
-								user.control = "";
-								user.xscale = 1;
+								map_monsters.each(function(monster){
+									if((((user.x+1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
+									{
+										user.x++;
+										user.control = "";
+										user.xscale = 1;
+										doit = false;
+									}
+								});
 							}
 						}
 						break;
@@ -308,7 +394,39 @@ if(cluster.isMaster)
 			
 			map_monsters.each(function(monster){
 				//Operation about monster step
-				
+				doit = true;
+				authenticated_users.each(function(user) {
+					if(doit)
+					{
+						var width = user.x-monster.x;
+						var height = user.y-monster.y;
+						if(width < 0)
+							width *= -1;
+						if(height < 0)
+							height *= -1;
+						if(sqrt(width+height) < 3)
+						{
+							doit = false;
+							//console.log("FIND!");
+							// here to follow
+							if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
+							{
+								monster.x--;
+							}else
+							if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1))){
+								monster.x++;
+							}else
+							if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
+							{
+								monster.y--;
+							}else
+							if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
+								monster.y++;
+							}
+						}
+					}
+					
+				});
 				
 				//Save the monsters states in packet
 				var x = monster.x;

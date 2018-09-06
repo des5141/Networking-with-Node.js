@@ -6,11 +6,13 @@ function create(type, space, x, y) {
 		case 0:
 			maxhp = 20;
 			damage = 5;
+			visual = 3;
 		break;
 		
 		case 1:
 			maxhp = 40;
 			damage = 10;
+			visual = 3;
 		break;
 		
 		default:
