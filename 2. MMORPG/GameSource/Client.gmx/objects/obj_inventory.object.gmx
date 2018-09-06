@@ -25,13 +25,38 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>inventory = false
+            <string>/// Variables
+inventory = false
 inventory_item = ""
 inventory_cursor = 0
 inventory_select_item = 0
 inventory_select_town = 0
 item = arr(10);
 delay = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Drawing
+width = 150;
+height = 150;
+
 </string>
           </argument>
         </arguments>
@@ -69,14 +94,14 @@ if(inventory)and(global.hp &gt;= 0)
     }
 
     draw_set_color(c_white)
-    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+40, view_xview[0]+80 + 6, view_yview[0]+95, false)
+    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+40, view_xview[0]+150 + 6, view_yview[0]+95, false)
     draw_set_color(c_black)
-    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+40 + 3, view_xview[0]+80 - 3 + 6, view_yview[0]+95 - 3, false)
+    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+40 + 3, view_xview[0]+150 - 3 + 6, view_yview[0]+95 - 3, false)
     
     draw_set_color(c_white)
-    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+100, view_xview[0]+80 + 6, view_yview[0]+154, false)
+    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+100, view_xview[0]+150 + 6, view_yview[0]+154, false)
     draw_set_color(c_black)
-    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+100 + 3, view_xview[0]+80 - 3 + 6, view_yview[0]+154 - 3, false)
+    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+100 + 3, view_xview[0]+150 - 3 + 6, view_yview[0]+154 - 3, false)
     
     if(inventory_item == "")
     {
@@ -104,9 +129,9 @@ if(inventory)and(global.hp &gt;= 0)
         if(inventory_item = "item")or(inventory_item = "select")
         {
             draw_set_color(c_white)
-            draw_rectangle(view_xview[0]+90, view_yview[0]+40, view_xview[0]+270, view_yview[0]+220, false)
+            draw_rectangle(view_xview[0]+150+10, view_yview[0]+40, view_xview[0]+600, view_yview[0]+220, false)
             draw_set_color(c_black)
-            draw_rectangle(view_xview[0]+90 + 3, view_yview[0]+40 + 3, view_xview[0]+270 - 3, view_yview[0]+220 - 3, false)
+            draw_rectangle(view_xview[0]+150+10 + 3, view_yview[0]+40 + 3, view_xview[0]+600 - 3, view_yview[0]+220 - 3, false)
             
             draw_set_color(c_white)
             draw_set_font(fnt_text)

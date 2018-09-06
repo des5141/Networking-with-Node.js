@@ -86,12 +86,12 @@
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>
+    <font>fonts\fnt_text2</font>
     <fonts name="Keyboard">
       <font>fonts\font_keyboard</font>
       <font>fonts\font_keyboard2</font>
       <font>fonts\font_keyboard_string</font>
     </fonts>
-    <font>fonts\fnt_text_new</font>
   </fonts>
   <objects name="objects">
     <objects name="Client">

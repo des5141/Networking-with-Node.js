@@ -39,6 +39,7 @@ Author: yuto
 	var array_save = [];
 	var max_space = 10;
 	var strArray = "";
+	
 	fs.readFile('map/map0.txt', 'utf8', function(err, data){
 		strArray = split('\n', data);
 		array[0] = new Array();
@@ -53,7 +54,7 @@ Author: yuto
 			}
 		}
 	});
-			
+
 	fs.readFile('map/map1.txt', 'utf8', function(err, data){
 		strArray = split('\n', data);
 		array[1] = new Array();
@@ -93,6 +94,10 @@ Author: yuto
 //Main code is start from here !
 if(cluster.isMaster)
 {	
+	//{ Requires
+		var Monster = require('./classes/monster.js');
+		var MonsterBox = require('./classes/monster_box.js');
+	//}
 	//{ Server information
 		console.log("Networking with Node.js".data);
 		console.log(" - Node.js Server".data, "version 1.0");
@@ -253,6 +258,7 @@ if(cluster.isMaster)
 							{
 								user.x--;
 								user.control = "";
+								user.xscale = -1;
 							}
 						}
 						break;
@@ -264,6 +270,7 @@ if(cluster.isMaster)
 							{
 								user.x++;
 								user.control = "";
+								user.xscale = 1;
 							}
 						}
 						break;
@@ -272,7 +279,8 @@ if(cluster.isMaster)
 				//Save the users state in packet
 				var x = user.x;
 				var y = user.y;
-				player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#";
+				var xscale = user.xscale;
+				player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
 				player_max[user.space]++;
 			});
 				

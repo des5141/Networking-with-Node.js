@@ -15,7 +15,8 @@ function create(name, socket, id, uuid, space) {
 		y: 0,
 		control: "none",
 		mine: 0,
-		id: id
+		id: id,
+		xscale : 1
 	};
 }
 
