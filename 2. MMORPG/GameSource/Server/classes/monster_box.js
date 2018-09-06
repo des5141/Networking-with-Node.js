@@ -1,9 +1,9 @@
 function create() {
-	var monsters = new Array(); //Internal list of Monsters
+	var Monsters = new Array(); //Internal list of Monsters
 
 	//Add a Monster
 	function addMonster(monster) {
-		monsters[monsters.uuid] = monster;
+		Monsters[monster.uuid] = monster;
 	}
 	
 	//Remove a Monster
@@ -47,7 +47,7 @@ function create() {
 		addMonster: addMonster,
 		removeMonster: removeMonster,
 		findMonster: findMonster,
-		findMonsterByType: findMonsterById,
+		findMonsterByType: findMonsterByType,
 		findMonsterBySpace: findMonsterBySpace,
 		each: each
 	};

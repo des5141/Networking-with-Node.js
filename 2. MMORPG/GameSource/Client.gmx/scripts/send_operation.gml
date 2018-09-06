@@ -1,6 +1,5 @@
 ///send_operation(msg);
-if(obj_inventory.inventory != 1)
-{
+
     //Construct message
     var json_data = ds_map_create();
     ds_map_add(json_data, "id", NN.outsig_user_operation);
@@ -10,4 +9,4 @@ if(obj_inventory.inventory != 1)
     
     //Send message
     nn_send_message(body);
-}
+

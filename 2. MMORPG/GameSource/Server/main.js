@@ -35,12 +35,12 @@ Author: yuto
 	var i = 0, j = 0;
 	var array_width = 9;
 	var array_height = 5;
-	var array = [];
-	var array_save = [];
+	array = [];
+	array_save = [];
 	var max_space = 10;
 	var strArray = "";
 	
-	fs.readFile('map/map0.txt', 'utf8', function(err, data){
+	fs.readFile('./map/map0.txt', 'utf8', function(err, data){
 		strArray = split('\n', data);
 		array[0] = new Array();
 		array_save[0] = new Array();
@@ -55,7 +55,7 @@ Author: yuto
 		}
 	});
 
-	fs.readFile('map/map1.txt', 'utf8', function(err, data){
+	fs.readFile('./map/map1.txt', 'utf8', function(err, data){
 		strArray = split('\n', data);
 		array[1] = new Array();
 		array_save[1] = new Array();
@@ -70,7 +70,7 @@ Author: yuto
 		}
 	});
 			
-	fs.readFile('map/map2.txt', 'utf8', function(err, data){
+	fs.readFile('./map/map2.txt', 'utf8', function(err, data){
 		strArray = split('\n', data);
 		array[2] = new Array();
 		array_save[2] = new Array();
@@ -97,6 +97,7 @@ if(cluster.isMaster)
 	//{ Requires
 		var Monster = require('./classes/monster.js');
 		var MonsterBox = require('./classes/monster_box.js');
+		var map_monsters = MonsterBox.create();
 	//}
 	//{ Server information
 		console.log("Networking with Node.js".data);
@@ -117,6 +118,10 @@ if(cluster.isMaster)
 				cluster.fork();
 			}
 		});
+	//}
+	//{ Sample make monsters
+		var mon00 = Monster.create(1, 0, 1, 1);
+		map_monsters.addMonster(mon00);
 	//}
 	//{ Get message from worker's
 		cluster.on('message', function (worker, message) {
@@ -216,11 +221,28 @@ if(cluster.isMaster)
 			//Send all
 			var player_info = new Array();
 			var player_max = new Array();
+			var monster_info = new Array();
+			var monster_max = new Array();
 			for(i = 0; i < max_space; i++)
 			{
 				player_info[i] = "";
 				player_max[i] = 0;
+				
+				monster_info[i] = "";
+				monster_max[i] = 0;
 			}
+			
+			//If monster go to out side
+			map_monsters.each(function(monster) {
+				try
+				{
+					if(array[monster.space][monster.y][monster.x] == 0)
+					{
+						map_monsters.removeMonster(monster.uuid);
+					}
+				}catch(e){}
+			});
+			
 			
 			authenticated_users.each(function(user) {
 				//Operation about user step
@@ -283,6 +305,18 @@ if(cluster.isMaster)
 				player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
 				player_max[user.space]++;
 			});
+			
+			map_monsters.each(function(monster){
+				//Operation about monster step
+				
+				
+				//Save the monsters states in packet
+				var x = monster.x;
+				var y = monster.y;
+				var type = monster.type;
+				monster_info[monster.space] += type.toString() + "#" + x.toString() + "#" + y.toString() + "#";
+				monster_max[monster.space]++;
+			});
 				
 			authenticated_users.each(function(user) {
 				var user_map = "";
@@ -311,6 +345,8 @@ if(cluster.isMaster)
 					height: array_height,
 					player_max: player_max[user.space],
 					player_info : player_info[user.space],
+					monster_max : monster_max[user.space],
+					monster_info : monster_info[user.space],
 					user_x : user.x,
 					user_y : user.y
 				});
