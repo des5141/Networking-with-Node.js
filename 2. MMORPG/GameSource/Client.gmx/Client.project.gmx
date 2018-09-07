@@ -10,13 +10,6 @@
     <sound>sound\snd_tick</sound>
   </sounds>
   <sprites name="sprites">
-    <sprite>sprites\spr_target</sprite>
-    <sprite>sprites\spr_tiles</sprite>
-    <sprite>sprites\sprite3</sprite>
-    <sprite>sprites\spr_login_back</sprite>
-    <sprite>sprites\spr_login_bar</sprite>
-    <sprite>sprites\sprFont</sprite>
-    <sprite>sprites\sprFontBorder</sprite>
     <sprites name="Keyboard">
       <sprite>sprites\sprFunctionKey</sprite>
       <sprite>sprites\sprNormalKey</sprite>
@@ -24,9 +17,18 @@
       <sprite>sprites\sprEnterKey</sprite>
       <sprite>sprites\sprBackKeyboard</sprite>
     </sprites>
+    <sprite>sprites\spr_target</sprite>
+    <sprite>sprites\spr_tiles</sprite>
+    <sprite>sprites\sprite3</sprite>
+    <sprite>sprites\spr_login_back</sprite>
+    <sprite>sprites\spr_login_bar</sprite>
+    <sprite>sprites\sprFont</sprite>
+    <sprite>sprites\sprFontBorder</sprite>
     <sprite>sprites\spr_login_button</sprite>
     <sprite>sprites\spr_register_button</sprite>
     <sprite>sprites\spr_cancel_button</sprite>
+    <sprite>sprites\sprite15</sprite>
+    <sprite>sprites\sprite16</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\back_tile00</background>
@@ -83,6 +85,7 @@
       </scripts>
     </scripts>
     <script>scripts\send_operation.gml</script>
+    <script>scripts\monster_name.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>
@@ -116,6 +119,7 @@
     <object>objects\obj_goto_register</object>
     <object>objects\obj_register</object>
     <object>objects\obj_goto_login</object>
+    <object>objects\object18</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_connecting</room>

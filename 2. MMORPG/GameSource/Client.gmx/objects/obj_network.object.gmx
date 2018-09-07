@@ -112,6 +112,8 @@ event_user(15); //Connect attempt
           <argument>
             <kind>1</kind>
             <string>///Global variables setup
+global.init_width = room_width;
+global.init_height = room_height;
 global.can_inventory = true;
 global.hp = 100;
 global.nickname = "유토";
@@ -572,6 +574,21 @@ for(i = 0; i &lt; height; i++)
 draw_set_halign(fa_center);
 
 var j;
+if(ds_list_size(global.map_unit) &gt; 0)
+{
+    for(i = 0; i &lt; monster_max; i ++)
+    {
+        //draw_rectangle(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, true);
+        name = ds_list_find_value(global.map_unit, i*4);
+        draw_sprite_ext(sprite16, 0, real(ds_list_find_value(global.map_unit, i*4+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*4+2))*64 + 32, real(ds_list_find_value(global.map_unit, i*4+3)), 1, 0, c_white, 1);
+        //draw_sprite(sprite3, 0, user_x, user_y);
+        
+        draw_text(real(ds_list_find_value(global.map_unit, i*4+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*4+2))*64 - 20, monster_name(real(name)))      
+    }
+}
+
+
+var j;
 if(ds_list_size(global.map_players) &gt; 0)
 {
     for(i = 0; i &lt; player_max; i ++)
@@ -584,22 +601,6 @@ if(ds_list_size(global.map_players) &gt; 0)
         draw_text(real(ds_list_find_value(global.map_players, i*3+1))*64 + 32, real(ds_list_find_value(global.map_players, i*3+2))*64 - 20, name)      
     }
 }
-
-var j;
-if(ds_list_size(global.map_unit) &gt; 0)
-{
-    for(i = 0; i &lt; monster_max; i ++)
-    {
-        //draw_rectangle(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, true);
-        name = ds_list_find_value(global.map_unit, i*3);
-        draw_sprite_ext(sprite3, 0, real(ds_list_find_value(global.map_unit, i*3+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 32, 1, 1, 0, c_white, 1);
-        //draw_sprite(sprite3, 0, user_x, user_y);
-        
-        draw_text(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 32, real(ds_list_find_value(global.map_unit, i*3+2))*64 - 20, name)      
-    }
-}
-
-
 </string>
           </argument>
         </arguments>
