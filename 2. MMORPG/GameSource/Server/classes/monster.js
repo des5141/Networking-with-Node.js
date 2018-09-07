@@ -6,13 +6,13 @@ function create(type, space, x, y) {
 		case 0:
 			maxhp = 20;
 			damage = 5;
-			visual = 3;
+			visual = 2.2;
 		break;
 		
 		case 1:
 			maxhp = 40;
 			damage = 10;
-			visual = 3;
+			visual = 2.2
 		break;
 		
 		default:
@@ -30,6 +30,8 @@ function create(type, space, x, y) {
 		hp: hp,
 		maxhp: maxhp,
 		damage: damage,
+		visual: visual,
+		xscale: 1,
 		uuid: uuid_v4()
 	};
 }

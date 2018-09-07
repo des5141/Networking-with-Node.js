@@ -5,6 +5,10 @@ Author: yuto
 */
 
 //{ Others
+	//min ~ max 사이의 임의의 정수 반환
+	function getRandomInt(min, max) { 
+		return Math.floor(Math.random() * (max - min)) + min;
+	}
 	//Stack 생성자 정의
 	function Stack() {
 
@@ -182,7 +186,16 @@ if(cluster.isMaster)
 	//{ Sample make monsters
 		var mon00 = Monster.create(1, 0, 1, 0);
 		map_monsters.addMonster(mon00);
+		var mon01 = Monster.create(1, 0, 2, 2);
+		map_monsters.addMonster(mon01);
+		var mon02 = Monster.create(1, 0, 0, 3);
+		map_monsters.addMonster(mon02);
 		var stackObj = new Stack();
+		
+		var mon02 = Monster.create(0, 1, 0, 4);
+		map_monsters.addMonster(mon02);
+		var mon02 = Monster.create(0, 2, 0, 4);
+		map_monsters.addMonster(mon02);
 	//}
 	//{ Get message from worker's
 		cluster.on('message', function (worker, message) {
@@ -307,6 +320,7 @@ if(cluster.isMaster)
 			
 			authenticated_users.each(function(user) {
 				//Operation about user step
+				can = true;
 				doit = true;
 				switch(user.control)
 				{
@@ -319,13 +333,19 @@ if(cluster.isMaster)
 							if(array[user.space][user.y-1][user.x] != 0)
 							{
 								map_monsters.each(function(monster){
-									if((user.y-1 != monster.y)&&(doit))
+									if((((user.y-1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
 									{
-										user.y--;
-										user.control = "";
-										doit = false;
+										
+									}else if(monster.space == user.space){
+										can = false;
 									}
 								});
+								if(can)
+								{
+									user.y--;
+									user.control = "";
+									doit = false;
+								}
 							}
 						}
 						break;
@@ -336,13 +356,19 @@ if(cluster.isMaster)
 							if(array[user.space][user.y+1][user.x] != 0)
 							{
 								map_monsters.each(function(monster){
-									if((user.y+1 != monster.y)&&(doit))
+									if((((user.y+1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
 									{
-										user.y++;
-										user.control = "";
-										doit = false;
+										
+									}else if(monster.space == user.space){
+										can = false;
 									}
 								});
+								if(can)
+								{
+									user.y++;
+									user.control = "";
+									doit = false;
+								}
 							}
 						}
 						break;
@@ -353,14 +379,20 @@ if(cluster.isMaster)
 							if(array[user.space][user.y][user.x-1] != 0)
 							{
 								map_monsters.each(function(monster){
-									if((user.x-1 != monster.x)&&(doit))
+									if((((user.x-1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
 									{
-										user.x--;
-										user.control = "";
-										user.xscale = -1;
-										doit = false;
+										
+									}else if(monster.space == user.space){
+										can = false;
 									}
 								});
+								if(can)
+								{
+									user.x--;
+									user.control = "";
+									user.xscale = -1;
+									doit = false;
+								}
 							}
 						}
 						break;
@@ -373,12 +405,18 @@ if(cluster.isMaster)
 								map_monsters.each(function(monster){
 									if((((user.x+1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
 									{
-										user.x++;
-										user.control = "";
-										user.xscale = 1;
-										doit = false;
+										
+									}else if(monster.space == user.space){
+										can = false;
 									}
 								});
+								if(can)
+								{
+									user.x++;
+									user.control = "";
+									user.xscale = 1;
+									doit = false;
+								}
 							}
 						}
 						break;
@@ -396,7 +434,7 @@ if(cluster.isMaster)
 				//Operation about monster step
 				doit = true;
 				authenticated_users.each(function(user) {
-					if(doit)
+					if((doit)&&(monster.space == user.space))
 					{
 						var width = user.x-monster.x;
 						var height = user.y-monster.y;
@@ -404,24 +442,66 @@ if(cluster.isMaster)
 							width *= -1;
 						if(height < 0)
 							height *= -1;
-						if(sqrt(width+height) < 3)
+						if(sqrt(width*2+height*2) < monster.visual)
 						{
+							console.log(sqrt(width*2+height*2));
 							doit = false;
 							//console.log("FIND!");
 							// here to follow
 							if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
 							{
-								monster.x--;
-							}else
-							if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1))){
-								monster.x++;
+								can = true;
+								map_monsters.each(function(monster2){
+									if(((monster2.x == monster.x-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+									{
+										can = false;
+									}
+								});
+								if(can)
+								{
+									monster.x--;
+									monster.xscale = -1;
+								}
+							}if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1))){
+								can = true;
+								map_monsters.each(function(monster2){
+									if(((monster2.x == monster.x+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+									{
+										can = false;
+									}
+								});
+								if(can)
+								{
+									monster.x++;
+									monster.xscale = 1;
+								}
 							}else
 							if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
 							{
-								monster.y--;
+								can = true;
+								map_monsters.each(function(monster2){
+									if(((monster2.y == monster.y-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+									{
+										can = false;
+									}
+								});
+								if(can)
+								{
+									monster.y--;
+								}
 							}else
 							if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
-								monster.y++;
+								can = true;
+								map_monsters.each(function(monster2){
+									if(((monster2.y == monster.y+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+									{
+										can = false;
+									}
+								});
+								if(can)
+								{
+									monster.y++;
+								}
 							}
 						}
 					}
@@ -432,7 +512,8 @@ if(cluster.isMaster)
 				var x = monster.x;
 				var y = monster.y;
 				var type = monster.type;
-				monster_info[monster.space] += type.toString() + "#" + x.toString() + "#" + y.toString() + "#";
+				var xscale = monster.xscale;
+				monster_info[monster.space] += type.toString() + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
 				monster_max[monster.space]++;
 			});
 				
