@@ -321,7 +321,6 @@ if(cluster.isMaster)
 			authenticated_users.each(function(user) {
 				//Operation about user step
 				can = true;
-				doit = true;
 				switch(user.control)
 				{
 					case "none":
@@ -338,13 +337,14 @@ if(cluster.isMaster)
 										
 									}else if(monster.space == user.space){
 										can = false;
+										monster.hp-=10;
+										if(monster.hp <= 0)
+											map_monsters.removeMonster(monster.uuid);
 									}
 								});
 								if(can)
 								{
 									user.y--;
-									user.control = "";
-									doit = false;
 								}
 							}
 						}
@@ -361,13 +361,14 @@ if(cluster.isMaster)
 										
 									}else if(monster.space == user.space){
 										can = false;
+										monster.hp-=10;
+										if(monster.hp <= 0)
+											map_monsters.removeMonster(monster.uuid);
 									}
 								});
 								if(can)
 								{
 									user.y++;
-									user.control = "";
-									doit = false;
 								}
 							}
 						}
@@ -384,14 +385,16 @@ if(cluster.isMaster)
 										
 									}else if(monster.space == user.space){
 										can = false;
+										monster.hp-=10;
+										user.xscale = -1;
+										if(monster.hp <= 0)
+											map_monsters.removeMonster(monster.uuid);
 									}
 								});
 								if(can)
 								{
 									user.x--;
-									user.control = "";
 									user.xscale = -1;
-									doit = false;
 								}
 							}
 						}
@@ -408,19 +411,22 @@ if(cluster.isMaster)
 										
 									}else if(monster.space == user.space){
 										can = false;
+										monster.hp-=10;
+										user.xscale = 1;
+										if(monster.hp <= 0)
+											map_monsters.removeMonster(monster.uuid);
 									}
 								});
 								if(can)
 								{
 									user.x++;
-									user.control = "";
 									user.xscale = 1;
-									doit = false;
 								}
 							}
 						}
 						break;
 				}
+				user.control = "";
 				
 				//Save the users state in packet
 				var x = user.x;
