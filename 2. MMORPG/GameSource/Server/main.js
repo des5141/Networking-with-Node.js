@@ -288,7 +288,20 @@ if(cluster.isMaster)
 			}
 		});
 	//}
-	
+	//{ Send Object
+		function send_obj(who, string, value, space, x, y){
+			var json_string = JSON.stringify({
+				asset : string,
+				value : value,
+				x : x,
+				y : y
+			});
+			for(var id in cluster.workers)
+			{
+				cluster.workers[id].send({type : 'object', to : 'worker', json : json_string, space : space, who : who});
+			}
+		}
+	//}
 	
 	//{ Server event - step
 		! function step() {
@@ -335,11 +348,14 @@ if(cluster.isMaster)
 									if((((user.y-1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
 									{
 										
-									}else if(monster.space == user.space){
+									}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y-1 == monster.y)){
 										can = false;
 										monster.hp-=10;
 										if(monster.hp <= 0)
+										{
+											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
 											map_monsters.removeMonster(monster.uuid);
+										}
 									}
 								});
 								if(can)
@@ -359,11 +375,14 @@ if(cluster.isMaster)
 									if((((user.y+1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
 									{
 										
-									}else if(monster.space == user.space){
+									}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y+1 == monster.y)){
 										can = false;
 										monster.hp-=10;
 										if(monster.hp <= 0)
+										{
+											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
 											map_monsters.removeMonster(monster.uuid);
+										}
 									}
 								});
 								if(can)
@@ -383,12 +402,15 @@ if(cluster.isMaster)
 									if((((user.x-1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
 									{
 										
-									}else if(monster.space == user.space){
+									}else if((monster.space == user.space)&&(monster.x == user.x-1)&&(user.y == monster.y)){
 										can = false;
 										monster.hp-=10;
 										user.xscale = -1;
 										if(monster.hp <= 0)
+										{
+											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
 											map_monsters.removeMonster(monster.uuid);
+										}
 									}
 								});
 								if(can)
@@ -409,12 +431,15 @@ if(cluster.isMaster)
 									if((((user.x+1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
 									{
 										
-									}else if(monster.space == user.space){
+									}else if((monster.space == user.space)&&(monster.x == user.x+1)&&(user.y == monster.y)){
 										can = false;
 										monster.hp-=10;
 										user.xscale = 1;
 										if(monster.hp <= 0)
+										{
+											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
 											map_monsters.removeMonster(monster.uuid);
+										}
 									}
 								});
 								if(can)
@@ -450,7 +475,7 @@ if(cluster.isMaster)
 							height *= -1;
 						if(sqrt(width*2+height*2) < monster.visual)
 						{
-							console.log(sqrt(width*2+height*2));
+							//console.log(sqrt(width*2+height*2));
 							doit = false;
 							//console.log("FIND!");
 							// here to follow
@@ -468,7 +493,12 @@ if(cluster.isMaster)
 									monster.x--;
 									monster.xscale = -1;
 								}
-							}if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1))){
+							}else if((monster.x-1 == user.x)&&(monster.y == user.y))
+							{
+								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
+							}else
+							if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1)))
+							{
 								can = true;
 								map_monsters.each(function(monster2){
 									if(((monster2.x == monster.x+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
@@ -481,6 +511,9 @@ if(cluster.isMaster)
 									monster.x++;
 									monster.xscale = 1;
 								}
+							}else if((monster.x+1 == user.x)&&(monster.y == user.y))
+							{
+								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 							}else
 							if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
 							{
@@ -495,6 +528,9 @@ if(cluster.isMaster)
 								{
 									monster.y--;
 								}
+							}else if((monster.x == user.x)&&(monster.y-1 == user.y))
+							{
+								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 							}else
 							if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
 								can = true;
@@ -508,6 +544,9 @@ if(cluster.isMaster)
 								{
 									monster.y++;
 								}
+							}else if((monster.x == user.x)&&(monster.y+1 == user.y))
+							{
+								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 							}
 						}
 					}
@@ -623,6 +662,26 @@ if(cluster.isWorker)
 							}
 						});
 					break;
+					
+					case 'object':
+						if(message.who == -1)
+						{
+							authenticated_users.each(function(user) {
+								if((user.space == message.space)&&(user.socket != -1))
+								{
+									send_id_message(user.socket, outsig_send_obj, message.json);
+								}
+							});
+						}else{
+							authenticated_users.each(function(user) {
+								if((user.socket != -1)&&(user.uuid == message.who))
+								{
+									send_id_message(user.socket, outsig_send_obj, message.json);
+								}
+							});
+
+						}
+					break;
 				}
 			}
 		});
@@ -638,6 +697,7 @@ if(cluster.isWorker)
 		const outsig_user_position = 5;
 		const outsig_user_space = 6;
 		const outsig_user_map = 7;
+		const outsig_send_obj = 8;
 
 		//Server-bound signal IDs
 		const insig_login = 0;
@@ -864,6 +924,7 @@ if(cluster.isWorker)
 									var from_user;
 									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
 										process.send({type : 'space', to : 'master', uuid : from_user.uuid, space : msg});
+										from_user.space = msg;
 									}
 								break;
 								

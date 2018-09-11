@@ -195,6 +195,7 @@ enum NN{
     insig_user_position = 5,
     insig_user_space = 6,
     insig_user_map = 7,
+    insig_send_obj = 8,
     
     
     outsig_login = 0,

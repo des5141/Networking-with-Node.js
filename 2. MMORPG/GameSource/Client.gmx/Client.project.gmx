@@ -19,7 +19,7 @@
     </sprites>
     <sprite>sprites\spr_target</sprite>
     <sprite>sprites\spr_tiles</sprite>
-    <sprite>sprites\sprite3</sprite>
+    <sprite>sprites\spr_character</sprite>
     <sprite>sprites\spr_login_back</sprite>
     <sprite>sprites\spr_login_bar</sprite>
     <sprite>sprites\sprFont</sprite>
@@ -29,6 +29,8 @@
     <sprite>sprites\spr_cancel_button</sprite>
     <sprite>sprites\sprite15</sprite>
     <sprite>sprites\sprite16</sprite>
+    <sprite>sprites\spr_boom</sprite>
+    <sprite>sprites\spr_boom2</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\back_tile00</background>
@@ -109,6 +111,9 @@
       <object>objects\par_bar</object>
       <object>objects\obj_id</object>
       <object>objects\obj_pass</object>
+      <object>objects\obj_eff1</object>
+      <object>objects\obj_eff1_part1</object>
+      <object>objects\old_obj_eff1</object>
       <object>objects\obj_name</object>
     </objects>
     <objects name="Keyboard">
