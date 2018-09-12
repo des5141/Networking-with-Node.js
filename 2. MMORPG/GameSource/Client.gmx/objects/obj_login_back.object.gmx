@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>1</depth>
+  <depth>-3</depth>
   <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -120,7 +120,7 @@ sprite_index = spr_login_back;
 {
     
     dx = 400;
-    dy = 240 + lengthdir_y(2 * (rps + 2), rots) + plus_y;
+    dy = 240 + lengthdir_y(2 * (rps + 2), rots) + plus_y + 50;
     draw_sprite_ext(sprite_index, 0, dx, dy, rps, rps, 0, c_white, 1);
     
     // ID

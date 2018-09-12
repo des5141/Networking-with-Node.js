@@ -611,101 +611,109 @@ if(cluster.isMaster)
 					try{
 						if(array != false)
 						{
-							var doing = getRandomInt(0, 4);
-							switch(doing)
+							while(1)
 							{
-								case 0:
-									map_monsters.each(function(monster2){
-										if((monster2.x == monster.x-1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+								var doing = getRandomInt(0, 4);
+								switch(doing)
+								{
+									case 0:
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x-1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x-1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.x-1 < 0)
 											monster.active = 0;
-									});
-									authenticated_users.each(function(user3) {
-										if((user3.x == monster.x-1)&&(user3.y == monster.y)&&(user3.space == monster.space))
-											monster.active = 0;
-									});
-									if(monster.x-1 < 0)
-										monster.active = 0;
-									
-									if(monster.x-1 >= 0)
-									{
-										if(array[monster.space][monster.y][monster.x-1] == 0)
-											monster.active = 0;
-									}
 										
-									if(monster.active == 1)
-									{
-										monster.x = monster.x - 1;
-										monster.xscale = -1;
-									}
-								break;
-									
-								case 1:
-									map_monsters.each(function(monster2){
-										if((monster2.x == monster.x+1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
-											monster.active = 0;
-									});
-									authenticated_users.each(function(user3) {
-										if((user3.x == monster.x+1)&&(user3.y == monster.y)&&(user3.space == monster.space))
-											monster.active = 0;
-									});
-									if(monster.x+1 >= array_width)
-										monster.active = 0;
-									
-									if(monster.x+1 < array_width)
-									{
-										if(array[monster.space][monster.y][monster.x+1] == 0)
-											monster.active = 0;
-									}
-									if(monster.active == 1)
-									{
-										monster.x = monster.x + 1;
-										monster.xscale = 1;
-									}
-								break;
-									
-								case 2:
-									map_monsters.each(function(monster2){
-										if((monster2.x == monster.x)&&(monster2.y == monster.y-1)&&(monster2.space == monster.space))
-											monster.active = 0;
-									});
-									authenticated_users.each(function(user3) {
-										if((user3.x == monster.x)&&(user3.y == monster.y-1)&&(user3.space == monster.space))
-											monster.active = 0;
-									});
-									if(monster.y-1 < 0)
-										monster.active = 0;
-									
+										if(monster.x-1 >= 0)
+										{
+											if(array[monster.space][monster.y][monster.x-1] != 1)
+												monster.active = 0;
+										}
+											
+										if(monster.active == 1)
+										{
+											monster.x = monster.x - 1;
+											monster.xscale = -1;
+										}
+									break;
 										
-									if(monster.y-1 >= 0)
-									{
-										if(array[monster.space][monster.y-1][monster.x] == 0)
+									case 1:
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x+1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x+1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.x+1 >= array_width)
 											monster.active = 0;
-									}
 										
-									if(monster.active == 1)
-										monster.y = monster.y - 1;
-								break;
-									
-								case 3:
-									map_monsters.each(function(monster2){
-										if((monster2.x == monster.x)&&(monster2.y == monster.y+1)&&(monster2.space == monster.space))
-											monster.active = 0;
-									});
-									authenticated_users.each(function(user3) {
-										if((user3.x == monster.x)&&(user3.y == monster.y+1)&&(user3.space == monster.space))
-											monster.active = 0;
-									});
-									if(monster.y+1 >= array_height)
-										monster.active = 0;
+										if(monster.x+1 < array_width)
+										{
+											if(array[monster.space][monster.y][monster.x+1] != 1)
+												monster.active = 0;
+										}
+										if(monster.active == 1)
+										{
+											monster.x = monster.x + 1;
+											monster.xscale = 1;
+										}
+									break;
 										
-									if(monster.y+1 < array_height)
-									{
-										if(array[monster.space][monster.y+1][monster.x] == 0)
+									case 2:
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x)&&(monster2.y == monster.y-1)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x)&&(user3.y == monster.y-1)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.y-1 < 0)
 											monster.active = 0;
-									}
-									if(monster.active == 1)
-										monster.y = monster.y + 1;
-								break;
+										
+											
+										if(monster.y-1 >= 0)
+										{
+											if(array[monster.space][monster.y-1][monster.x] != 1)
+												monster.active = 0;
+										}
+											
+										if(monster.active == 1)
+											monster.y = monster.y - 1;
+									break;
+										
+									case 3:
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x)&&(monster2.y == monster.y+1)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x)&&(user3.y == monster.y+1)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.y+1 >= array_height)
+											monster.active = 0;
+											
+										if(monster.y+1 < array_height)
+										{
+											if(array[monster.space][monster.y+1][monster.x] != 1)
+												monster.active = 0;
+										}
+										if(monster.active == 1)
+											monster.y = monster.y + 1;
+									break;
+								}
+								
+								if(monster.active == 1)
+									break;
+								else
+									monster.active = 1;
 							}
 						}
 					}catch(e){}

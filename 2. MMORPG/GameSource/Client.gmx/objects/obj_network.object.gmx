@@ -435,6 +435,10 @@ if (status == NN.status_connected) {
                     case "obj_shake":
                         global.shake_it += ds_map_find_value(json_data, "value");
                     break
+                    
+                    case "obj_eff2":
+                        instance_create(data_x, data_y, obj_eff2);
+                    break
                 }
                 
                 ds_map_destroy(json_data);
@@ -444,36 +448,6 @@ if (status == NN.status_connected) {
     }
 }
 </string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="53">
-      <action>
-        <libid>1</libid>
-        <id>201</id>
-        <kind>0</kind>
-        <userelative>-1</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_create_object</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>10</kind>
-            <object>old_obj_eff1</object>
-          </argument>
-          <argument>
-            <kind>0</kind>
-            <string>mouse_x</string>
-          </argument>
-          <argument>
-            <kind>0</kind>
-            <string>mouse_y</string>
           </argument>
         </arguments>
       </action>
@@ -644,11 +618,11 @@ if(ds_list_size(global.map_players) &gt; 0)
     for(i = 0; i &lt; player_max; i ++)
     {
         //draw_rectangle(real(ds_list_find_value(global.map_unit, i*3+1))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+2))*64 + 64, real(ds_list_find_value(global.map_unit, i*3+1))*64, real(ds_list_find_value(global.map_unit, i*3+2))*64, true);
-        name = ds_list_find_value(global.map_players, i*3);
-        draw_sprite_ext(spr_character, 0, real(ds_list_find_value(global.map_players, i*3+1))*64 + 32, real(ds_list_find_value(global.map_players, i*3+2))*64 + 32, real(ds_list_find_value(global.map_players, i*3+3)), 1, 0, c_white, 1);
+        name = ds_list_find_value(global.map_players, i*4);
+        draw_sprite_ext(spr_character, 0, real(ds_list_find_value(global.map_players, i*4+1))*64 + 32, real(ds_list_find_value(global.map_players, i*4+2))*64 + 32, real(ds_list_find_value(global.map_players, i*4+3)), 1, 0, c_white, 1);
         //draw_sprite(sprite3, 0, user_x, user_y);
         
-        draw_text(real(ds_list_find_value(global.map_players, i*3+1))*64 + 32, real(ds_list_find_value(global.map_players, i*3+2))*64 - 20, name)      
+        draw_text(real(ds_list_find_value(global.map_players, i*4+1))*64 + 32, real(ds_list_find_value(global.map_players, i*4+2))*64 - 20, name)      
     }
 }
 </string>

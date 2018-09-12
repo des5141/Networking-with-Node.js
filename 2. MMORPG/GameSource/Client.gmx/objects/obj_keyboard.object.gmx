@@ -517,13 +517,13 @@ draw_set_color(c_black);
 draw_set_alpha(0.6)
 draw_rectangle(0, 0, 800, 480, false)
 draw_set_alpha(0.9)
-draw_rectangle(200, 155, 800 - 200, 200, false)
+draw_rectangle(200, 145, 800 - 200, 190, false)
 draw_set_alpha(1)
 
 draw_set_color(c_white);
 draw_set_font(font_keyboard_string);
 draw_set_valign(fa_middle);
-draw_text(210, 175+(220-195)/2, _str2);
+draw_text(210, 155+(220-195)/2, _str2);
 draw_set_valign(fa_top);
 
 draw_set_font(fnt_text);

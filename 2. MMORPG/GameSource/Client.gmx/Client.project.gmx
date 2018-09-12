@@ -31,6 +31,14 @@
     <sprite>sprites\sprite16</sprite>
     <sprite>sprites\spr_boom</sprite>
     <sprite>sprites\spr_boom2</sprite>
+    <sprite>sprites\spr_attack</sprite>
+    <sprite>sprites\spr_attack_piece</sprite>
+    <sprite>sprites\spr_magic_square</sprite>
+    <sprite>sprites\spr_magic_square2</sprite>
+    <sprite>sprites\spr_rotate_bg</sprite>
+    <sprite>sprites\spr_rotate_bg2</sprite>
+    <sprite>sprites\spr_noise</sprite>
+    <sprite>sprites\spr_noise2</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\back_tile00</background>
@@ -111,10 +119,12 @@
       <object>objects\par_bar</object>
       <object>objects\obj_id</object>
       <object>objects\obj_pass</object>
+      <object>objects\obj_name</object>
       <object>objects\obj_eff1</object>
       <object>objects\obj_eff1_part1</object>
       <object>objects\old_obj_eff1</object>
-      <object>objects\obj_name</object>
+      <object>objects\obj_eff2</object>
+      <object>objects\obj_eff2_part1</object>
     </objects>
     <objects name="Keyboard">
       <object>objects\obj_keyboard</object>
@@ -124,8 +134,15 @@
     <object>objects\obj_goto_register</object>
     <object>objects\obj_register</object>
     <object>objects\obj_goto_login</object>
-    <object>objects\object18</object>
+    <object>objects\ob_background_test</object>
+    <object>objects\obj_magic_square</object>
+    <object>objects\obj_rotate_bg</object>
+    <object>objects\obj_noise</object>
+    <object>objects\obj_magic_square2</object>
+    <object>objects\obj_rotate_bg2</object>
+    <object>objects\obj_noise2</object>
   </objects>
+  <timelines name="timelines"/>
   <rooms name="rooms">
     <room>rooms\rm_connecting</room>
     <room>rooms\rm_login</room>

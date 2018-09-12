@@ -4,11 +4,11 @@
   <width>800</width>
   <height>450</height>
   <vsnap>32</vsnap>
-  <hsnap>32</hsnap>
+  <hsnap>400</hsnap>
   <isometric>0</isometric>
   <speed>60</speed>
   <persistent>0</persistent>
-  <colour>16777215</colour>
+  <colour>0</colour>
   <showcolour>-1</showcolour>
   <code></code>
   <enableViews>0</enableViews>
@@ -56,6 +56,7 @@
     <instance objName="obj_name" x="256" y="288" name="inst_032254A6" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
     <instance objName="obj_goto_login" x="0" y="0" name="inst_2E79867E" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
     <instance objName="obj_register" x="32" y="0" name="inst_85867A8A" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
+    <instance objName="obj_magic_square2" x="400" y="224" name="inst_3234F877" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
   </instances>
   <tiles/>
   <PhysicsWorld>0</PhysicsWorld>
