@@ -32,7 +32,8 @@ function create(type, space, x, y) {
 		damage: damage,
 		visual: visual,
 		xscale: 1,
-		uuid: uuid_v4()
+		uuid: uuid_v4(),
+		active: 0
 	};
 }
 

@@ -76,6 +76,7 @@ Author: yuto
 	var User = require('./classes/user.js');
 	var UserBox = require('./classes/user_box.js');
 	var sqrt = require('math-sqrt');
+	var async = require('async');
 //}
 //{ Setup console colors
 	Colors.setTheme({
@@ -306,7 +307,7 @@ if(cluster.isMaster)
 	
 	//{ Server event - step
 		! function step() {
-			//Respawn Monster
+			/*//Respawn Monster
 			for(i = 0; i < max_space; i++)
 			{
 				how_much_monster[i] = 0;
@@ -334,7 +335,7 @@ if(cluster.isMaster)
 					var mon00 = Monster.create(1, 0, respawn_x, respawn_y);
 					map_monsters.addMonster(mon00);
 				}
-			}
+			}*/
 			
 			//Send all
 			var player_info = new Array();
@@ -361,10 +362,11 @@ if(cluster.isMaster)
 				}catch(e){}
 			});
 			
-			
+			//User data processing
 			authenticated_users.each(function(user) {
 				//Operation about user step
 				can = true;
+				doit = true;
 				switch(user.control)
 				{
 					case "none":
@@ -391,6 +393,7 @@ if(cluster.isMaster)
 								});
 								if(can)
 								{
+									doit = false;
 									user.y--;
 								}
 							}
@@ -418,6 +421,7 @@ if(cluster.isMaster)
 								});
 								if(can)
 								{
+									doit = false;
 									user.y++;
 								}
 							}
@@ -446,6 +450,7 @@ if(cluster.isMaster)
 								});
 								if(can)
 								{
+									doit = false;
 									user.x--;
 									user.xscale = -1;
 								}
@@ -475,6 +480,7 @@ if(cluster.isMaster)
 								});
 								if(can)
 								{
+									doit = false;
 									user.x++;
 									user.xscale = 1;
 								}
@@ -492,11 +498,16 @@ if(cluster.isMaster)
 				player_max[user.space]++;
 			});
 			
+			//Monster reset
+			map_monsters.each(function(monster){
+				monster.active = 1;
+			});
+			
+			//Monster data processing
 			map_monsters.each(function(monster){
 				//Operation about monster step
-				doit = true;
 				authenticated_users.each(function(user) {
-					if((doit)&&(monster.space == user.space))
+					if((monster.active == 1)&&(monster.space == user.space))
 					{
 						var width = user.x-monster.x;
 						var height = user.y-monster.y;
@@ -506,9 +517,7 @@ if(cluster.isMaster)
 							height *= -1;
 						if(sqrt(width*2+height*2) < monster.visual)
 						{
-							//console.log(sqrt(width*2+height*2));
-							doit = false;
-							//console.log("FIND!");
+							monster.active = 0;
 							// here to follow
 							if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
 							{
@@ -579,114 +588,141 @@ if(cluster.isMaster)
 							{
 								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 							}
-						}else{
-							//Can't find user
-							var doing = Math.floor(Math.random() * 5);
-							try
-							{
-								console.log(monster.x);
-								switch(doing)
-								{
-									case 0:
-										if((array[monster.space][monster.x-1][monster.y] == 1)&&(monster.x > 0))
-										{
-											can = true;
-											authenticated_users.each(function(user){
-												if((user.x == monster.x-1)&&(user.y == monster.y)&&(monster.space == user.space))
-													can = false;
-											});
-											map_monsters.each(function(monster2){
-												if(!(monster.uuid == monster2.uuid))
-												{
-													if((monster.x-1 == monster2.x)&&(monster.y == monster2.y)&&(monster.space == monster2.space))
-														can = false;
-												}
-											});
-											if(can)
-											{
-												monster.x--;
-												monster.xscale = -1;
-											}
-										}
-									break;
-									
-									case 1:
-										if((array[monster.space][monster.x+1][monster.y] == 1)&&(monster.x < array_width))
-										{
-											can = true;
-											authenticated_users.each(function(user){
-												if((user.x == monster.x+1)&&(user.y == monster.y)&&(monster.space == user.space))
-													can = false;
-											});
-											map_monsters.each(function(monster2){
-												if(!(monster.uuid == monster2.uuid))
-												{
-													if((monster.x+1 == monster2.x)&&(monster.y == monster2.y)&&(monster.space == monster2.space))
-														can = false;
-												}
-											});
-											if(can)
-											{
-												monster.x++;
-												monster.xscale = 1;
-											}
-										}
-									break;
-									
-									case 2:
-										if((array[monster.space][monster.x][monster.y-1] == 1)&&(monster.y > 0))
-										{
-											can = true;
-											authenticated_users.each(function(user){
-												if((user.x == monster.x)&&(user.y == monster.y-1)&&(monster.space == user.space))
-													can = false;
-											});
-											map_monsters.each(function(monster2){
-												if(!(monster.uuid == monster2.uuid))
-												{
-													if((monster.x == monster2.x)&&(monster.y-1 == monster2.y)&&(monster.space == monster2.space))
-														can = false;
-												}
-											});
-											if(can)
-											{
-												monster.y--;
-											}
-										}
-									break;
-									
-									case 3:
-										if((array[monster.space][monster.x][monster.y+1] == 1)&&(monster.y < array_height))
-										{
-											can = true;
-											authenticated_users.each(function(user){
-												if((user.x == monster.x)&&(user.y == monster.y+1)&&(monster.space == user.space))
-													can = false;
-											});
-											map_monsters.each(function(monster2){
-												if(!(monster.uuid == monster2.uuid))
-												{
-													if((monster.x == monster2.x)&&(monster.y+1 == monster2.y)&&(monster.space == monster2.space))
-														can = false;
-												}
-											});
-											if(can)
-											{
-												monster.y--;
-											}
-										}
-									break;
-								}
-							}catch(e)
-							{
-								
-							}
 						}
 					}
 					
 				});
-				
-				//Save the monsters states in packet
+			});
+			
+			//Monster automatic moving
+			map_monsters.each(function(monster){
+				if(monster.active == 1)
+				{
+					try{
+						if(array != false)
+						{
+						
+						var doing = getRandomInt(0, 4);
+						switch(doing)
+						{
+									case 0:
+										
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x-1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x-1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.x-1 < 0)
+										{
+											monster.active = 0;
+										}
+										
+										if(monster.x-1 >= 0)
+										{
+											if(array[monster.space][monster.y][monster.x-1] == 0)
+												monster.active = 0;
+										}
+										
+										if(monster.active == 1)
+										{
+											monster.x = monster.x - 1;
+											
+										}
+									break;
+									
+									case 1:
+										
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x+1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x+1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.x+1 >= array_width)
+										{
+											monster.active = 0;
+										}
+										if(monster.x+1 < array_width)
+										{
+											if(array[monster.space][monster.y][monster.x+1] == 0)
+											{
+												monster.active = 0;
+											}
+										}
+										if(monster.active == 1)
+										{
+											monster.x = monster.x + 1;
+										}
+									break;
+									
+									case 2:
+										
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x)&&(monster2.y == monster.y-1)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x)&&(user3.y == monster.y-1)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.y-1 < 0)
+										{
+											monster.active = 0;
+										}
+										
+										if(monster.y-1 >= 0)
+										{
+											if(array[monster.space][monster.y-1][monster.x] == 0)
+												monster.active = 0;
+										}
+										
+										if(monster.active == 1)
+										{
+											monster.y = monster.y - 1;
+										}
+									break;
+									
+									case 3:
+										
+										map_monsters.each(function(monster2){
+											if((monster2.x == monster.x)&&(monster2.y == monster.y+1)&&(monster2.space == monster.space))
+												monster.active = 0;
+										});
+										authenticated_users.each(function(user3) {
+											if((user3.x == monster.x)&&(user3.y == monster.y+1)&&(user3.space == monster.space))
+												monster.active = 0;
+										});
+										if(monster.y+1 >= array_height)
+										{
+											monster.active = 0;
+										}
+										
+										if(monster.y+1 < array_height)
+										{
+											if(array[monster.space][monster.y+1][monster.x] == 0)
+												monster.active = 0;
+										}
+										
+										if(monster.active == 1)
+										{
+											monster.y = monster.y + 1;
+										}
+									break;
+						}
+						
+						}
+					}catch(e){console.log(array);console.log(e);}
+				}
+			});
+			
+			//Export the monster data in packet
+			map_monsters.each(function(monster){
+				//Export the monsters states in packet
 				var x = monster.x;
 				var y = monster.y;
 				var type = monster.type;
@@ -739,7 +775,7 @@ if(cluster.isMaster)
 			//While
 			setTimeout(function() {
 				step();
-			}, 200);
+			}, 500);
 		}()
 	//}
 	
