@@ -31,7 +31,7 @@ inventory_item = ""
 inventory_cursor = 0
 inventory_select_item = 0
 inventory_select_town = 0
-item = arr(10);
+item = arr(14);
 delay = 0;
 </string>
           </argument>
@@ -94,31 +94,33 @@ if(inventory)and(global.hp &gt;= 0)
     }
 
     draw_set_color(c_white)
-    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+40, view_xview[0]+150 + 6, view_yview[0]+95, false)
+    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+40, view_xview[0]+200 + 6, view_yview[0]+135, false)
     draw_set_color(c_black)
-    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+40 + 3, view_xview[0]+150 - 3 + 6, view_yview[0]+95 - 3, false)
+    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+40 + 3, view_xview[0]+200 - 3 + 6, view_yview[0]+135 - 3, false)
     
     draw_set_color(c_white)
-    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+100, view_xview[0]+150 + 6, view_yview[0]+154, false)
+    draw_rectangle(view_xview[0]+10 + 6, view_yview[0]+140, view_xview[0]+200 + 6, view_yview[0]+234, false)
     draw_set_color(c_black)
-    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+100 + 3, view_xview[0]+150 - 3 + 6, view_yview[0]+154 - 3, false)
+    draw_rectangle(view_xview[0]+10 + 3 + 6, view_yview[0]+140 + 3, view_xview[0]+200 - 3 + 6, view_yview[0]+234 - 3, false)
     
     if(inventory_item == "")
     {
         draw_set_color(c_red)
-        draw_rectangle(view_xview[0]+15 + 6, view_yview[0]+105 + (inventory_cursor*15), view_xview[0]+15+5 + 6, view_yview[0]+105+15 + (inventory_cursor*15), false)
+        draw_rectangle(view_xview[0]+20 + 6, view_yview[0]+150 + (inventory_cursor*25), view_xview[0]+25 + 6, view_yview[0]+150+25 + (inventory_cursor*25), false)
     }
     
     draw_set_color(c_white)
-    draw_set_font(fnt_text)
-    draw_text(view_xview[0]+15 + 6, view_yview[0]+44, global.nickname)
-    draw_text(view_xview[0]+50 + 6, view_yview[0]+105, "물품")
-    draw_text(view_xview[0]+50 + 6, view_yview[0]+120, "스탯")
-    draw_text(view_xview[0]+50 + 6, view_yview[0]+135, "스킬")
-    draw_set_font(fnt_text)
-    draw_text(view_xview[0]+15 + 6, view_yview[0]+56, "Lv " + string(global.level))
-    draw_text(view_xview[0]+15 + 6, view_yview[0]+68, "HP "+ string(global.hp) + "/" + string(20 + 5 * (global.level - 1) ))
-    draw_text(view_xview[0]+15 + 6, view_yview[0]+80, "G " + string(global.gold))
+    draw_set_font(fnt_inventory)
+    draw_text(view_xview[0]+15 + 10, view_yview[0]+44, global.nickname)
+    draw_set_halign(fa_right);
+    draw_text(view_xview[0]+190, view_yview[0]+150, "물품")
+    draw_text(view_xview[0]+190, view_yview[0]+177, "스탯")
+    draw_text(view_xview[0]+190, view_yview[0]+204, "스킬")
+    draw_set_halign(fa_left);
+    draw_set_font(fnt_inventory)
+    draw_text(view_xview[0]+15 + 10, view_yview[0]+67, "Lv " + string(global.level))
+    draw_text(view_xview[0]+15 + 10, view_yview[0]+90, "HP "+ string(global.hp) + "/" + string(20 + 5 * (global.level - 1) ))
+    draw_text(view_xview[0]+15 + 10, view_yview[0]+110, "G " + string(global.gold))
     
     if not(instance_exists(obj_dialoguer))
     {
@@ -129,25 +131,27 @@ if(inventory)and(global.hp &gt;= 0)
         if(inventory_item = "item")or(inventory_item = "select")
         {
             draw_set_color(c_white)
-            draw_rectangle(view_xview[0]+150+10, view_yview[0]+40, view_xview[0]+600, view_yview[0]+220, false)
+            draw_rectangle(view_xview[0]+200+15, view_yview[0]+40, view_xview[0]+600, view_yview[0]+400, false)
             draw_set_color(c_black)
-            draw_rectangle(view_xview[0]+150+10 + 3, view_yview[0]+40 + 3, view_xview[0]+600 - 3, view_yview[0]+220 - 3, false)
+            draw_rectangle(view_xview[0]+200+15 + 3, view_yview[0]+40 + 3, view_xview[0]+600 - 3, view_yview[0]+400 - 3, false)
             
             draw_set_color(c_white)
-            draw_set_font(fnt_text)
+            draw_set_font(fnt_inventory)
+            draw_set_valign(fa_bottom)
             /*if(inventory_cursor &gt;= 0)
             {*/
-                draw_text(view_xview[0]+120, view_yview[0]+200, "사용")
-                draw_text(view_xview[0]+170, view_yview[0]+200, "정보")
-                draw_text(view_xview[0]+220, view_yview[0]+200, "버림")
+                draw_text(view_xview[0]+315, view_yview[0]+390, "사용")
+                draw_text(view_xview[0]+385, view_yview[0]+390, "정보")
+                draw_text(view_xview[0]+455, view_yview[0]+390, "버림")
             //}
-            
-            for(i = 0; i &lt; 10; i++)
+            draw_set_valign(fa_top)
+            draw_set_font(fnt_inventory)
+            for(i = 0; i &lt; 14; i++)
             {
                 if not(item[i] = 0)
                 {
                     draw_set_color(item_color(item[i]))
-                    draw_text(view_xview[0]+120, view_yview[0]+45 + (i * 15), item_name(item[i]))
+                    draw_text(view_xview[0]+240, view_yview[0]+45 + (i * 23), item_name(item[i]))
                 }
             }
         }
@@ -155,9 +159,9 @@ if(inventory)and(global.hp &gt;= 0)
         if(inventory_item == "item")and(inventory_cursor &gt;= 0)
         {
             draw_set_color(c_red)
-            draw_rectangle(view_xview[0]+100, view_yview[0]+44 + (inventory_cursor*15), view_xview[0]+100+5, view_yview[0]+44+15 + (inventory_cursor*15), false)
+            draw_rectangle(view_xview[0]+225, view_yview[0]+46 + (inventory_cursor*23), view_xview[0]+225+5, view_yview[0]+46+20 + (inventory_cursor*23), false)
             
-            for(i = 0; i &lt; 10; i++)
+            for(i = 0; i &lt; 14; i++)
             {
                 if(item[i] = 0)and(i &lt;= inventory_cursor)
                 {
@@ -169,7 +173,7 @@ if(inventory)and(global.hp &gt;= 0)
         if(inventory_item == "select")and(inventory_cursor &gt;= 0)
         {
             draw_set_color(c_red)
-            draw_rectangle(view_xview[0]+109 + (inventory_cursor*50), view_yview[0]+200, view_xview[0]+109+5 + (inventory_cursor*50), view_yview[0]+200+15, false)
+            draw_rectangle(view_xview[0]+300 + (inventory_cursor*70), view_yview[0]+390+3, view_xview[0]+300+5 + (inventory_cursor*70), view_yview[0]+390-15-6, false)
         }
         
         if(inventory_item == "state")and(inventory_cursor &gt;= 0)
@@ -181,7 +185,7 @@ if(inventory)and(global.hp &gt;= 0)
             
             draw_set_color(c_white)
             
-            draw_set_font(fnt_text)
+            draw_set_font(fnt_inventory)
             draw_text(view_xview[0]+105, view_yview[0]+50-2, "힘 " + string(global.str))
             draw_text(view_xview[0]+105, view_yview[0]+65-2, "지능 " + string(global.int))
             draw_text(view_xview[0]+105, view_yview[0]+80-2, "민첩 " + string(global.dex))
@@ -285,7 +289,7 @@ inventory_sort()
     inventory_cursor++;
 }
 
-if(inventory)and(inventory_item = "item")and(inventory_cursor &lt; 9)
+if(inventory)and(inventory_item = "item")and(inventory_cursor &lt; 13)
 {
     if(item[inventory_cursor+1] != 0)
     {

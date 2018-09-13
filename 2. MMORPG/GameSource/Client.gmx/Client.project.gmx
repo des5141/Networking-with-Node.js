@@ -105,6 +105,8 @@
       <font>fonts\font_keyboard2</font>
       <font>fonts\font_keyboard_string</font>
     </fonts>
+    <font>fonts\fnt_inventory</font>
+    <font>fonts\fnt_inventory2</font>
   </fonts>
   <objects name="objects">
     <objects name="Client">
@@ -142,7 +144,6 @@
     <object>objects\obj_rotate_bg2</object>
     <object>objects\obj_noise2</object>
   </objects>
-  <timelines name="timelines"/>
   <rooms name="rooms">
     <room>rooms\rm_connecting</room>
     <room>rooms\rm_login</room>

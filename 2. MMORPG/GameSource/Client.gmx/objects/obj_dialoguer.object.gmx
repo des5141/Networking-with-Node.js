@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-2</depth>
+  <depth>-4</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -166,7 +166,7 @@ switch(end_type)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fnt_text);
+            <string>draw_set_font(fnt_inventory);
 draw_set_halign(fa_left);
 
 var a = 0;
@@ -181,11 +181,11 @@ if string_char_at(current, count) == "%" a = 1
     draw_text(_x + 20, _y + 10, string_copy(current, 1, count - 1 - a))
 } else {*/
     draw_set_colour(c_white)
-    draw_rectangle(view_xview[0] + 16,view_yview[0] + 160,view_xview[0] + 304,view_yview[0] + 235, false)
+    draw_rectangle(view_xview[0] + 16,view_yview[0] + 280,view_xview[0] + 800-16,view_yview[0] + 440, false)
     draw_set_colour(c_black)
-    draw_rectangle(view_xview[0] + 19,view_yview[0] + 163,view_xview[0] + 301,view_yview[0] + 232, false)
+    draw_rectangle(view_xview[0] + 19,view_yview[0] + 283,view_xview[0] + 800-19,view_yview[0] + 437, false)
     draw_set_colour(c_white)
-    draw_text(view_xview[0] + 23,view_yview[0] + 168, string_copy(current, 1, count - 1 - a))
+    draw_text(view_xview[0] + 30,view_yview[0] + 295, string_copy(current, 1, count - 1 - a))
 //}
 
 for (n = 1; n &lt; count + 1; n = n + 1)

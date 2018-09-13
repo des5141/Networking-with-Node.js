@@ -228,6 +228,10 @@ if(cluster.isMaster)
 							}
 						}
 						
+						//Loading the inventory
+						//Maximum size is 14
+						
+						
 						authenticated_users.addUser(new_user);
 						for(var id in cluster.workers)
 						{
@@ -363,6 +367,26 @@ if(cluster.isMaster)
 				}catch(e){}
 			});
 			//}
+			
+			//If user died
+			authenticated_users.each(function(user) {
+				if(user.hp <= 0)
+				{
+					var i, j;
+					for(i = 0; i < array_height; i++)
+					{
+						for(j = 0; j < array_width; j++)
+						{
+							if(array[0][i][j] == "2")
+							{
+								user.x = j;
+								user.y = i;
+							}
+						}
+					}
+					user.hp = user.maxhp;
+				}
+			});
 			
 			//User data processing
 			authenticated_users.each(function(user) {
@@ -543,6 +567,8 @@ if(cluster.isMaster)
 							{
 								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+								user.hp -= monster.damage;
+								monster,xscale = -1;
 							}else
 							if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1)))
 							{
@@ -562,6 +588,8 @@ if(cluster.isMaster)
 							{
 								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+								user.hp -= monster.damage;
+								monster,xscale = 1;
 							}else
 							if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
 							{
@@ -580,6 +608,7 @@ if(cluster.isMaster)
 							{
 								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+								user.hp -= monster.damage;
 							}else
 							if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
 								can = true;
@@ -597,6 +626,7 @@ if(cluster.isMaster)
 							{
 								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
 								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+								user.hp -= monster.damage;
 							}
 						}
 					}
@@ -613,7 +643,7 @@ if(cluster.isMaster)
 						{
 							while(1)
 							{
-								var doing = getRandomInt(0, 4);
+								var doing = getRandomInt(0, 7);
 								switch(doing)
 								{
 									case 0:

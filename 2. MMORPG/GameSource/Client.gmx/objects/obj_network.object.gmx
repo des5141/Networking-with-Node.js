@@ -451,6 +451,68 @@ if (status == NN.status_connected) {
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Input
+if(instance_exists(obj_inventory))
+{
+    if not(obj_inventory.inventory)
+    {
+        if(keyboard_check_pressed(vk_space))
+        {
+            ///Space move
+            obj_network.to_space = ++obj_network.space;
+            
+            //Construct message
+            var json_data = ds_map_create();
+            ds_map_add(json_data, "id", NN.outsig_user_space);
+            ds_map_add(json_data, "msg", obj_network.to_space);
+            var body = json_encode(json_data);
+            ds_map_destroy(json_data);
+            
+            //Send message
+            nn_send_message(body);
+        }
+        
+        if(keyboard_check_pressed(vk_left))
+        {
+            send_operation("left");
+        }
+        
+        if(keyboard_check_pressed(vk_right))
+        {
+            send_operation("right");
+        }
+        
+        if(keyboard_check_pressed(vk_up))
+        {
+            send_operation("up");
+        }
+        
+        if(keyboard_check_pressed(vk_down))
+        {
+            send_operation("down");
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="7" enumb="11">
       <action>
@@ -651,138 +713,6 @@ if(ds_list_size(global.map_players) &gt; 0)
 if (!active) {
     event_user(15); //Connect attempt
 }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="40">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Space move
-send_operation("down");
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="39">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Space move
-send_operation("right");
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="38">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Space move
-send_operation("up");
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="37">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Space move
-send_operation("left");
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="32">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Space move
-
-    obj_network.to_space = ++obj_network.space;
-    
-    //Construct message
-    var json_data = ds_map_create();
-    ds_map_add(json_data, "id", NN.outsig_user_space);
-    ds_map_add(json_data, "msg", obj_network.to_space);
-    var body = json_encode(json_data);
-    ds_map_destroy(json_data);
-    
-    //Send message
-    nn_send_message(body);
-
 </string>
           </argument>
         </arguments>

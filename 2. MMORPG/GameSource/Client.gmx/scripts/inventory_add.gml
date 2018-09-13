@@ -1,7 +1,7 @@
 with(obj_inventory)
 {
     var i;
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 14; i++)
     {
         if(item[i] = 0)
         {

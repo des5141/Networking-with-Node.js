@@ -16,7 +16,10 @@ function create(name, socket, id, uuid, space) {
 		control: "none",
 		mine: 0,
 		id: id,
-		xscale : 1
+		xscale : 1,
+		hp: 20,
+		maxhp: 20,
+		damage: 10
 	};
 }
 
