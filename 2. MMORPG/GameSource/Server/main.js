@@ -305,6 +305,37 @@ if(cluster.isMaster)
 						});
 					break;
 					
+					case 'inventory':
+						switch(message.type2)
+						{
+							case 'use':
+								authenticated_users.each(function(user) {
+									if(user.uuid == message.uuid)
+									{
+										switch(user.inventory[message.index])
+										{
+											case 1:
+												console.log("HELO");
+											break;
+											
+											case 2:
+												console.log("ASD");
+											break;
+											
+											case 3:
+												console.log("AAAAASS");
+											break;
+										}
+									}
+								});
+							break;
+							
+							default:
+							
+							break;
+						}
+					break;
+					
 					default:
 						console.log("Wrong message type from process message".error, "-".gray, message.type);
 					break;
@@ -885,8 +916,8 @@ if(cluster.isMaster)
 			];
 			
 			async.series(tasks, function (err, results) {
-				console.log("Master process working order - - - - - - - - - - - -".inverse);
-				console.log(Colors.gray(results));
+				//console.log("Master process working order - - - - - - - - - - - -".inverse);
+				//console.log(Colors.gray(results));
 			});
 		}()
 	//}
@@ -987,6 +1018,7 @@ if(cluster.isWorker)
 		const insig_user_space = 3;
 		const insig_user_operation = 4;
 		const insig_user_register = 5;
+		const insig_user_inventory = 6;
 		
 	//} Signal setting
 	//{ Server run
@@ -1209,6 +1241,13 @@ if(cluster.isWorker)
 									}
 								break;
 								
+								case insig_user_inventory:
+									var from_user;
+									type = json_data.type;
+									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
+										process.send({type : 'inventory', to : 'master', uuid : from_user.uuid, type2 : type, index : msg});
+									}
+								break;
 								
 								//Invalid message ID
 								default:

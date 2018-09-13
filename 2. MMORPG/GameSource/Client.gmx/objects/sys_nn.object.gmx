@@ -204,6 +204,7 @@ enum NN{
     outsig_user_space = 3,
     outsig_user_operation = 4,
     outsig_register = 5,
+    outsig_user_inventory = 6,
     
     status_disconnected = -1,
     status_connecting = 0,
