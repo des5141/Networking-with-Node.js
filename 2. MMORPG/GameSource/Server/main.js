@@ -165,8 +165,11 @@ if(cluster.isMaster)
 		var map_monsters = MonsterBox.create();
 	//}
 	//{ Server information
-		console.log("Networking with Node.js".data);
-		console.log(" - Node.js Server".data, "version 1.0");
+		console.log(" MMORPG SERVER beta version - - - - - - - - - - - - - - - ".inverse);
+		console.log(" - master process started".data);
+		console.log(" - server ip :".data, Colors.data(ip), ", server port :".data, Colors.data(tcp_port));
+		console.log();
+		console.log(" HERE TO STARTING DRAWING CONSOLE LOGS  - - - - - - - - - ".inverse);
 	//}
 	//{ Make worker as much as count of cpu
 		os.cpus().forEach(function (cpu) {
@@ -207,10 +210,11 @@ if(cluster.isMaster)
 				switch(message.type)
 				{
 					case 'login':
+						//{
 						console.log("Login user : ".gray + message.uuid + "(".gray + message.name +")".gray);
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
-								console.log("already");
+								console.log("already logined");
 						});
 						
 						var new_user = User.create(message.name, -1, message.id, message.uuid, 0);
@@ -228,8 +232,10 @@ if(cluster.isMaster)
 							}
 						}
 						
+						var tasks = [
 						//Loading the inventory
 						//Maximum size is 14
+						function(callback) {
 						var fs = require('fs');
 							fs.exists('ClientData/'+new_user.id+'_inventory.txt', function(exists){
 								if(exists)
@@ -243,7 +249,6 @@ if(cluster.isMaster)
 										{
 											new_user.inventory[i] = parseInt(strArray[i]);
 										}
-										console.log(new_user.inventory);
 									});
 								}else{
 									// Can't load. maybe new user.
@@ -254,37 +259,81 @@ if(cluster.isMaster)
 									{
 										new_user.inventory[i] = 0;
 									}
-									console.log(new_user.inventory);
 								}
 							});
-								
-						
-						authenticated_users.addUser(new_user);
+							callback(null, "");
+						}
+						,	
+						//Loading the status
+						function(callback) {
+						var fs = require('fs');
+						fs.exists('ClientData/'+new_user.id+'_status.txt', function(exists){
+							if(exists)
+							{
+								// Can load
+								fs.readFile('ClientData/'+new_user.id+'_status.txt', 'utf8', function(err, data){
+									split2 = require('string-split');
+									strArray2 = split2('#', data);
+									new_user.space = parseInt(strArray2[0]);
+									new_user.x = parseInt(strArray2[1]);
+									new_user.y = parseInt(strArray2[2]);
+									new_user.xscale = parseInt(strArray2[3]);
+									new_user.damage = parseInt(strArray2[4]);
+									new_user.hp = parseInt(strArray2[5]);
+									new_user.maxhp = parseInt(strArray2[6]);
+									new_user.exp = parseInt(strArray2[7]);
+									new_user.maxexp = parseInt(strArray2[8]);
+									new_user.level = parseInt(strArray2[9]);
+									callback(null, "");
+								});
+							}else{
+								// Can't load. maybe new user
+								default_user_data = (new_user.space).toString() + "#" + (new_user.x).toString() + "#" + (new_user.y).toString() + "#" + (new_user.xscale).toString() + "#";
+								default_user_data += (new_user.damage).toString() + "#" + (new_user.hp).toString() + "#" + (new_user.maxhp).toString() + "#" + (new_user.exp).toString() + "#" + (new_user.maxexp).toString() + "#"
+								default_user_data += (new_user.level).toString() + "#" 
+								fs.writeFile('ClientData/'+new_user.id+'_status.txt', default_user_data, 'utf8', function(error){});
+								callback(null, "");
+							}
+						});
+						}
+						,
+						function(callback) {
 						for(var id in cluster.workers)
 						{
-							cluster.workers[id].send({type : 'login', to : 'worker', uuid : message.uuid, name : message.name, id : message.id});
+							cluster.workers[id].send({type : 'login', to : 'worker', uuid : message.uuid, name : message.name, id : message.id, space : new_user.space});
 						}
+						authenticated_users.addUser(new_user);
+						callback(null, "");
+						}];
+						
+						async.series(tasks, function (err, results) {});
+						//}
 					break;
 					
 					case 'quit':
+						//{
 						console.log("Removing user   :".data, "(" + message.uuid + ")");
 						authenticated_users.removeUser(message.uuid);
 						for(var id in cluster.workers)
 						{
 							cluster.workers[id].send({type : 'quit', to : 'worker', uuid : message.uuid});
 						}
+						//}
 					break;
 					
 					case 'operator':
+						//{
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
 							{
 								user.control = message.operator;
 							}
 						});
+						//}
 					break;
 					
 					case 'space':
+						//{
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
 							{
@@ -303,28 +352,55 @@ if(cluster.isMaster)
 								}
 							}
 						});
+						//}
 					break;
 					
 					case 'inventory':
+						//{
 						switch(message.type2)
 						{
 							case 'use':
+								//{
 								authenticated_users.each(function(user) {
 									if(user.uuid == message.uuid)
 									{
 										switch(user.inventory[message.index])
 										{
 											case 1:
-												console.log("HELO");
+												user.maxhp += 100;
+												user.hp = user.maxhp;
+												console.log(" MAXHP UP!".inverse);
 											break;
 											
 											case 2:
-												console.log("ASD");
+												user.damage = 100;
+												console.log(" WEAPON EQUIPED!".inverse);
 											break;
 											
 											case 3:
-												console.log("AAAAASS");
+												user.hp = 0;
+												console.log(" PPAP!".inverse);
 											break;
+										}
+									}
+								});
+								//}
+							break;
+							
+							case 'drop':
+								authenticated_users.each(function(user) {
+									if(user.uuid == message.uuid)
+									{
+										user.inventory[message.index] = 0;
+										
+										var i;
+										for(i = 0; i < 13; i++)
+										{
+											if((user.inventory[i] == 0)&&(user.inventory[i+1] != 0))
+											{
+												user.inventory[i] = user.inventory[i+1];
+												user.inventory[i+1] = 0;
+											}   
 										}
 									}
 								});
@@ -334,6 +410,21 @@ if(cluster.isMaster)
 							
 							break;
 						}
+						var fs = require('fs');
+						//fs.unlink('ClientData/'+message.id+'_inventory.txt', function (err) { if (err) throw err; console.log('successfully deleted text2.txt'); });
+						
+						temp_inventory_data = "";
+						authenticated_users.each(function(user) {
+							if(user.uuid == message.uuid)
+							{
+								for(i = 0; i < 14; i++)
+								{
+									temp_inventory_data += (user.inventory[i]).toString() + "#";
+								}
+							}
+						});
+						fs.writeFile('ClientData/'+message.id+'_inventory.txt', temp_inventory_data, 'utf8', function(error){});
+						//}
 					break;
 					
 					default:
@@ -453,7 +544,7 @@ if(cluster.isMaster)
 											
 										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y-1 == monster.y)){
 											can = false;
-											monster.hp-=10;
+											monster.hp-=user.damage;
 											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
@@ -482,7 +573,7 @@ if(cluster.isMaster)
 											
 										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y+1 == monster.y)){
 											can = false;
-											monster.hp-=10;
+											monster.hp-=user.damage;
 											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
@@ -511,7 +602,7 @@ if(cluster.isMaster)
 											
 										}else if((monster.space == user.space)&&(monster.x == user.x-1)&&(user.y == monster.y)){
 											can = false;
-											monster.hp-=10;
+											monster.hp-=user.damage;
 											user.xscale = -1;
 											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
@@ -542,7 +633,7 @@ if(cluster.isMaster)
 											
 										}else if((monster.space == user.space)&&(monster.x == user.x+1)&&(user.y == monster.y)){
 											can = false;
-											monster.hp-=10;
+											monster.hp-=user.damage;
 											user.xscale = 1;
 											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
@@ -906,6 +997,18 @@ if(cluster.isMaster)
 						callback(null, 'Export the user data in packet');
 				}
 				,
+				//User status save
+				function(callback){
+					// Can't load. maybe new user
+					authenticated_users.each(function(user) {
+						temp_user_data = (user.space).toString() + "#" + (user.x).toString() + "#" + (user.y).toString() + "#" + (user.xscale).toString() + "#";
+						temp_user_data += (user.damage).toString() + "#" + (user.hp).toString() + "#" + (user.maxhp).toString() + "#" + (user.exp).toString() + "#" + (user.maxexp).toString() + "#"
+						temp_user_data += (user.level).toString() + "#" 
+						fs.writeFile('ClientData/'+user.id+'_status.txt', temp_user_data, 'utf8', function(error){});
+					});
+					callback(null, 'User staus saved');
+				}
+				,
 				//While
 				function(callback){
 				setTimeout(function() {
@@ -938,6 +1041,7 @@ if(cluster.isWorker)
 							if(user.uuid == message.uuid)
 							{
 								check = -1;
+								user.space = message.space;
 							}
 						});
 						
@@ -945,7 +1049,7 @@ if(cluster.isWorker)
 						{
 							//console.log("login - ".gray + message.uuid + "|".gray + process.pid);
 							//var new_user = User.create(message.name, 0, -1, message.uuid);
-							var new_user = User.create(message.name, -1, message.id, message.uuid, 0);
+							var new_user = User.create(message.name, -1, message.id, message.uuid, message.space);
 							authenticated_users.addUser(new_user);
 						}
 					break;
@@ -1245,7 +1349,7 @@ if(cluster.isWorker)
 									var from_user;
 									type = json_data.type;
 									if ((from_user = authenticated_users.findUserBySocket(dsocket)) != null) {
-										process.send({type : 'inventory', to : 'master', uuid : from_user.uuid, type2 : type, index : msg});
+										process.send({type : 'inventory', to : 'master', uuid : from_user.uuid, type2 : type, index : msg, id : from_user.id});
 									}
 								break;
 								

@@ -20,7 +20,11 @@ function create(name, socket, id, uuid, space) {
 		hp: 20,
 		maxhp: 20,
 		damage: 10,
-		inventory: false
+		level : 1,
+		exp : 0,
+		maxexp : 100,
+		inventory: false,
+		gold : 0
 	};
 }
 
