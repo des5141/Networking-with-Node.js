@@ -399,7 +399,6 @@ if (status == NN.status_connected) {
                 var json_data = json_decode(message_body);
                 ds_list_clear(global.map_unit);
                 map = ds_map_find_value(json_data, "map");
-                //show_message(map);
                 width = ds_map_find_value(json_data, "width");
                 height = ds_map_find_value(json_data, "height");
                 player_max = ds_map_find_value(json_data, "player_max");
@@ -408,15 +407,19 @@ if (status == NN.status_connected) {
                 my_y = real(ds_map_find_value(json_data, "user_y"));
                 monster_max = ds_map_find_value(json_data, "monster_max");
                 monster_info = ds_map_find_value(json_data, "monster_info");
+                global.nickname = ds_map_find_value(json_data, "user_name");
+                global.hp = real(ds_map_find_value(json_data, "user_hp"));
+                global.maxhp = real(ds_map_find_value(json_data, "user_maxhp"));
                 obj_view.target_x = my_x*64+32;
                 obj_view.target_y = my_y*64+32;
-                //show_debug_message(string(my_x) + " , " + string(my_y));
+                if(instance_exists(obj_inventory))
+                    string_split(ds_map_find_value(json_data, "user_inventory"), "#", obj_inventory.list);
+                for(var i = 0; i &lt; 14; i++)
+                {
+                    obj_inventory.item[i] = real(ds_list_find_value(obj_inventory.list, i));
+                }
                 string_split(player_info, "#", global.map_players);
                 string_split(monster_info, "#", global.map_unit);
-                //show_debug_message(player_info)
-                //with(obj_tiles){instance_destroy()}
-                
-                
                 ds_map_destroy(json_data);
             break
             

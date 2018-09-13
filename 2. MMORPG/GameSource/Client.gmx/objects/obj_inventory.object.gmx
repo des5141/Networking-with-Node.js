@@ -33,6 +33,7 @@ inventory_select_item = 0
 inventory_select_town = 0
 item = arr(14);
 delay = 0;
+list = ds_list_create();
 </string>
           </argument>
         </arguments>
@@ -57,6 +58,29 @@ delay = 0;
 width = 150;
 height = 150;
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ds_list_destroy(list);
 </string>
           </argument>
         </arguments>
@@ -119,7 +143,7 @@ if(inventory)and(global.hp &gt;= 0)
     draw_set_halign(fa_left);
     draw_set_font(fnt_inventory)
     draw_text(view_xview[0]+15 + 10, view_yview[0]+67, "Lv " + string(global.level))
-    draw_text(view_xview[0]+15 + 10, view_yview[0]+90, "HP "+ string(global.hp) + "/" + string(20 + 5 * (global.level - 1) ))
+    draw_text(view_xview[0]+15 + 10, view_yview[0]+90, "HP "+ string(global.hp) + "/" + string(global.maxhp))
     draw_text(view_xview[0]+15 + 10, view_yview[0]+110, "G " + string(global.gold))
     
     if not(instance_exists(obj_dialoguer))

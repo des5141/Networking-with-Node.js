@@ -230,7 +230,34 @@ if(cluster.isMaster)
 						
 						//Loading the inventory
 						//Maximum size is 14
-						
+						var fs = require('fs');
+							fs.exists('ClientData/'+new_user.id+'_inventory.txt', function(exists){
+								if(exists)
+								{
+									// Can load
+									fs.readFile('ClientData/'+new_user.id+'_inventory.txt', 'utf8', function(err, data){
+										var split = require('string-split');
+										var strArray = split('#', data);
+										new_user.inventory = new Array();
+										for(i = 0; i < 14; i++)
+										{
+											new_user.inventory[i] = parseInt(strArray[i]);
+										}
+										console.log(new_user.inventory);
+									});
+								}else{
+									// Can't load. maybe new user.
+									var default_inventory_data = "0#0#0#0#0#0#0#0#0#0#0#0#0#0";
+									fs.writeFile('ClientData/'+new_user.id+'_inventory.txt', default_inventory_data, 'utf8', function(error){});
+									new_user.inventory = new Array();
+									for(i = 0; i < 14; i++)
+									{
+										new_user.inventory[i] = 0;
+									}
+									console.log(new_user.inventory);
+								}
+							});
+								
 						
 						authenticated_users.addUser(new_user);
 						for(var id in cluster.workers)
@@ -311,501 +338,556 @@ if(cluster.isMaster)
 	
 	//{ Server event - step
 		! function step() {
-			//{ Respawn Monster
-			for(i = 0; i < max_space; i++)
-			{
-				how_much_monster[i] = 0;
-			}
-			
-			map_monsters.each(function(monster) {
-				how_much_monster[monster.space]++;
-			});
-			
-			if(how_much_monster[0] < 1)
-			{
-				var respawn_x = 3;
-				var respawn_y = 3;
-				var can = true;
-				map_monsters.each(function(monster) {
-					if((monster.x == respawn_x)&&(monster.y == respawn_y))
-						can = false;
-				});
-				authenticated_users.each(function(user) {
-					if((user.x == respawn_x)&&(user.y == respawn_y))
-						can = false;
-				});
-				if(can)
-				{
-					var mon00 = Monster.create(1, 0, respawn_x, respawn_y);
-					map_monsters.addMonster(mon00);
-				}
-			}
-			//}
-			
-			//{ Send all
-			var player_info = new Array();
-			var player_max = new Array();
-			var monster_info = new Array();
-			var monster_max = new Array();
-			for(i = 0; i < max_space; i++)
-			{
-				player_info[i] = "";
-				player_max[i] = 0;
-				
-				monster_info[i] = "";
-				monster_max[i] = 0;
-			}
-			
-			//If monster go to out side
-			map_monsters.each(function(monster) {
-				try
-				{
-					if(array[monster.space][monster.y][monster.x] == 0)
+			var tasks = [
+				//Respawn Monster
+				function(callback){
+					for(i = 0; i < max_space; i++)
 					{
-						map_monsters.removeMonster(monster.uuid);
-					}
-				}catch(e){}
-			});
-			//}
-			
-			//If user died
-			authenticated_users.each(function(user) {
-				if(user.hp <= 0)
-				{
-					var i, j;
-					for(i = 0; i < array_height; i++)
-					{
-						for(j = 0; j < array_width; j++)
-						{
-							if(array[0][i][j] == "2")
-							{
-								user.x = j;
-								user.y = i;
-							}
-						}
-					}
-					user.hp = user.maxhp;
-				}
-			});
-			
-			//User data processing
-			authenticated_users.each(function(user) {
-				//Operation about user step
-				can = true;
-				doit = true;
-				switch(user.control)
-				{
-					case "none":
-						break;
-						
-					case "up":
-						if(user.y-1 >= 0)
-						{
-							if(array[user.space][user.y-1][user.x] != 0)
-							{
-								map_monsters.each(function(monster){
-									if((((user.y-1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
-									{
-										
-									}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y-1 == monster.y)){
-										can = false;
-										monster.hp-=10;
-										send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
-										if(monster.hp <= 0)
-										{
-											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
-											map_monsters.removeMonster(monster.uuid);
-										}
-									}
-								});
-								if(can)
-								{
-									doit = false;
-									user.y--;
-								}
-							}
-						}
-						break;
-						
-					case "down":
-						if(user.y+1 < array_height)
-						{
-							if(array[user.space][user.y+1][user.x] != 0)
-							{
-								map_monsters.each(function(monster){
-									if((((user.y+1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
-									{
-										
-									}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y+1 == monster.y)){
-										can = false;
-										monster.hp-=10;
-										send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
-										if(monster.hp <= 0)
-										{
-											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
-											map_monsters.removeMonster(monster.uuid);
-										}
-									}
-								});
-								if(can)
-								{
-									doit = false;
-									user.y++;
-								}
-							}
-						}
-						break;
-						
-					case "left":
-						if(user.x-1 >= 0)
-						{
-							if(array[user.space][user.y][user.x-1] != 0)
-							{
-								map_monsters.each(function(monster){
-									if((((user.x-1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
-									{
-										
-									}else if((monster.space == user.space)&&(monster.x == user.x-1)&&(user.y == monster.y)){
-										can = false;
-										monster.hp-=10;
-										user.xscale = -1;
-										send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
-										if(monster.hp <= 0)
-										{
-											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
-											map_monsters.removeMonster(monster.uuid);
-										}
-									}
-								});
-								if(can)
-								{
-									doit = false;
-									user.x--;
-									user.xscale = -1;
-								}
-							}
-						}
-						break;
-						
-					case "right":
-						if(user.x+1 < array_width)
-						{
-							if(array[user.space][user.y][user.x+1] != 0)
-							{
-								map_monsters.each(function(monster){
-									if((((user.x+1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
-									{
-										
-									}else if((monster.space == user.space)&&(monster.x == user.x+1)&&(user.y == monster.y)){
-										can = false;
-										monster.hp-=10;
-										user.xscale = 1;
-										send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
-										if(monster.hp <= 0)
-										{
-											send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
-											map_monsters.removeMonster(monster.uuid);
-										}
-									}
-								});
-								if(can)
-								{
-									doit = false;
-									user.x++;
-									user.xscale = 1;
-								}
-							}
-						}
-						break;
-				}
-				user.control = "";
-				
-				//Save the users state in packet
-				var x = user.x;
-				var y = user.y;
-				var xscale = user.xscale;
-				player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
-				player_max[user.space]++;
-			});
-			
-			//Monster reset
-			map_monsters.each(function(monster){
-				monster.active = 1;
-			});
-			
-			//Monster data processing
-			map_monsters.each(function(monster){
-				//Operation about monster step
-				authenticated_users.each(function(user) {
-					if((monster.active == 1)&&(monster.space == user.space))
-					{
-						var width = user.x-monster.x;
-						var height = user.y-monster.y;
-						if(width < 0)
-							width *= -1;
-						if(height < 0)
-							height *= -1;
-						if(sqrt(width*2+height*2) < monster.visual)
-						{
-							monster.active = 0;
-							// here to follow
-							if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
-							{
-								can = true;
-								map_monsters.each(function(monster2){
-									if(((monster2.x == monster.x-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
-									{
-										can = false;
-									}
-								});
-								if(can)
-								{
-									monster.x--;
-									monster.xscale = -1;
-								}
-							}else if((monster.x-1 == user.x)&&(monster.y == user.y))
-							{
-								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
-								user.hp -= monster.damage;
-								monster,xscale = -1;
-							}else
-							if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1)))
-							{
-								can = true;
-								map_monsters.each(function(monster2){
-									if(((monster2.x == monster.x+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
-									{
-										can = false;
-									}
-								});
-								if(can)
-								{
-									monster.x++;
-									monster.xscale = 1;
-								}
-							}else if((monster.x+1 == user.x)&&(monster.y == user.y))
-							{
-								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
-								user.hp -= monster.damage;
-								monster,xscale = 1;
-							}else
-							if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
-							{
-								can = true;
-								map_monsters.each(function(monster2){
-									if(((monster2.y == monster.y-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
-									{
-										can = false;
-									}
-								});
-								if(can)
-								{
-									monster.y--;
-								}
-							}else if((monster.x == user.x)&&(monster.y-1 == user.y))
-							{
-								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
-								user.hp -= monster.damage;
-							}else
-							if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
-								can = true;
-								map_monsters.each(function(monster2){
-									if(((monster2.y == monster.y+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
-									{
-										can = false;
-									}
-								});
-								if(can)
-								{
-									monster.y++;
-								}
-							}else if((monster.x == user.x)&&(monster.y+1 == user.y))
-							{
-								send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-								send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
-								user.hp -= monster.damage;
-							}
-						}
+						how_much_monster[i] = 0;
 					}
 					
-				});
-			});
-			
-			//Monster automatic moving
-			map_monsters.each(function(monster){
-				if(monster.active == 1)
-				{
-					try{
-						if(array != false)
-						{
-							while(1)
-							{
-								var doing = getRandomInt(0, 7);
-								switch(doing)
-								{
-									case 0:
-										map_monsters.each(function(monster2){
-											if((monster2.x == monster.x-1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
-												monster.active = 0;
-										});
-										authenticated_users.each(function(user3) {
-											if((user3.x == monster.x-1)&&(user3.y == monster.y)&&(user3.space == monster.space))
-												monster.active = 0;
-										});
-										if(monster.x-1 < 0)
-											monster.active = 0;
-										
-										if(monster.x-1 >= 0)
-										{
-											if(array[monster.space][monster.y][monster.x-1] != 1)
-												monster.active = 0;
-										}
-											
-										if(monster.active == 1)
-										{
-											monster.x = monster.x - 1;
-											monster.xscale = -1;
-										}
-									break;
-										
-									case 1:
-										map_monsters.each(function(monster2){
-											if((monster2.x == monster.x+1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
-												monster.active = 0;
-										});
-										authenticated_users.each(function(user3) {
-											if((user3.x == monster.x+1)&&(user3.y == monster.y)&&(user3.space == monster.space))
-												monster.active = 0;
-										});
-										if(monster.x+1 >= array_width)
-											monster.active = 0;
-										
-										if(monster.x+1 < array_width)
-										{
-											if(array[monster.space][monster.y][monster.x+1] != 1)
-												monster.active = 0;
-										}
-										if(monster.active == 1)
-										{
-											monster.x = monster.x + 1;
-											monster.xscale = 1;
-										}
-									break;
-										
-									case 2:
-										map_monsters.each(function(monster2){
-											if((monster2.x == monster.x)&&(monster2.y == monster.y-1)&&(monster2.space == monster.space))
-												monster.active = 0;
-										});
-										authenticated_users.each(function(user3) {
-											if((user3.x == monster.x)&&(user3.y == monster.y-1)&&(user3.space == monster.space))
-												monster.active = 0;
-										});
-										if(monster.y-1 < 0)
-											monster.active = 0;
-										
-											
-										if(monster.y-1 >= 0)
-										{
-											if(array[monster.space][monster.y-1][monster.x] != 1)
-												monster.active = 0;
-										}
-											
-										if(monster.active == 1)
-											monster.y = monster.y - 1;
-									break;
-										
-									case 3:
-										map_monsters.each(function(monster2){
-											if((monster2.x == monster.x)&&(monster2.y == monster.y+1)&&(monster2.space == monster.space))
-												monster.active = 0;
-										});
-										authenticated_users.each(function(user3) {
-											if((user3.x == monster.x)&&(user3.y == monster.y+1)&&(user3.space == monster.space))
-												monster.active = 0;
-										});
-										if(monster.y+1 >= array_height)
-											monster.active = 0;
-											
-										if(monster.y+1 < array_height)
-										{
-											if(array[monster.space][monster.y+1][monster.x] != 1)
-												monster.active = 0;
-										}
-										if(monster.active == 1)
-											monster.y = monster.y + 1;
-									break;
-								}
-								
-								if(monster.active == 1)
-									break;
-								else
-									monster.active = 1;
-							}
-						}
-					}catch(e){}
-				}
-			});
-			
-			//Export the monster data in packet
-			map_monsters.each(function(monster){
-				//Export the monsters states in packet
-				var x = monster.x;
-				var y = monster.y;
-				var type = monster.type;
-				var xscale = monster.xscale;
-				monster_info[monster.space] += type.toString() + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
-				monster_max[monster.space]++;
-			});
-				
-			authenticated_users.each(function(user) {
-				var user_map = "";
-				var i, j;
-				var base_x = user.x - 7;
-				var base_y = user.y - 7;
-				for(i = 0; i < 15; i++)
-				{
-					for(j = 0; j < 15; j++)
+					map_monsters.each(function(monster) {
+						how_much_monster[monster.space]++;
+					});
+					
+					if(how_much_monster[0] < 1)
 					{
-						if((user.y-7+i >= 0)&&(user.y-7+i < array_height)&&(user.x-7+j >= 0)&&(user.x-7+j < array_width))
+						var respawn_x = 3;
+						var respawn_y = 3;
+						var can = true;
+						map_monsters.each(function(monster) {
+							if((monster.x == respawn_x)&&(monster.y == respawn_y))
+								can = false;
+						});
+						authenticated_users.each(function(user) {
+							if((user.x == respawn_x)&&(user.y == respawn_y))
+								can = false;
+						});
+						if(can)
 						{
-							//This is map inside
-							user_map += array[user.space][user.y-7+i][user.x-7+j];
-						}else{
-							//This is map outside
-							user_map += "0";
+							var mon00 = Monster.create(1, 0, respawn_x, respawn_y);
+							map_monsters.addMonster(mon00);
 						}
 					}
+					callback(null, 'Respawn Monster');
 				}
-				
-				
-				var json_string = JSON.stringify({
-					map: array_save[user.space],
-					width: array_width,
-					height: array_height,
-					player_max: player_max[user.space],
-					player_info : player_info[user.space],
-					monster_max : monster_max[user.space],
-					monster_info : monster_info[user.space],
-					user_x : user.x,
-					user_y : user.y
+				,
+				//Send all
+				function(callback){
+					player_info = new Array();
+					player_max = new Array();
+					monster_info = new Array();
+					monster_max = new Array();
+					for(i = 0; i < max_space; i++)
+					{
+						player_info[i] = "";
+						player_max[i] = 0;
+						
+						monster_info[i] = "";
+						monster_max[i] = 0;
+					}
+					
+					//If monster go to out side
+					map_monsters.each(function(monster) {
+						try
+						{
+							if(array[monster.space][monster.y][monster.x] == 0)
+							{
+								map_monsters.removeMonster(monster.uuid);
+							}
+						}catch(e){}
+					});
+					callback(null, 'Send All');
+				}
+				,
+				//User data processing
+				function(callback){
+					authenticated_users.each(function(user) {
+					//Operation about user step
+					can = true;
+					doit = true;
+					switch(user.control)
+					{
+						case "none":
+							break;
+							
+						case "up":
+							if(user.y-1 >= 0)
+							{
+								if(array[user.space][user.y-1][user.x] != 0)
+								{
+									map_monsters.each(function(monster){
+										if((((user.y-1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
+										{
+											
+										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y-1 == monster.y)){
+											can = false;
+											monster.hp-=10;
+											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											if(monster.hp <= 0)
+											{
+												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
+												map_monsters.removeMonster(monster.uuid);
+											}
+										}
+									});
+									if(can)
+									{
+										doit = false;
+										user.y--;
+									}
+								}
+							}
+							break;
+							
+						case "down":
+							if(user.y+1 < array_height)
+							{
+								if(array[user.space][user.y+1][user.x] != 0)
+								{
+									map_monsters.each(function(monster){
+										if((((user.y+1 != monster.y)&&(user.x == monster.x))||(user.x != monster.x))&&(doit))
+										{
+											
+										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y+1 == monster.y)){
+											can = false;
+											monster.hp-=10;
+											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											if(monster.hp <= 0)
+											{
+												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
+												map_monsters.removeMonster(monster.uuid);
+											}
+										}
+									});
+									if(can)
+									{
+										doit = false;
+										user.y++;
+									}
+								}
+							}
+							break;
+							
+						case "left":
+							if(user.x-1 >= 0)
+							{
+								if(array[user.space][user.y][user.x-1] != 0)
+								{
+									map_monsters.each(function(monster){
+										if((((user.x-1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
+										{
+											
+										}else if((monster.space == user.space)&&(monster.x == user.x-1)&&(user.y == monster.y)){
+											can = false;
+											monster.hp-=10;
+											user.xscale = -1;
+											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											if(monster.hp <= 0)
+											{
+												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
+												map_monsters.removeMonster(monster.uuid);
+											}
+										}
+									});
+									if(can)
+									{
+										doit = false;
+										user.x--;
+										user.xscale = -1;
+									}
+								}
+							}
+							break;
+							
+						case "right":
+							if(user.x+1 < array_width)
+							{
+								if(array[user.space][user.y][user.x+1] != 0)
+								{
+									map_monsters.each(function(monster){
+										if((((user.x+1 != monster.x)&&(user.y == monster.y))||(user.y != monster.y))&&(doit))
+										{
+											
+										}else if((monster.space == user.space)&&(monster.x == user.x+1)&&(user.y == monster.y)){
+											can = false;
+											monster.hp-=10;
+											user.xscale = 1;
+											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											if(monster.hp <= 0)
+											{
+												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
+												map_monsters.removeMonster(monster.uuid);
+											}
+										}
+									});
+									if(can)
+									{
+										doit = false;
+										user.x++;
+										user.xscale = 1;
+									}
+								}
+							}
+							break;
+					}
+					user.control = "";
 				});
-				//console.log(user_map);
-				//send_id_message(user.socket, outsig_user_map, json_string);
-				
-				for(var id in cluster.workers)
-				{
-					cluster.workers[id].send({type : 'map', to : 'worker', json : json_string, uuid : user.uuid});
+				callback(null, 'User data processing');
 				}
-			});
-			
-			//While
-			setTimeout(function() {
+				,
+				//Monster reset
+				function(callback){
+					map_monsters.each(function(monster){
+						monster.active = 1;
+					});
+					callback(null, 'Monster reset');
+				}
+				,
+				//Monster data processing
+				function(callback){
+					map_monsters.each(function(monster){
+					//Operation about monster step
+					authenticated_users.each(function(user) {
+						if((monster.active == 1)&&(monster.space == user.space))
+						{
+							var width = user.x-monster.x;
+							var height = user.y-monster.y;
+							if(width < 0)
+								width *= -1;
+							if(height < 0)
+								height *= -1;
+							if(sqrt(width*2+height*2) < monster.visual)
+							{
+								monster.active = 0;
+								// here to follow
+								if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
+								{
+									can = true;
+									map_monsters.each(function(monster2){
+										if(((monster2.x == monster.x-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+										{
+											can = false;
+										}
+									});
+									if(can)
+									{
+										monster.x--;
+										monster.xscale = -1;
+									}
+								}else if((monster.x-1 == user.x)&&(monster.y == user.y))
+								{
+									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
+									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									user.hp -= monster.damage;
+									monster,xscale = -1;
+								}else
+								if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1)))
+								{
+									can = true;
+									map_monsters.each(function(monster2){
+										if(((monster2.x == monster.x+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+										{
+											can = false;
+										}
+									});
+									if(can)
+									{
+										monster.x++;
+										monster.xscale = 1;
+									}
+								}else if((monster.x+1 == user.x)&&(monster.y == user.y))
+								{
+									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
+									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									user.hp -= monster.damage;
+									monster,xscale = 1;
+								}else
+								if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
+								{
+									can = true;
+									map_monsters.each(function(monster2){
+										if(((monster2.y == monster.y-1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+										{
+											can = false;
+										}
+									});
+									if(can)
+									{
+										monster.y--;
+									}
+								}else if((monster.x == user.x)&&(monster.y-1 == user.y))
+								{
+									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
+									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									user.hp -= monster.damage;
+								}else
+								if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
+									can = true;
+									map_monsters.each(function(monster2){
+										if(((monster2.y == monster.y+1)&&(monster2.y == monster.y))&&(monster.space == monster2.space))
+										{
+											can = false;
+										}
+									});
+									if(can)
+									{
+										monster.y++;
+									}
+								}else if((monster.x == user.x)&&(monster.y+1 == user.y))
+								{
+									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
+									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									user.hp -= monster.damage;
+								}
+							}
+						}
+						
+					});
+				});
+					callback(null, 'Monster data processing');
+				}
+				,
+				//Monster automatic moving
+				function(callback){
+					map_monsters.each(function(monster){
+					if(monster.active == 1)
+					{
+						try{
+							if(array != false)
+							{
+								while(1)
+								{
+									var doing = getRandomInt(0, 7);
+									switch(doing)
+									{
+										case 0:
+											map_monsters.each(function(monster2){
+												if((monster2.x == monster.x-1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+													monster.active = 0;
+											});
+											authenticated_users.each(function(user3) {
+												if((user3.x == monster.x-1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+													monster.active = 0;
+											});
+											if(monster.x-1 < 0)
+												monster.active = 0;
+											
+											if(monster.x-1 >= 0)
+											{
+												if(array[monster.space][monster.y][monster.x-1] != 1)
+													monster.active = 0;
+											}
+												
+											if(monster.active == 1)
+											{
+												monster.x = monster.x - 1;
+												monster.xscale = -1;
+											}
+										break;
+											
+										case 1:
+											map_monsters.each(function(monster2){
+												if((monster2.x == monster.x+1)&&(monster2.y == monster.y)&&(monster2.space == monster.space))
+													monster.active = 0;
+											});
+											authenticated_users.each(function(user3) {
+												if((user3.x == monster.x+1)&&(user3.y == monster.y)&&(user3.space == monster.space))
+													monster.active = 0;
+											});
+											if(monster.x+1 >= array_width)
+												monster.active = 0;
+											
+											if(monster.x+1 < array_width)
+											{
+												if(array[monster.space][monster.y][monster.x+1] != 1)
+													monster.active = 0;
+											}
+											if(monster.active == 1)
+											{
+												monster.x = monster.x + 1;
+												monster.xscale = 1;
+											}
+										break;
+											
+										case 2:
+											map_monsters.each(function(monster2){
+												if((monster2.x == monster.x)&&(monster2.y == monster.y-1)&&(monster2.space == monster.space))
+													monster.active = 0;
+											});
+											authenticated_users.each(function(user3) {
+												if((user3.x == monster.x)&&(user3.y == monster.y-1)&&(user3.space == monster.space))
+													monster.active = 0;
+											});
+											if(monster.y-1 < 0)
+												monster.active = 0;
+											
+												
+											if(monster.y-1 >= 0)
+											{
+												if(array[monster.space][monster.y-1][monster.x] != 1)
+													monster.active = 0;
+											}
+												
+											if(monster.active == 1)
+												monster.y = monster.y - 1;
+										break;
+											
+										case 3:
+											map_monsters.each(function(monster2){
+												if((monster2.x == monster.x)&&(monster2.y == monster.y+1)&&(monster2.space == monster.space))
+													monster.active = 0;
+											});
+											authenticated_users.each(function(user3) {
+												if((user3.x == monster.x)&&(user3.y == monster.y+1)&&(user3.space == monster.space))
+													monster.active = 0;
+											});
+											if(monster.y+1 >= array_height)
+												monster.active = 0;
+												
+											if(monster.y+1 < array_height)
+											{
+												if(array[monster.space][monster.y+1][monster.x] != 1)
+													monster.active = 0;
+											}
+											if(monster.active == 1)
+												monster.y = monster.y + 1;
+										break;
+									}
+									
+									if(monster.active == 1)
+										break;
+									else
+										monster.active = 1;
+								}
+							}
+						}catch(e){}
+					}
+				});
+					callback(null, 'Monster automatic moving');
+				}
+				,
+				//If user died
+				function(callback){
+					authenticated_users.each(function(user) {
+					if(user.hp <= 0)
+					{
+						var i, j;
+						for(i = 0; i < array_height; i++)
+						{
+							for(j = 0; j < array_width; j++)
+							{
+								if(array[user.space][i][j] == "2")
+								{
+									user.x = j;
+									user.y = i;
+								}
+							}
+						}
+						user.hp = user.maxhp;
+					}
+				});
+				callback(null, 'If player died');
+				}
+				,
+				//If monster died
+				function(callback){
+					map_monsters.each(function(monster) {
+						if(monster.hp <= 0)
+							map_monsters.removeMonster(monster.uuid);
+					});
+					callback(null, 'If monster died');
+				}
+				,
+				//Export the monster data in packet
+				function(callback){
+					map_monsters.each(function(monster){
+					//Export the monsters states in packet
+					var x = monster.x;
+					var y = monster.y;
+					var type = monster.type;
+					var xscale = monster.xscale;
+					monster_info[monster.space] += type.toString() + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
+					monster_max[monster.space]++;
+				});
+				callback(null, 'Export the monster data in packet');
+				}
+				,
+				//Export the user data in packet
+				function(callback){
+					authenticated_users.each(function(user) {
+						//Save the users state in packet
+						var x = user.x;
+						var y = user.y;
+						var xscale = user.xscale;
+						player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
+						player_max[user.space]++;
+						
+						var user_map = "";
+						var i, j;
+						var base_x = user.x - 7;
+						var base_y = user.y - 7;
+						for(i = 0; i < 15; i++)
+						{
+							for(j = 0; j < 15; j++)
+							{
+								if((user.y-7+i >= 0)&&(user.y-7+i < array_height)&&(user.x-7+j >= 0)&&(user.x-7+j < array_width))
+								{
+									//This is map inside
+									user_map += array[user.space][user.y-7+i][user.x-7+j];
+								}else{
+									//This is map outside
+									user_map += "0";
+								}
+							}
+						}
+						
+						var inventory_send = "";
+						for(i = 0; i < 14; i++)
+						{
+							j = user.inventory[i];
+							inventory_send += j.toString()+"#";
+						}
+						
+						var json_string = JSON.stringify({
+							map: array_save[user.space],
+							width: array_width,
+							height: array_height,
+							player_max: player_max[user.space],
+							player_info : player_info[user.space],
+							monster_max : monster_max[user.space],
+							monster_info : monster_info[user.space],
+							user_x : user.x,
+							user_y : user.y,
+							user_hp : user.hp,
+							user_maxhp : user.maxhp,
+							user_name : user.name,
+							user_inventory : inventory_send
+						});
+						//console.log(user_map);
+						//send_id_message(user.socket, outsig_user_map, json_string);
+						
+						for(var id in cluster.workers)
+						{
+							cluster.workers[id].send({type : 'map', to : 'worker', json : json_string, uuid : user.uuid});
+						}
+					});
+						callback(null, 'Export the user data in packet');
+				}
+				,
+				//While
+				function(callback){
+				setTimeout(function() {
 				step();
 			}, 500);
+			callback(null, 'return');
+			}
+			];
+			
+			async.series(tasks, function (err, results) {
+				console.log("Master process working order - - - - - - - - - - - -".inverse);
+				console.log(Colors.gray(results));
+			});
 		}()
 	//}
 	

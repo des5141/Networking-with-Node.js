@@ -19,7 +19,8 @@ function create(name, socket, id, uuid, space) {
 		xscale : 1,
 		hp: 20,
 		maxhp: 20,
-		damage: 10
+		damage: 10,
+		inventory: false
 	};
 }
 

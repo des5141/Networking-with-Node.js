@@ -4,7 +4,7 @@ function create(type, space, x, y) {
 	switch(type)
 	{
 		case 0:
-			maxhp = 21;
+			maxhp = 20;
 			damage = 5;
 			visual = 2.2;
 		break;
