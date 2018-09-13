@@ -127,6 +127,7 @@
       <object>objects\old_obj_eff1</object>
       <object>objects\obj_eff2</object>
       <object>objects\obj_eff2_part1</object>
+      <object>objects\obj_eff3</object>
     </objects>
     <objects name="Keyboard">
       <object>objects\obj_keyboard</object>

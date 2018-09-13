@@ -126,8 +126,8 @@ global.con = 0;
 global.wis = 0;
 global.state_point = 0;
 global.version_checked = 1;
-global._font = font_add_sprite_ext(sprFont, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, 57)
-global._font2 = font_add_sprite_ext(sprFontBorder, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, 57)
+global._font = font_add_sprite_ext(sprFont, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, -1)
+global._font2 = font_add_sprite_ext(sprFontBorder, '!"※$%&amp;|()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, -1)
 </string>
           </argument>
         </arguments>
@@ -410,13 +410,17 @@ if (status == NN.status_connected) {
                 global.nickname = ds_map_find_value(json_data, "user_name");
                 global.hp = real(ds_map_find_value(json_data, "user_hp"));
                 global.maxhp = real(ds_map_find_value(json_data, "user_maxhp"));
+                global.gold = real(ds_map_find_value(json_data, "user_gold"));
+                global.level = real(ds_map_find_value(json_data, "user_level"));
                 obj_view.target_x = my_x*64+32;
                 obj_view.target_y = my_y*64+32;
                 if(instance_exists(obj_inventory))
-                    string_split(ds_map_find_value(json_data, "user_inventory"), "#", obj_inventory.list);
-                for(var i = 0; i &lt; 14; i++)
                 {
-                    obj_inventory.item[i] = real(ds_list_find_value(obj_inventory.list, i));
+                    string_split(ds_map_find_value(json_data, "user_inventory"), "#", obj_inventory.list);
+                    for(var i = 0; i &lt; 14; i++)
+                    {
+                        obj_inventory.item[i] = real(ds_list_find_value(obj_inventory.list, i));
+                    }
                 }
                 string_split(player_info, "#", global.map_players);
                 string_split(monster_info, "#", global.map_unit);
@@ -441,6 +445,14 @@ if (status == NN.status_connected) {
                     
                     case "obj_eff2":
                         instance_create(data_x, data_y, obj_eff2);
+                        var ins = instance_create(data_x + 32, data_y + 32, obj_eff3);
+                        ins.value = "-" + string(ds_map_find_value(json_data, "value"));
+                        if(data_x+32 == obj_view.target_x)and(data_y+32 == obj_view.target_y)
+                        {
+                            ins.color = make_colour_rgb(255, 108, 108);
+                        }else{
+                            ins.color = make_colour_rgb(153, 224, 0);
+                        }
                     break
                 }
                 

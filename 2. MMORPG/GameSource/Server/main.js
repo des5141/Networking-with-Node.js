@@ -284,13 +284,14 @@ if(cluster.isMaster)
 									new_user.exp = parseInt(strArray2[7]);
 									new_user.maxexp = parseInt(strArray2[8]);
 									new_user.level = parseInt(strArray2[9]);
+									new_user.gold = parseInt(strArray2[10]);
 									callback(null, "");
 								});
 							}else{
 								// Can't load. maybe new user
 								default_user_data = (new_user.space).toString() + "#" + (new_user.x).toString() + "#" + (new_user.y).toString() + "#" + (new_user.xscale).toString() + "#";
 								default_user_data += (new_user.damage).toString() + "#" + (new_user.hp).toString() + "#" + (new_user.maxhp).toString() + "#" + (new_user.exp).toString() + "#" + (new_user.maxexp).toString() + "#"
-								default_user_data += (new_user.level).toString() + "#" 
+								default_user_data += (new_user.level).toString() + "#" + (new_user.gold).toString() + "#" 
 								fs.writeFile('ClientData/'+new_user.id+'_status.txt', default_user_data, 'utf8', function(error){});
 								callback(null, "");
 							}
@@ -304,7 +305,8 @@ if(cluster.isMaster)
 						}
 						authenticated_users.addUser(new_user);
 						callback(null, "");
-						}];
+						}
+						];
 						
 						async.series(tasks, function (err, results) {});
 						//}
@@ -411,8 +413,6 @@ if(cluster.isMaster)
 							break;
 						}
 						var fs = require('fs');
-						//fs.unlink('ClientData/'+message.id+'_inventory.txt', function (err) { if (err) throw err; console.log('successfully deleted text2.txt'); });
-						
 						temp_inventory_data = "";
 						authenticated_users.each(function(user) {
 							if(user.uuid == message.uuid)
@@ -545,7 +545,7 @@ if(cluster.isMaster)
 										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y-1 == monster.y)){
 											can = false;
 											monster.hp-=user.damage;
-											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											send_obj(-1, "obj_eff2", user.damage, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
 												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
@@ -574,7 +574,7 @@ if(cluster.isMaster)
 										}else if((monster.space == user.space)&&(monster.x == user.x)&&(user.y+1 == monster.y)){
 											can = false;
 											monster.hp-=user.damage;
-											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											send_obj(-1, "obj_eff2", user.damage, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
 												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
@@ -604,7 +604,7 @@ if(cluster.isMaster)
 											can = false;
 											monster.hp-=user.damage;
 											user.xscale = -1;
-											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											send_obj(-1, "obj_eff2", user.damage, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
 												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
@@ -635,7 +635,7 @@ if(cluster.isMaster)
 											can = false;
 											monster.hp-=user.damage;
 											user.xscale = 1;
-											send_obj(-1, "obj_eff2", -1, monster.space, monster.x, monster.y);
+											send_obj(-1, "obj_eff2", user.damage, monster.space, monster.x, monster.y);
 											if(monster.hp <= 0)
 											{
 												send_obj(-1, "obj_eff1", -1, monster.space, monster.x, monster.y);
@@ -681,7 +681,6 @@ if(cluster.isMaster)
 								height *= -1;
 							if(sqrt(width*2+height*2) < monster.visual)
 							{
-								monster.active = 0;
 								// here to follow
 								if((monster.x > user.x)&&((((monster.x-1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x-1] == 1)))
 								{
@@ -692,17 +691,25 @@ if(cluster.isMaster)
 											can = false;
 										}
 									});
+									authenticated_users.each(function(user2) {
+										if(((user2.x == monster.x-1)&&(user2.y == monster.y))&&(user2.space == monster.space))
+										{
+											can = false;
+										}
+									});
 									if(can)
 									{
 										monster.x--;
 										monster.xscale = -1;
+										monster.active = 0;
 									}
 								}else if((monster.x-1 == user.x)&&(monster.y == user.y))
 								{
 									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									send_obj(-1, "obj_eff2",  monster.damage, user.space, user.x, user.y);
 									user.hp -= monster.damage;
-									monster,xscale = -1;
+									monster.xscale = -1;
+									monster.active = 0;
 								}else
 								if((monster.x < user.x)&&((((monster.x+1 != user.x)&&(monster.y == user.y))||((monster.y != user.y)))&&(array[monster.space][monster.y][monster.x+1] == 1)))
 								{
@@ -713,17 +720,25 @@ if(cluster.isMaster)
 											can = false;
 										}
 									});
+									authenticated_users.each(function(user2) {
+										if(((user2.x == monster.x+1)&&(user2.y == monster.y))&&(user2.space == monster.space))
+										{
+											can = false;
+										}
+									});
 									if(can)
 									{
 										monster.x++;
 										monster.xscale = 1;
+										monster.active = 0;
 									}
 								}else if((monster.x+1 == user.x)&&(monster.y == user.y))
 								{
 									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									send_obj(-1, "obj_eff2", monster.damage, user.space, user.x, user.y);
 									user.hp -= monster.damage;
-									monster,xscale = 1;
+									monster.xscale = 1;
+									monster.active = 0;
 								}else
 								if((monster.y > user.y)&&((((monster.y-1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y-1][monster.x] == 1)))
 								{
@@ -734,15 +749,23 @@ if(cluster.isMaster)
 											can = false;
 										}
 									});
+									authenticated_users.each(function(user2) {
+										if(((user2.x == monster.x)&&(user2.y == monster.y-1))&&(user2.space == monster.space))
+										{
+											can = false;
+										}
+									});
 									if(can)
 									{
 										monster.y--;
+										monster.active = 0;
 									}
 								}else if((monster.x == user.x)&&(monster.y-1 == user.y))
 								{
 									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									send_obj(-1, "obj_eff2",  monster.damage, user.space, user.x, user.y);
 									user.hp -= monster.damage;
+									monster.active = 0;
 								}else
 								if((monster.y < user.y)&&((((monster.y+1 != user.y)&&(monster.x == user.x))||((monster.x != user.x)))&&(array[monster.space][monster.y+1][monster.x] == 1))){
 									can = true;
@@ -752,15 +775,23 @@ if(cluster.isMaster)
 											can = false;
 										}
 									});
+									authenticated_users.each(function(user2) {
+										if(((user2.x == monster.x)&&(user2.y == monster.y+1))&&(user2.space == monster.space))
+										{
+											can = false;
+										}
+									});
 									if(can)
 									{
 										monster.y++;
+										monster.active = 0;
 									}
 								}else if((monster.x == user.x)&&(monster.y+1 == user.y))
 								{
 									send_obj(user.uuid, "obj_shake", 20, user.space, 0, 0);
-									send_obj(-1, "obj_eff2", -1, user.space, user.x, user.y);
+									send_obj(-1, "obj_eff2",  monster.damage, user.space, user.x, user.y);
 									user.hp -= monster.damage;
+									monster.active = 0;
 								}
 							}
 						}
@@ -935,7 +966,7 @@ if(cluster.isMaster)
 				callback(null, 'Export the monster data in packet');
 				}
 				,
-				//Export the user data in packet
+				//User data in line with
 				function(callback){
 					authenticated_users.each(function(user) {
 						//Save the users state in packet
@@ -944,7 +975,13 @@ if(cluster.isMaster)
 						var xscale = user.xscale;
 						player_info[user.space] += user.name + "#" + x.toString() + "#" + y.toString() + "#" + xscale.toString() + "#";
 						player_max[user.space]++;
-						
+					});
+					callback(null, 'User data in line with');
+				}
+				,
+				//Export the user data in packet
+				function(callback){
+					authenticated_users.each(function(user) {
 						var user_map = "";
 						var i, j;
 						var base_x = user.x - 7;
@@ -984,7 +1021,9 @@ if(cluster.isMaster)
 							user_hp : user.hp,
 							user_maxhp : user.maxhp,
 							user_name : user.name,
-							user_inventory : inventory_send
+							user_inventory : inventory_send,
+							user_gold : user.gold,
+							user_level : user.level
 						});
 						//console.log(user_map);
 						//send_id_message(user.socket, outsig_user_map, json_string);
@@ -1003,7 +1042,7 @@ if(cluster.isMaster)
 					authenticated_users.each(function(user) {
 						temp_user_data = (user.space).toString() + "#" + (user.x).toString() + "#" + (user.y).toString() + "#" + (user.xscale).toString() + "#";
 						temp_user_data += (user.damage).toString() + "#" + (user.hp).toString() + "#" + (user.maxhp).toString() + "#" + (user.exp).toString() + "#" + (user.maxexp).toString() + "#"
-						temp_user_data += (user.level).toString() + "#" 
+						temp_user_data += (user.level).toString() + "#" + (user.gold).toString() + "#" 
 						fs.writeFile('ClientData/'+user.id+'_status.txt', temp_user_data, 'utf8', function(error){});
 					});
 					callback(null, 'User staus saved');
@@ -1013,7 +1052,7 @@ if(cluster.isMaster)
 				function(callback){
 				setTimeout(function() {
 				step();
-			}, 500);
+			}, 300);
 			callback(null, 'return');
 			}
 			];
@@ -1047,8 +1086,6 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							//console.log("login - ".gray + message.uuid + "|".gray + process.pid);
-							//var new_user = User.create(message.name, 0, -1, message.uuid);
 							var new_user = User.create(message.name, -1, message.id, message.uuid, message.space);
 							authenticated_users.addUser(new_user);
 						}
@@ -1065,7 +1102,6 @@ if(cluster.isWorker)
 						
 						if(check == 1)
 						{
-							//console.log("quit - ".gray + message.uuid + "|".gray + process.pid);
 							authenticated_users.removeUser(message.uuid);
 						}
 					break;
@@ -1134,8 +1170,9 @@ if(cluster.isWorker)
 			id: id,
 			msg: msg
 		});
-		
+		try{
 		sock.send("㏆" + json_string.length + "®" + json_string);
+		}catch(e){}
 		}
 	//}
 	//{ Message processing

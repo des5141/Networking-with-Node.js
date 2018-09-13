@@ -203,28 +203,28 @@ if(inventory)and(global.hp &gt;= 0)
         if(inventory_item == "state")and(inventory_cursor &gt;= 0)
         {
             draw_set_color(c_white)
-            draw_rectangle(view_xview[0]+90, view_yview[0]+40, view_xview[0]+270, view_yview[0]+140, false)
+            draw_rectangle(view_xview[0]+200+15, view_yview[0]+40, view_xview[0]+600, view_yview[0]+400, false)
             draw_set_color(c_black)
-            draw_rectangle(view_xview[0]+90 + 3, view_yview[0]+40 + 3, view_xview[0]+270 - 3, view_yview[0]+140 - 3, false)
+            draw_rectangle(view_xview[0]+200+15 + 3, view_yview[0]+40 + 3, view_xview[0]+600 - 3, view_yview[0]+400 - 3, false)
             
             draw_set_color(c_white)
             
             draw_set_font(fnt_inventory)
-            draw_text(view_xview[0]+105, view_yview[0]+50-2, "힘 " + string(global.str))
-            draw_text(view_xview[0]+105, view_yview[0]+65-2, "지능 " + string(global.int))
-            draw_text(view_xview[0]+105, view_yview[0]+80-2, "민첩 " + string(global.dex))
-            draw_text(view_xview[0]+105, view_yview[0]+95-2, "체력 " + string(global.con))
-            draw_text(view_xview[0]+105, view_yview[0]+110-2, "지혜 " + string(global.wis))
+            draw_text(view_xview[0]+250, view_yview[0]+50, "힘 " + string(global.str))
+            draw_text(view_xview[0]+250, view_yview[0]+70, "지능 " + string(global.int))
+            draw_text(view_xview[0]+250, view_yview[0]+90, "민첩 " + string(global.dex))
+            draw_text(view_xview[0]+250, view_yview[0]+110, "체력 " + string(global.con))
+            draw_text(view_xview[0]+250, view_yview[0]+130, "지혜 " + string(global.wis))
             
-            draw_text(view_xview[0]+95, view_yview[0]+125, "남은 스탯 포인트 : " + string(global.state_point))
+            draw_text(view_xview[0]+250, view_yview[0]+160, "남은 스탯 포인트 : " + string(global.state_point))
         }
         
         if(inventory_item == "skill")and(inventory_cursor &gt;= 0)
         {
             draw_set_color(c_white)
-            draw_rectangle(view_xview[0]+90, view_yview[0]+40, view_xview[0]+270, view_yview[0]+220, false)
+            draw_rectangle(view_xview[0]+200+15, view_yview[0]+40, view_xview[0]+600, view_yview[0]+400, false)
             draw_set_color(c_black)
-            draw_rectangle(view_xview[0]+90 + 3, view_yview[0]+40 + 3, view_xview[0]+270 - 3, view_yview[0]+220 - 3, false)
+            draw_rectangle(view_xview[0]+200+15 + 3, view_yview[0]+40 + 3, view_xview[0]+600 - 3, view_yview[0]+400 - 3, false)
         }
     }
 }
