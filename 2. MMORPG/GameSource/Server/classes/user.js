@@ -19,12 +19,14 @@ function create(name, socket, id, uuid, space) {
 		xscale : 1,
 		hp: 20,
 		maxhp: 20,
-		damage: 10,
+		damage: 5,
 		level : 1,
 		exp : 0,
 		maxexp : 100,
 		inventory: false,
-		gold : 0
+		gold : 0,
+		delay_time : 2,
+		delay : 0
 	};
 }
 

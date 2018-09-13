@@ -2,6 +2,7 @@
 switch(argument0)
 {
     case 0:
+        return "귀여운 토끼";
         break;
         
     case 1:

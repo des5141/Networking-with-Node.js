@@ -29,6 +29,7 @@
     <sprite>sprites\spr_cancel_button</sprite>
     <sprite>sprites\sprite15</sprite>
     <sprite>sprites\sprite16</sprite>
+    <sprite>sprites\sprite27</sprite>
     <sprite>sprites\spr_boom</sprite>
     <sprite>sprites\spr_boom2</sprite>
     <sprite>sprites\spr_attack</sprite>
@@ -96,6 +97,7 @@
     </scripts>
     <script>scripts\send_operation.gml</script>
     <script>scripts\monster_name.gml</script>
+    <script>scripts\monster_sprite.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>

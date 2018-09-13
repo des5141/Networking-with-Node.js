@@ -7,12 +7,14 @@ function create(type, space, x, y) {
 			maxhp = 20;
 			damage = 5;
 			visual = 2.2;
+			delay_time = 10;
 		break;
 		
 		case 1:
 			maxhp = 40;
 			damage = 10;
-			visual = 2.2
+			visual = 2.2;
+			delay_time = 5;
 		break;
 		
 		default:
@@ -33,7 +35,9 @@ function create(type, space, x, y) {
 		visual: visual,
 		xscale: 1,
 		uuid: uuid_v4(),
-		active: 0
+		active: 0,
+		delay_time : delay_time,
+		delay : 0
 	};
 }
 
