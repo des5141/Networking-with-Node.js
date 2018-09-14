@@ -40,6 +40,7 @@
     <sprite>sprites\spr_rotate_bg2</sprite>
     <sprite>sprites\spr_noise</sprite>
     <sprite>sprites\spr_noise2</sprite>
+    <sprite>sprites\spr_creater</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\back_tile00</background>
@@ -64,12 +65,6 @@
       <script>scripts\inventory_info.gml</script>
       <script>scripts\item_color.gml</script>
     </scripts>
-    <script>scripts\only_single.gml</script>
-    <script>scripts\string_split.gml</script>
-    <script>scripts\arr.gml</script>
-    <script>scripts\change_back.gml</script>
-    <script>scripts\col16.gml</script>
-    <script>scripts\colLighter.gml</script>
     <scripts name="Keyboard">
       <scripts name="vmKey">
         <script>scripts\vmKey_init.gml</script>
@@ -95,9 +90,17 @@
         <script>scripts\kor_reset.gml</script>
       </scripts>
     </scripts>
+    <script>scripts\only_single.gml</script>
+    <script>scripts\string_split.gml</script>
+    <script>scripts\arr.gml</script>
+    <script>scripts\change_back.gml</script>
+    <script>scripts\col16.gml</script>
+    <script>scripts\colLighter.gml</script>
     <script>scripts\send_operation.gml</script>
     <script>scripts\monster_name.gml</script>
     <script>scripts\monster_sprite.gml</script>
+    <script>scripts\remove_modifier.gml</script>
+    <script>scripts\dialogue_create.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>
@@ -117,6 +120,7 @@
       <object>objects\obj_view</object>
       <object>objects\obj_inventory</object>
       <object>objects\obj_dialoguer</object>
+      <object>objects\obj_dialoguer_old</object>
       <object>objects\obj_sample</object>
       <object>objects\obj_background_manager</object>
       <object>objects\obj_login_back</object>

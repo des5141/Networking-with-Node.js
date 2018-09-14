@@ -72,13 +72,11 @@ message_end = array_length_1d(message);
 if (message_end &gt; 0)
 {
     //Variables
-    var charWidth = 18;
-    var lineEnd = 40;
+    var lineEnd = 30;
     var line = 0;
     var space = 0;
     var i = 1
     var delay = 3;
-    modifier = 0;
     
     //Text Position
     var tY = view_yview[0] + 295;
@@ -139,19 +137,19 @@ if (message_end &gt; 0)
         
         //Text
         draw_set_font(fnt_inventory);
-        //show_debug_message(string_copy(remove_modifier(message[message_current]) ,1+line*30,space-1))
+        show_debug_message(string_copy(remove_modifier(message[message_current]) ,1,space))
         switch(modifier)
         {
             case 0: //normal
             {
                 draw_set_colour(c_white);
-                draw_text(tX+(space*charWidth), tY+(22*line), string_char_at(message[message_current], i));
+                draw_text(tX+string_width(string_copy(remove_modifier(message[message_current]) ,1,space)), tY+(22*line), string_char_at(message[message_current], i));
                 break;
             }
             case 1: //shaky
             {
                 draw_set_colour(c_white);
-                draw_text(tX+(space*charWidth)+random_range(-1, 1), tY+(22*line)+random_range(-1, 1), string_char_at(message[message_current], i));
+                draw_text(tX+string_width(string_copy(remove_modifier(message[message_current]) ,1,space))+random_range(-1, 1), tY+(22*line)+random_range(-1, 1), string_char_at(message[message_current], i));
                 break;
             }
             case 2: //rotating
@@ -160,7 +158,7 @@ if (message_end &gt; 0)
                 var shiftc = cos(so*pi*freq/room_speed)*amplitude;
                 var shifts = sin(so*pi*freq/room_speed)*amplitude;
                 draw_set_colour(c_white);
-                draw_text(tX+(space*charWidth)+shiftc, tY+(22*line)+shifts, string_char_at(message[message_current], i));
+                draw_text(tX+string_width(string_copy(remove_modifier(message[message_current]) ,1,space))+shiftc, tY+(22*line)+shifts, string_char_at(message[message_current], i));
                 break;
             }
             case 3: //wave
@@ -169,14 +167,14 @@ if (message_end &gt; 0)
                 var shiftc = cos(so*pi*freq/room_speed)*amplitude;
                 var shifts = sin(so*pi*freq/room_speed)*amplitude;
                 draw_set_colour(c_white);
-                draw_text(tX+(space*charWidth)+shiftc, tY+(22*line)+shifts, string_char_at(message[message_current], i));
+                draw_text(tX+string_width(string_copy(remove_modifier(message[message_current]) ,1,space))+shiftc, tY+(22*line)+shifts, string_char_at(message[message_current], i));
                 break;
             }
             case 4: //color shift
             {
                 var col = make_colour_hsv(t+i, 255, 255);
                 var col2 = make_colour_hsv(t+i+75, 255, 255);
-                draw_text_transformed_colour(tX+(space*charWidth), tY+(22*line), string_char_at(message[message_current], i), 1, 1, 0, col, col, col2, col2, 1);
+                draw_text_transformed_colour(tX+string_width(string_copy(remove_modifier(message[message_current]) ,1,space)), tY+(22*line), string_char_at(message[message_current], i), 1, 1, 0, col, col, col2, col2, 1);
                 break;
             }
 
@@ -201,7 +199,7 @@ if (message_end &gt; 0)
         }
         case "creater":
         {
-            draw_sprite(spr_creater, 0, view_xview[0] + 21 + 75, view_yview[0] + 450 -75 - 15);
+            draw_sprite(Creater, 0, view_xview[0] + 21 + 75, view_hview[0]-75 - 15);
             break;
         }
     }

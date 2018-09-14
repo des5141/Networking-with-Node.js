@@ -30,6 +30,7 @@ global.shake_it = 0
 global.shake_time = 2
 target_x = x
 target_y = y
+display_set_gui_size(800, 450)
 </string>
           </argument>
         </arguments>
