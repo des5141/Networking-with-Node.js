@@ -1,20 +1,20 @@
 # Networking with Node.js
 
-GM:S¿¡¼­ º¸´Ù ½±°í, ¾ÈÁ¤ÀûÀÎ ¿Â¶óÀÎ °ÔÀÓÀ» ¸¸µé ¼ö ÀÖ°Ô ¸¸µé¾îÁÖ´Â ³×Æ®¿öÅ© ¿£ÁøÀÔ´Ï´Ù.
+GM:Sì—ì„œ ë³´ë‹¤ ì‰½ê³ , ì•ˆì •ì ì¸ ì˜¨ë¼ì¸ ê²Œì„ì„ ë§Œë“¤ ìˆ˜ ìˆê²Œ ë§Œë“¤ì–´ì£¼ëŠ” ë„¤íŠ¸ì›Œí¬ ì—”ì§„ì…ë‹ˆë‹¤.
 
-## Áö¿øÇÏ´Â ±â´Éµé
+## ì§€ì›í•˜ëŠ” ê¸°ëŠ¥ë“¤
 
-* GM:S ¿¡¼­ ÆĞÅ¶ Àß¸², ºÙÈû Ã³¸®
-* Space ±â´É (¼¼¼¼ÇÏ°Ô ³ª´©¾îÁ®ÀÖ´Â Ã¤³ÎÀÌ¶ó »ı°¢ÇÏ½Ã¸é µË´Ï´Ù)
-* Node.js ¿¡¼­ GM:S ÀÇ [STEP EVENT] °°Àº ÀÌº¥Æ®
-* Clustering System (CPU ÀÚ¿øÀ» ³¶ºñ¾øÀÌ!)
-* <Ãß°¡ ¿¹Á¤>
+* GM:S ì—ì„œ íŒ¨í‚· ì˜ë¦¼, ë¶™í˜ ì²˜ë¦¬
+* Space ê¸°ëŠ¥ (ì„¸ì„¸í•˜ê²Œ ë‚˜ëˆ„ì–´ì ¸ìˆëŠ” ì±„ë„ì´ë¼ ìƒê°í•˜ì‹œë©´ ë©ë‹ˆë‹¤)
+* Node.js ì—ì„œ GM:S ì˜ [STEP EVENT] ê°™ì€ ì´ë²¤íŠ¸
+* Clustering System (CPU ìì›ì„ ë‚­ë¹„ì—†ì´!)
+* <ì¶”ê°€ ì˜ˆì •> 
 
-## ¾î¶»°Ô »ç¿ëÇÏ³ª¿ä?
+## ì–´ë–»ê²Œ ì‚¬ìš©í•˜ë‚˜ìš”?
 
-ÄÄÇ»ÅÍ¿¡ Node.js ¿Í GM:S °¡ ¼³Ä¡µÇ¾îÀÖ´Ù´Â ÀüÁ¦ ÇÏ¿¡ ÁøÇàÇÕ´Ï´Ù.
+ì»´í“¨í„°ì— Node.js ì™€ GM:S ê°€ ì„¤ì¹˜ë˜ì–´ìˆë‹¤ëŠ” ì „ì œ í•˜ì— ì§„í–‰í•©ë‹ˆë‹¤.
 
-### 1. Node.js ¼­¹ö ½ÇÇà
+### 1. Node.js ì„œë²„ ì‹¤í–‰
 
 What things you need to install the software and how to install them
 
@@ -22,7 +22,7 @@ What things you need to install the software and how to install them
 Give examples
 ```
 
-### 2. GM:S ¼­¹ö ¼³Á¤
+### 2. GM:S ì„œë²„ ì„¤ì •
 
 A step by step series of examples that tell you how to get a development env running
 
@@ -40,10 +40,10 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## »ùÇÃ¿¡ Æ÷ÇÔµÇ¾îÀÖ´Â ±â´É
+## ìƒ˜í”Œì— í¬í•¨ë˜ì–´ìˆëŠ” ê¸°ëŠ¥
 
-* ·Î±×ÀÎ, È¸¿ø°¡ÀÔ
-* Å¬·¯½ºÅÍ¸µ
+* ë¡œê·¸ì¸, íšŒì›ê°€ì…
+* í´ëŸ¬ìŠ¤í„°ë§
 
 ### Break down into end to end tests
 
