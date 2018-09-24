@@ -20,7 +20,7 @@ GM:S에서 보다 쉽고, 안정적인 온라인 게임을 만들 수 있게 만
 What things you need to install the software and how to install them
 
 ```
-Give examples
+Give examples 
 ```
 
 ### 2. GM:S 서버 설정
