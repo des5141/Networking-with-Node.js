@@ -5,9 +5,7 @@
   </Configs>
   <NewExtensions/>
   <sounds name="sound"/>
-  <sprites name="sprites">
-    <sprite>sprites\sprite0</sprite>
-  </sprites>
+  <sprites name="sprites"/>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -17,8 +15,7 @@
       <script>scripts\nn_connect.gml</script>
       <script>scripts\nn_disconnect.gml</script>
       <script>scripts\nn_send_message.gml</script>
-      <script>scripts\nn_has_message.gml</script>
-      <script>scripts\nn_get_message.gml</script>
+      <script>scripts\buffer_write_string.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
@@ -28,10 +25,7 @@
     <objects name="Client">
       <object>objects\sys_nn</object>
       <object>objects\obj_network</object>
-      <object>objects\obj_client</object>
-      <object>objects\obj_view</object>
       <object>objects\obj_login</object>
-      <object>objects\obj_portal</object>
     </objects>
   </objects>
   <rooms name="rooms">

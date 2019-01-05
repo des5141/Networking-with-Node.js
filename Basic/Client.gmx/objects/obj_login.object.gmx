@@ -8,7 +8,7 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="0" enumb="0">
+    <event eventtype="9" enumb="13">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -25,12 +25,12 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Auto Login
-with (obj_network) {
-    login_as = "device" + string(irandom_range(1000000, 9999999));
-    event_user(1);
-}
-instance_destroy();
+            <string>/// Login
+obj_network.login_name = get_string("Input your nickname", "");
+var buffer = buffer_create(1, buffer_grow, 1);
+buffer_write(buffer, buffer_u8, NN.signal_login);
+buffer_write_string(buffer, obj_network.login_name);
+nn_send_message(buffer);
 </string>
           </argument>
         </arguments>

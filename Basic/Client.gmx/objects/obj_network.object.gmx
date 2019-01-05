@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>-1</persistent>
-  <parentName>self</parentName>
+  <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -35,16 +35,15 @@ randomize();
 
 //Whether a connection (or an attempt) is active
 active = false;
+delay = 0;
 
 //Cached login info
 login_uuid = "";
 login_name = "";
-login_id = "";
 
 //Set ping
 ping = current_time;
-
-//Out ping
+my_ping = current_time;
 global.out_ping = 2000;
 
 //Set timeout
@@ -53,7 +52,33 @@ network_set_config(network_config_connect_timeout, 200);
 //Set space
 space = 0;
 
+//Debug mode
+debug = true;
+
 alarm[0] = room_speed;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ds_queue_destroy(global.message_processing);
 </string>
           </argument>
         </arguments>
@@ -77,10 +102,7 @@ alarm[0] = room_speed;
           <argument>
             <kind>1</kind>
             <string>///Connect to the correct server
-nn_connect("127.0.0.1", NN.port);
-
-//Mark connection as active (or at least, actively in progress)
-active = true;
+nn_connect(global.ip, global.port);
 </string>
           </argument>
         </arguments>
@@ -105,17 +127,11 @@ active = true;
             <kind>1</kind>
             <string>/// Ping
 var status = nn_status();
+my_ping = current_time;
 if (status == NN.status_connected){
-
-//Construct message
-var json_data = ds_map_create();
-ds_map_add(json_data, "id", NN.outsig_ping);
-ds_map_add(json_data, "msg", string(current_time));
-var body = json_encode(json_data);
-ds_map_destroy(json_data);
-
-//Send message
-nn_send_message(body);
+    var buffer = buffer_create(1, buffer_grow, 1);
+    buffer_write(buffer, buffer_u8, NN.signal_ping);
+    nn_send_message(buffer);
 }
 
 alarm[0] = room_speed;
@@ -166,18 +182,13 @@ status = nn_status();
             <string>///Monitor running status
 
 if (active) {
-    //Connection successful in login room, show login
-    if (room == rm_connecting) &amp;&amp; (status == NN.status_connected) &amp;&amp; (!instance_exists(obj_login)) {
-        //instance_create(x, y, obj_login);
+    if (room == rm_connecting) &amp;&amp; (status == NN.status_connected)
         room_goto(rm_login);
-    }
-
-    //Connection broke
+        
     if (status == NN.status_disconnected) {
-        //Connection broke while chatting, go back to login screen and ask for reconnect
-        if (room != rm_connecting) {
+        if (room != rm_connecting)
             room_goto(rm_connecting);
-        }
+        
         active = false;
     }
 }
@@ -202,100 +213,22 @@ if (active) {
           <argument>
             <kind>1</kind>
             <string>///Receiving data
-
-if (status == NN.status_connected) {
-    while (nn_has_message()) {
-        //Decode response
-        var json_data = json_decode(nn_get_message());
-        var message_id = ds_map_find_value(json_data, 'id');
-        var message_body = ds_map_find_value(json_data, 'msg');
-        ds_map_destroy(json_data);
-        
-        //Route between different functions
-        switch (message_id) {
-        
-            //Login refused
-            case NN.insig_login_refused:
-                show_message_async(message_body);
-            break;
-            
-            //Login accepted
-            case NN.insig_login_accepted:
-                json_data = json_decode(message_body);
-                login_name = ds_map_find_value(json_data, 'name');
-                login_uuid = ds_map_find_value(json_data, 'uuid');
-                login_id = ds_map_find_value(json_data, 'id');
-                ds_map_destroy(json_data);
-                show_debug_message("Login OK. Your UUID is: " + login_uuid);
+if(instance_exists(sys_nn)) {
+    while (ds_queue_size(global.message_processing) != 0) {
+        var buffer = ds_queue_dequeue(global.message_processing);
+        var signal = buffer_read(buffer, buffer_u8);
+        switch (signal) {
+            case NN.signal_login_accepted:
+                login_uuid = buffer_read(buffer, buffer_string);
                 room_goto(rm_main);
-            break;
-            
-            //Another user has left
-            case NN.insig_user_leave:
-                json_data = json_decode(message_body);
-                var user_name = ds_map_find_value(json_data, 'name');
-                var user_uuid = ds_map_find_value(json_data, 'uuid');
-                ds_map_destroy(json_data);
-            break;
-            
-            //Another user has joined
-            case NN.insig_user_join:
-                json_data = json_decode(message_body);
-                var user_name = ds_map_find_value(json_data, 'name');
-                var user_uuid = ds_map_find_value(json_data, 'uuid');
-                ds_map_destroy(json_data);
-            break;
-            
-            //Ping
-            case NN.insig_ping:
-                my_ping = current_time;
-                ping = real(message_body);
-            break;
-            
-            //Position
-            case NN.insig_user_position:
-                if(login_uuid != "")
-                {
-                    json_data = json_decode(message_body);
-                    var user_x = real(ds_map_find_value(json_data, 'x'));
-                    var user_y = real(ds_map_find_value(json_data, 'y'));
-                    var user_uuid = ds_map_find_value(json_data, 'uuid');
-                    ds_map_destroy(json_data);
-                    
-                    var check = true;
-                    with(obj_client){
-                        if(user_uuid == control){
-                            check = false;
-                            target_x = user_x;
-                            target_y = user_y;
-                            alarm[1] = room_speed;
-                        }
-                    }
-                    
-                    if(check){
-                        var ins = instance_create(user_x, user_y, obj_client);
-                        ins.control = user_uuid;
-                    }
-                }
-            break;
-            
-            //Space changed check
-            case NN.insig_user_space:
-                space = message_body;
+                break;
                 
-                with(obj_client)
-                {
-                    if(control == other.login_uuid)
-                    {
-                        x = xstart;
-                        y = ystart;
-                    }else{
-                        instance_destroy();
-                    }
-                }
-            break;
-            
+            case NN.signal_ping:
+                ping = current_time - my_ping;
+                my_ping = current_time;
+                break;
         }
+        buffer_delete(buffer);
     }
 }
 </string>
@@ -303,7 +236,7 @@ if (status == NN.status_connected) {
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="11">
+    <event eventtype="7" enumb="2">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -320,19 +253,23 @@ if (status == NN.status_connected) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Send login request message to server
-
-login_name = login_as;
-
-//Construct message
-var json_data = ds_map_create();
-ds_map_add(json_data, "id", NN.outsig_login);
-ds_map_add(json_data, "msg", login_as);
-var body = json_encode(json_data);
-ds_map_destroy(json_data);
-
-//Send message
-nn_send_message(body);
+            <string>///ENUM , global variables
+global.ip = '127.0.0.1';
+global.port = 65535;
+global.check_bytes_recv = 0;
+global.check_bytes_send = 0;
+global.message_processing = ds_queue_create();
+global.message_buffer = -1;
+enum NN{
+    signal_login = 0,
+    signal_login_refused = 1,
+    signal_login_accepted = 2,
+    signal_ping = 3,
+    
+    status_disconnected = -1,
+    status_connecting = 0,
+    status_connected = 1
+}
 </string>
           </argument>
         </arguments>
@@ -355,16 +292,18 @@ nn_send_message(body);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Draw ping
-if(my_ping - ping &gt; 0)
-{
-    draw_set_color(c_white)
-    draw_set_font(fnt_text)
-    draw_set_halign(fa_left)
-    draw_set_valign(fa_top)
-    draw_set_alpha(0.5)
-    draw_text(5, 5, "ping " + string(my_ping - ping) + "#space " + string(space))
-    draw_set_alpha(1)
+            <string>/// Draw debug
+if(debug == true) {
+    draw_set_color(c_white);
+    draw_set_font(fnt_text);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    draw_set_alpha(0.5);
+    draw_text(5, 5, "ping " + string(ping) + "#recv bytes " + string(global.check_bytes_recv) + " (" + string(global.check_bytes_recv/1000000) + "MB)" + "#send bytes " + string(global.check_bytes_send) + " (" + string(global.check_bytes_send/1000000) + "MB)");
+    draw_set_valign(fa_bottom);
+    draw_text(0, room_height, room_get_name(room));
+    draw_set_valign(fa_top);
+    draw_set_alpha(1);
 }
 </string>
           </argument>
@@ -388,26 +327,28 @@ if(my_ping - ping &gt; 0)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Paint
+            <string>/// Draw
 var status = nn_status();
+draw_set_font(fnt_text);
+draw_set_color(c_white);
+draw_set_alpha(0.5);
+draw_set_halign(fa_center);
+draw_set_valign(fa_middle);
 if (status != NN.status_connected) {
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_middle);
-    draw_set_font(fnt_text);
-    draw_set_color(c_white);
     if (status == NN.status_disconnected) {
         draw_text(room_width/2, room_height/2, "Re connecting");
-        if (!active) {
-            active = true;
-            alarm[1] = 1; //Connect attempt
+        if(delay &lt;= 0) {
+            alarm[1] = 1;
+            delay = 30;
         }
+        delay--;
     }
-    else if (status == NN.status_connecting) {
+    else if (status == NN.status_connecting)
         draw_text(room_width/2, room_height/2, "Connecting...");
-    }
-    draw_set_halign(fa_left);
-    draw_set_valign(fa_top);
 }
+draw_set_alpha(1);
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
 </string>
           </argument>
         </arguments>
@@ -430,10 +371,33 @@ if (status != NN.status_connected) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Retry on a failed connection
-if (!active) {
-    event_user(15); //Connect attempt
-}
+            <string>///Disconnect
+nn_disconnect();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="49">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Clear debug
+global.check_bytes_recv = 0;
+global.check_bytes_send = 0;
 </string>
           </argument>
         </arguments>

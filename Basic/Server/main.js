@@ -160,9 +160,6 @@
                     break;
             }
 }
-        function buffer_create(write) {
-            write = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
-        }
         // #endregion
     // #endregion
 
@@ -212,7 +209,7 @@ server.onConnection(function (dsocket) {
                 index++;
             }
         } catch (e) {
-            console.log("- pid ".red + process.pid + "에서 에러 발생 | ".red + e);
+            console.log(e);
         }
     });
     // #endregion
@@ -220,9 +217,8 @@ server.onConnection(function (dsocket) {
     dsocket.onClose(function () {
         var quitter;
         if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
-            console.log("- 유저 나감 (".gray + (quitter.uuid).gray + ")".gray);
-            process.send({ type: 'logout', to: 'master', uuid: quitter.uuid });
-            authenticated_users.removeUserData(quitter.uuid);
+            console.log("User out (" + (quitter.uuid) + ")");
+            authenticated_users.removeUser(quitter.uuid);
         }
     });
     // #endregion
@@ -248,7 +244,7 @@ server.onConnection(function (dsocket) {
                         var name = buffer_read(data, buffer_string, read);
                         if (authenticated_users.findUserByName(name) != null) {
                             // refused
-                            var buffer = buffer_create();
+                            var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                             buffer_write(buffer, buffer_u8, signal_login_refused);
                             send_raw(dsocket, buffer);
                         } else {
@@ -256,8 +252,9 @@ server.onConnection(function (dsocket) {
                             var new_user = User.create(dsocket, name, 0);
                             authenticated_users.addUser(new_user);
                             console.log("New user logined : " + name);
-                            var buffer = buffer_create();
+                            var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                             buffer_write(buffer, buffer_u8, signal_login_accepted);
+                            buffer_write(buffer, buffer_string, new_user.uuid);
                             send_raw(dsocket, buffer);
                         }
                         // #endregion
@@ -276,7 +273,7 @@ server.onConnection(function (dsocket) {
             switch (signal) {
                 case signal_ping:
                     // #region codes
-                    var buffer = buffer_create();
+                    var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                     buffer_write(buffer, buffer_u8, signal_ping);
                     send_raw(dsocket, buffer);
                     // #endregion
@@ -288,7 +285,7 @@ server.onConnection(function (dsocket) {
     }
     setTimeout(function () {
         processing();
-    }, 10);
+    }, 1);
 }();
 
 server.listen(port, ip);

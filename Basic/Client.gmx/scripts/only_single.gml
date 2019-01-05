@@ -1,5 +1,9 @@
 ///only_single();
-with (object_index) {
- if (id != other.id)
-  instance_destroy();
+var check = false;
+with(object_index) {
+    if(id != other.id) {
+        check = true;
+    }
 }
+if(check)
+    instance_destroy();
