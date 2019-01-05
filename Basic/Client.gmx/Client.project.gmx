@@ -12,6 +12,7 @@
   <paths name="paths"/>
   <scripts name="scripts">
     <scripts name="Networking with Node">
+      <script>scripts\only_single.gml</script>
       <script>scripts\nn_status.gml</script>
       <script>scripts\nn_connect.gml</script>
       <script>scripts\nn_disconnect.gml</script>
@@ -19,7 +20,6 @@
       <script>scripts\nn_has_message.gml</script>
       <script>scripts\nn_get_message.gml</script>
     </scripts>
-    <script>scripts\only_single.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_text</font>

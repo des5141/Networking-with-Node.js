@@ -1,5 +1,5 @@
 ///nn_status()
-    if (current_time - ping > global.out_ping)
+    if (ping > global.out_ping)
     {
         ping = current_time;
         nn_disconnect();

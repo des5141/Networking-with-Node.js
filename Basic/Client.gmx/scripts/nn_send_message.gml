@@ -1,7 +1,7 @@
 ///nn_send_message(msg)
 {
-    var bf = buffer_create(128, buffer_grow, 1);
-    buffer_write(bf, buffer_string, argument0 + "#");
-    network_send_raw(sys_nn.client, bf, buffer_tell(bf)-1);
-    buffer_delete(bf);
+    buffer_write(argument0, buffer_text, "§");
+    buffer_write(argument0, buffer_u16, buffer_tell(argument0));
+    global.check_bytes_send += buffer_tell(argument0);  
+    network_send_raw(sys_nn.client, argument0, buffer_tell(argument0));
 }

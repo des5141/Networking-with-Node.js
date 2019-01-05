@@ -42,7 +42,6 @@ login_name = "";
 login_id = "";
 
 //Set ping
-my_ping = current_time;
 ping = current_time;
 
 //Out ping
@@ -53,32 +52,8 @@ network_set_config(network_config_connect_timeout, 200);
 
 //Set space
 space = 0;
-to_space = 0;
 
 alarm[0] = room_speed;
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Connect to the server
-
-event_user(15); //Connect attempt
 </string>
           </argument>
         </arguments>

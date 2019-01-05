@@ -1,6 +1,6 @@
 var uuid_v4 = require('uuid-v4');
 
-function create(name, space, socket) {
+function create(socket, name, space) {
 	//Interface
 	return {
 		uuid: uuid_v4(), //UUID
