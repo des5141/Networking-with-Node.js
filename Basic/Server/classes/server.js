@@ -31,7 +31,6 @@ function createServer() {
         console.log("TCP Server crashed! Error message :", err.message);
     });
     tcp_server.on('connection', function (s) {
-
     });
     //Listen
     function listen(tcp_port, ip) {
@@ -42,6 +41,12 @@ function createServer() {
     //On Connection
     function onConnection(f) {
         tcp_server.on('connection', function (s) {
+            s.setNoDelay(false);
+            s.setTimeout(3000);
+            s.on('timeout', () => {
+                console.log('socket timeout');
+                s.end();
+            });
             f(new Socket(s));
         });
     }

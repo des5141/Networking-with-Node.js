@@ -43,11 +43,12 @@ login_name = "";
 
 //Set ping
 ping = current_time;
-my_ping = current_time;
+my_ping[0] = current_time;
+my_ping[1] = current_time;
 global.out_ping = 2000;
 
 //Set timeout
-network_set_config(network_config_connect_timeout, 200);
+network_set_config(network_config_connect_timeout, 500);
 
 //Set space
 space = 0;
@@ -127,7 +128,7 @@ nn_connect(global.ip, global.port);
             <kind>1</kind>
             <string>/// Ping
 var status = nn_status();
-my_ping = current_time;
+my_ping[0] = current_time;
 if (status == NN.status_connected){
     var buffer = buffer_create(1, buffer_grow, 1);
     buffer_write(buffer, buffer_u8, NN.signal_ping);
@@ -224,8 +225,8 @@ if(instance_exists(sys_nn)) {
                 break;
                 
             case NN.signal_ping:
-                ping = current_time - my_ping;
-                my_ping = current_time;
+                my_ping[1] = current_time;
+                ping = my_ping[1] - my_ping[0];
                 break;
         }
         buffer_delete(buffer);

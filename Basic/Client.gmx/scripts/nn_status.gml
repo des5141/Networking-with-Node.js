@@ -1,7 +1,6 @@
 ///nn_status()
-    if (ping > global.out_ping)
+    if (current_time - my_ping[1] > global.out_ping)
     {
-        ping = current_time;
         nn_disconnect();
         return NN.status_disconnected;
     }
