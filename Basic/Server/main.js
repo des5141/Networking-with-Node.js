@@ -1,5 +1,6 @@
 'use strict';
 // #region Init
+var engine_version = "v1.0"
 var queue = require('./classes/Queue.js');
 var readline = require('readline');
 var User = require('./classes/user.js');
@@ -91,7 +92,9 @@ function console_mode() {
     console.clear();
     switch (mode) {
         case 0:
-            console.log("Networking with Node.js Engine".inverse);
+            console.log("Networking with Node.js - Networking Engine".inverse);
+            console.log("※ 개발자 한마디".white);
+            console.log(" 이 ".gray + "https://github.com/des5141/Networking-with-Node.js".white + "\n 레퍼지토리 README에 기본적인 사용법이 있습니다\n\n 다음을 통해 개발자에게 문의할 수 있습니다\n 개발자 블로그 : www.rhea31.blog.me\n".gray);
             console.log("※ 명령어".white);
             console.log(" 1)".gray + " ctrl+q ".white + "- 메인화면으로 돌아옵니다".gray);
             console.log(" 2)".gray + " ctrl+w ".white + "- 현재 게임 로그를 띄웁니다".gray);
@@ -108,6 +111,9 @@ function console_mode() {
 
         case 2:
             console.log("Server status".inverse);
+            console.log("IP : ".gray + ip.white);
+            console.log("PORT : ".gray + port);
+            console.log("ENGINE VERSION : ".gray + engine_version);
             console.log("OS : ".gray + (os.type()).white);
             console.log("OS PLATFORM : ".gray + (os.platform()).white);
             console.log("OS ARCHITECTURE : ".gray + (os.arch()).white);
@@ -179,7 +185,7 @@ server.onConnection(function (dsocket) {
     dsocket.onClose(function () {
         var quitter;
         if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
-            console.log("User out (" + (quitter.uuid) + ")");
+            server_log("Client disconnected ".gray + (quitter.uuid).white);
             authenticated_users.removeUser(quitter.uuid);
         }
     });
@@ -215,7 +221,7 @@ server.onConnection(function (dsocket) {
                             // accepted
                             var new_user = User.create(dsocket, name, 0);
                             authenticated_users.addUser(new_user);
-                            console.log("New user logined : " + name);
+                            server_log("New user logined : ".gray + (new_user.uuid).white);
                             var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                             buffer_write(buffer, buffer_u8, signal_login_accepted);
                             buffer_write(buffer, buffer_string, new_user.uuid);
@@ -240,7 +246,6 @@ server.onConnection(function (dsocket) {
                     var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                     buffer_write(buffer, buffer_u8, signal_ping);
                     send_raw(dsocket, buffer);
-                    server_log("PING 받음");
                     // #endregion
                     break;
             }

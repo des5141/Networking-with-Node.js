@@ -25,7 +25,7 @@ function buffer_read(buffer, type, read) {
             return buffer.readInt132LE(read.offset - 4);
 
         case 6:
-            var length = buffer_read(buffer, buffer_u16, read);
+            var length = buffer_read(buffer, 2, read);
             read.offset += length + 1;
             return buffer.toString('utf-8', read.offset - length - 1, read.offset - 1);
     }

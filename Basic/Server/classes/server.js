@@ -41,7 +41,7 @@ function createServer() {
     function onConnection(f) {
         tcp_server.on('connection', function (s) {
             s.setNoDelay(true);
-            s.setTimeout(3000);
+            s.setTimeout(5000);
             s.on('timeout', () => {
                 console.log('socket timeout');
                 s.end();
