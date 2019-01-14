@@ -1,18 +1,17 @@
+<h1 align="center">Networking with Node.js<br>GM:S 에서 멋진 온라인 게임을 만드는 빠른 방법</h1>
+<h3 align="center">Node.js 를 이용하여 보다 쉽고 안정적인 대규모 온라인 게임을 만들 수 있습니다</h3>
+
 # Networking with Node.js
 
 GM:S에서 보다 쉽고, 안정적인 온라인 게임을 만들 수 있게 만들어주는 네트워크 엔진입니다.
 
-## 지원하는 기능들 
-
-* GM:S 에서 패킷 잘림, 붙힘 처리
-* Space 기능 (세세하게 나누어져있는 채널이라 생각하시면 됩니다)
-* Node.js 에서 GM:S 의 [STEP EVENT] 같은 이벤트
-* Clustering System (CPU 자원을 낭비없이!)
-* <추가 예정> 
-
 ## 어떻게 사용하나요?
 
-컴퓨터에 Node.js 와 GM:S 가 설치되어있다는 전제 하에 진행합니다.
+먼저, 컴퓨터에 Node.js 설치가 되어있어야 합니다
+만약 설치가 되어있지 않다면, 아래 사이트에서 최신버전을 설치하여주도록 합니다
+```
+https://nodejs.org/ko/
+```
 
 ### 1. Node.js 서버 실행
 
