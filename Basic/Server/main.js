@@ -7,6 +7,7 @@ var UserBox = require('./classes/user_box.js');
 var authenticated_users = UserBox.create();
 var server = require('./classes/server.js').createServer();
 var colors = require('colors');
+var os = require('os');
 var buffer_read = require('./classes/buffer.js').buffer_read;
 var buffer_write = require('./classes/buffer.js').buffer_write;
 var buffer_u8 = 0;
@@ -20,6 +21,7 @@ var buffer_temp = -1;
 var mode = 0;
 var message_processing = new queue();
 var message_socket = new queue();
+var server_log_queue = new queue();
 colors.setTheme({
     Emphasis: ['red', 'underline'],
     Okay: ['green', 'underline']
@@ -30,12 +32,18 @@ var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-rl.setPrompt(" >> ");
+rl.setPrompt("");
 function send_raw(sock, write) {
     if (sock != -1) {
         buffer_write(write, buffer_string, "§");
         buffer_write(write, buffer_u16, write.offset);
         sock.send(write.buffer);
+    }
+}
+function server_log(message) {
+    server_log_queue.enqueue(message);
+    if (mode == 1) {
+        console.log(message);
     }
 }
 // #endregion
@@ -55,30 +63,74 @@ const signal_ping = 3;
 // #region console mode
 console_mode();
 process.stdin.on('keypress', (str, key) => {
-    //console.log(key);
     if (key.ctrl == true) {
         switch (key.name) {
             case 'q':
-                mode = 1;
+                mode = 0;
                 console_mode();
                 break;
 
             case 'w':
-                mode = 0;
+                mode = 1;
+                console_mode();
+                break;
+
+            case 'e':
+                mode = 2;
+                console_mode();
+                break;
+
+            case 'r':
+                mode = 3;
                 console_mode();
                 break;
         }
     }
 });
 function console_mode() {
+    console.clear();
     switch (mode) {
         case 0:
-            console.clear();
             console.log("Networking with Node.js Engine".inverse);
+            console.log("※ 명령어".white);
+            console.log(" 1)".gray + " ctrl+q ".white + "- 메인화면으로 돌아옵니다".gray);
+            console.log(" 2)".gray + " ctrl+w ".white + "- 현재 게임 로그를 띄웁니다".gray);
+            console.log(" 3)".gray + " ctrl+e ".white + "- 서버 정보를 보여줍니다".gray);
+            console.log(" 4)".gray + " ctrl+r ".white + "- 게임 로그를 초기화합니다".gray);
             break;
 
         case 1:
-            console.clear();
+            console.log("Game log".inverse);
+            for (var i = 0; i < server_log_queue.length(); i++) {
+                console.log(server_log_queue.pick(i));
+            }
+            break;
+
+        case 2:
+            console.log("Server status".inverse);
+            console.log("OS : ".gray + (os.type()).white);
+            console.log("OS PLATFORM : ".gray + (os.platform()).white);
+            console.log("OS ARCHITECTURE : ".gray + (os.arch()).white);
+            console.log("OS VERSION : ".gray + (os.release()).white);
+            console.log("OS TIME : ".gray + (os.uptime()));
+            console.log("CPU : ".gray + ((os.cpus())[0].model).white);
+            console.log("CPU ENDIANNESS : ".gray + (os.endianness()).white);
+            console.log("FREE MEMORY : ".gray + (os.freemem()));
+            console.log("TOTAL MEMORY : ".gray + (os.totalmem()));
+
+            console.log(" - ctrl+q 로 돌아갑니다 - ".gray);
+            break;
+
+        case 3:
+            console.log("Game log clear".inverse);
+            for (var i = 0; i < server_log_queue.length(); i++) {
+                server_log_queue.dequeue();
+            }
+            console.log("초기화 완료".white);
+            console.log(" - ctrl+q 로 돌아갑니다 - ".gray);
+            break;
+
+        /*case 1:
             console.log("다음을 입력해주십시오");
 
             rl.prompt();
@@ -87,7 +139,7 @@ function console_mode() {
                 mode = 0;
                 console_mode();
             });
-            break;
+            break;*/
     }
 }
 // #endregion
@@ -147,6 +199,7 @@ server.onConnection(function (dsocket) {
             signal = buffer_read(data, buffer_u8, read);
             // #endregion
 
+            // Not common
             if (ins == null) {
                 // #region Not authenticated users
                 switch (signal) {
@@ -187,6 +240,7 @@ server.onConnection(function (dsocket) {
                     var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                     buffer_write(buffer, buffer_u8, signal_ping);
                     send_raw(dsocket, buffer);
+                    server_log("PING 받음");
                     // #endregion
                     break;
             }

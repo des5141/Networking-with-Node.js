@@ -16,5 +16,8 @@ class Queue {
             this._arr.splice(this._arr.indexOf(message), 1);
         }
     }
+    pick(i) {
+        return this._arr[i];
+    }
 }
 module.exports = Queue;
