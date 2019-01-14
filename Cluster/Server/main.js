@@ -155,10 +155,12 @@ if (cluster.isMaster) {
     }
     // #endregion
 
+    // fork
     os.cpus().forEach(function (cpu) {
         cluster.fork();
     });
 
+    // worker starting
     for (var id in cluster.workers) {
         cluster.workers[id].send({ type: 'start', to: 'worker' });
     }
@@ -211,7 +213,6 @@ if (cluster.isWorker) {
         dsocket.onClose(function () {
             var quitter;
             if ((quitter = authenticated_users.findUserBySocket(dsocket)) != null) {
-                server_log("Client disconnected ".gray + (quitter.uuid).white);
                 authenticated_users.removeUser(quitter.uuid);
             }
         });
@@ -247,7 +248,6 @@ if (cluster.isWorker) {
                                 // accepted
                                 var new_user = User.create(dsocket, name, 0);
                                 authenticated_users.addUser(new_user);
-                                server_log("New user logined : ".gray + (new_user.uuid).white);
                                 var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
                                 buffer_write(buffer, buffer_u8, signal_login_accepted);
                                 buffer_write(buffer, buffer_string, new_user.uuid);
