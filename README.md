@@ -69,3 +69,7 @@ buffer_read(data, buffer_u8, read);
 ```
 var read = { offset: 0 };
 ```
+
+## 뭔가 색다른 건 없나요?
+
+- Ctrl+(?) 명령어들로 서버를 효율적으로 관리할 수 있습니다
