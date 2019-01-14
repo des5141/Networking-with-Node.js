@@ -32,9 +32,40 @@ buffer_write(buffer, buffer_u8, NN.signal_ping);
 nn_send_message(buffer);
 ```
 
-NN.signal_ping 에서 signal 은 sys_nn 오브젝트의 GAMESTART 이벤트에서 enum 으로 선언합니다<br />
+NN.signal_ping 에서 signal 은 sys_nn 오브젝트의 GAMESTART 이벤트에서 enum 으로 선언합니다<br /><br />
 buffer_u8 에 대한 정보는 다음 링크를 통해 알 수 있습니다
 
 ```
 https://docs.yoyogames.com/source/dadiospice/002_reference/buffers/using%20buffers.html
+```
+
+### Node.js에서 어떻게 클라이언트로 값을 전달하나요?
+
+다음 코드처럼 작성하여 전달할 수 있습니다
+
+```
+var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
+buffer_write(buffer, buffer_u8, signal_ping);
+send_raw(dsocket, buffer);
+```
+
+게임메이커와 동일한 방식으로 구현하시면 됩니다
+
+### 게임메이커에서 받은 값은 어디에 있나요?
+
+obj_network 오브젝트의 Step 이벤트 마지막 코드 블럭을 사용하시면 됩니다
+
+### Node.js에서 받은 값은 어디에 있나요?
+
+[Message processing] 주석을 따라가 processing 함수를 열어보시면 됩니다<br />
+게임메이커와 받은 값을 읽는 방법은 비슷합니다만, 다음 코드처럼 세번째 인자로 read 가 들어간다는 것이 다릅니다
+
+```
+buffer_read(data, buffer_u8, read);
+```
+
+이 read는 다음과 같습니다
+
+```
+var read = { offset: 0 };
 ```
