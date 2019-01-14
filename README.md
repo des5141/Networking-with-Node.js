@@ -27,9 +27,14 @@ node main.js
 다음 코드처럼 작성하여 전달할 수 있습니다
 
 ```
-var buffer = buffer_create(1, buffer_grow, 1);<br />
-buffer_write(buffer, buffer_u8, NN.signal_ping);<br />
+var buffer = buffer_create(1, buffer_grow, 1);
+buffer_write(buffer, buffer_u8, NN.signal_ping);
 nn_send_message(buffer);
 ```
 
-NN.signal_ping 과 같은 signal 은 sys_nn 오브젝트의 GAMESTART 이벤트에서 enum 으로 선언합니다
+NN.signal_ping 에서 signal 은 sys_nn 오브젝트의 GAMESTART 이벤트에서 enum 으로 선언합니다<br />
+buffer_u8 에 대한 정보는 다음 링크를 통해 알 수 있습니다
+
+```
+https://docs.yoyogames.com/source/dadiospice/002_reference/buffers/using%20buffers.html
+```
