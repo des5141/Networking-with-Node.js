@@ -17,13 +17,20 @@ var buffer_u32 = 4;
 var buffer_s32 = 5;
 var buffer_string = 6;
 var buffer_temp = -1;
+var mode = 0;
 var message_processing = new queue();
 var message_socket = new queue();
 colors.setTheme({
-    custom: ['red', 'underline']
+    Emphasis: ['red', 'underline'],
+    Okay: ['green', 'underline']
 });
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+rl.setPrompt(" >> ");
 function send_raw(sock, write) {
     if (sock != -1) {
         buffer_write(write, buffer_string, "§");
@@ -46,31 +53,43 @@ const signal_ping = 3;
 // #endregion
 
 // #region console mode
+console_mode();
 process.stdin.on('keypress', (str, key) => {
+    //console.log(key);
     if (key.ctrl == true) {
         switch (key.name) {
-            case 'z':
-                //process.stdout.write('\033c');
-                console.clear();
-                console.log("다음을 입력해주십시오");
+            case 'q':
+                mode = 1;
+                console_mode();
+                break;
 
-                const rl = readline.createInterface({
-                    input: process.stdin,
-                    output: process.stdout
-                });
-
-                rl.setPrompt("## ".custom);
-
-                rl.prompt();
-                rl.on("line", (data) => {
-                    console.log(data);
-                    rl.close();
-                });
-
+            case 'w':
+                mode = 0;
+                console_mode();
                 break;
         }
     }
-})
+});
+function console_mode() {
+    switch (mode) {
+        case 0:
+            console.clear();
+            console.log("Networking with Node.js Engine".inverse);
+            break;
+
+        case 1:
+            console.clear();
+            console.log("다음을 입력해주십시오");
+
+            rl.prompt();
+            rl.once("line", (data) => {
+                console.log(data);
+                mode = 0;
+                console_mode();
+            });
+            break;
+    }
+}
 // #endregion
 
 /// Connection

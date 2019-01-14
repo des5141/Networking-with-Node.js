@@ -25,10 +25,9 @@ function createServer() {
     var tcp_server = require('net').createServer();
     tcp_server.on('listening', function () {
         var address = tcp_server.address();
-        console.log("TCP Server Started -", address.address + "," + address.port);
     });
     tcp_server.on('error', function (err) {
-        console.log("TCP Server crashed! Error message :", err.message);
+        console.log((err.message).red);
     });
     tcp_server.on('connection', function (s) {
     });
