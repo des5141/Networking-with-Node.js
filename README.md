@@ -1,5 +1,5 @@
 <h1 align="center">Networking with Node.js<br>GM:S 에서 멋진 온라인 게임을 만드는 빠른 방법</h1>
-<h3 align="center">Node.js 를 이용하여 보다 쉽고 안정적인 대규모 온라인 게임을 만들 수 있습니다</h3>
+<h3 align="center">보다 쉽고 안정적인 대규모 온라인 게임을 만들 수 있습니다<br />Node.js 와 클러스터링을 통한 환상적인 게임 서버를 만나보세요</h3>
 
 # Networking with Node.js
 
