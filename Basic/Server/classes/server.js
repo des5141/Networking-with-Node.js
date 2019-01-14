@@ -43,7 +43,6 @@ function createServer() {
             s.setNoDelay(true);
             s.setTimeout(5000);
             s.on('timeout', () => {
-                console.log('socket timeout');
                 s.end();
             });
             f(new Socket(s));
