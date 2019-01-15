@@ -1,7 +1,7 @@
 'use strict';
 // #region Init
 var engine_version = "v1.0"
-var queue = require('./classes/Queue.js');
+var queue = require('./classes/queue.js');
 var readline = require('readline');
 var User = require('./classes/user.js');
 var UserBox = require('./classes/user_box.js');
