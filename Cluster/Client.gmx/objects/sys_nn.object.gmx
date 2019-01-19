@@ -27,7 +27,6 @@
             <kind>1</kind>
             <string>///Setup
 status = NN.status_disconnected;
-index = 0;
 </string>
           </argument>
         </arguments>
@@ -60,6 +59,7 @@ if (ds_map_find_value(async_load, 'id') == client) {
             buffer_copy(buffer, 0, buffer_get_size(buffer), global.message_buffer, 0);
         }
         else { buffer_copy(buffer, 0, buffer_get_size(buffer), global.message_buffer, buffer_get_size(global.message_buffer)); }
+        var index = 0;
         while (true) {
             if (index + 4 &gt; buffer_get_size(global.message_buffer))
                 break;
