@@ -56,7 +56,7 @@ space = 0;
 //Debug mode
 debug = true;
 
-alarm[0] = room_speed;
+//alarm[0] = room_speed;
 </string>
           </argument>
         </arguments>
@@ -136,6 +136,35 @@ if (status == NN.status_connected){
 }
 
 alarm[0] = room_speed;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Ping
+my_ping[0] = current_time;
+if (status == NN.status_connected){
+    var buffer = buffer_create(1, buffer_grow, 1);
+    buffer_write(buffer, buffer_u8, NN.signal_ping);
+    nn_send_message(buffer);
+}
 </string>
           </argument>
         </arguments>

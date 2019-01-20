@@ -243,9 +243,18 @@ server.onConnection(function (dsocket) {
             switch (signal) {
                 case signal_ping:
                     // #region codes
-                    var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
-                    buffer_write(buffer, buffer_u8, signal_ping);
-                    send_raw(dsocket, buffer);
+                    for (var i = 0; i < 100; i++) {
+                        var buffer = { buffer: Buffer.allocUnsafe(1).fill(0), offset: 0 };
+                        buffer_write(buffer, buffer_u8, signal_ping);
+                        buffer_write(buffer, buffer_s8, i);
+                        buffer_write(buffer, buffer_s32, -1);
+                        buffer_write(buffer, buffer_string, "sex");
+                        buffer_write(buffer, buffer_string, "asd");
+                        buffer_write(buffer, buffer_string, "qweqweqwe");
+                        buffer_write(buffer, buffer_s8, -50);
+                        buffer_write(buffer, buffer_string, "loli ZOA!!!!!");
+                        send_raw(dsocket, buffer);
+                    }
                     // #endregion
                     break;
             }
