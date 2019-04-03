@@ -26,4 +26,3 @@ Based on these amazing projects:
 ## License
 
 Apache License 2.0
-s
