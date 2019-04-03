@@ -1,14 +1,9 @@
 'use strict';
-// #region Init
-var engine_version = "v1.0"
-var queue = require('./classes/queue.js');
-var readline = require('readline');
 var User = require('./classes/user.js');
 var UserBox = require('./classes/user_box.js');
 var authenticated_users = UserBox.create();
 var server = require('./classes/server.js').createServer();
 var colors = require('colors');
-var os = require('os');
 var buffer_read = require('./classes/buffer.js').buffer_read;
 var buffer_write = require('./classes/buffer.js').buffer_write;
 var buffer_u8 = 0;
@@ -27,13 +22,6 @@ colors.setTheme({
     Emphasis: ['red', 'underline'],
     Okay: ['green', 'underline']
 });
-readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
-var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-rl.setPrompt("");
 function send_raw(sock, write) {
     if (sock != -1) {
         buffer_write(write, buffer_string, "§");
@@ -49,106 +37,14 @@ function server_log(message) {
 }
 // #endregion
 
-// #region setting
 var ip = '127.0.0.1';
 var port = 65535;
-// #endregion
 
-// #region signal
 const signal_login = 0;
 const signal_login_refused = 1;
 const signal_login_accepted = 2;
 const signal_ping = 3;
-// #endregion
 
-// #region console mode
-console_mode();
-process.stdin.on('keypress', (str, key) => {
-    if (key.ctrl == true) {
-        switch (key.name) {
-            case 'q':
-                mode = 0;
-                console_mode();
-                break;
-
-            case 'w':
-                mode = 1;
-                console_mode();
-                break;
-
-            case 'e':
-                mode = 2;
-                console_mode();
-                break;
-
-            case 'r':
-                mode = 3;
-                console_mode();
-                break;
-        }
-    }
-});
-function console_mode() {
-    console.clear();
-    switch (mode) {
-        case 0:
-            console.log("Networking with Node.js - Networking Engine".inverse);
-            console.log("※ 개발자 한마디".white);
-            console.log(" 이 ".gray + "https://github.com/des5141/Networking-with-Node.js".white + "\n 레퍼지토리 README에 기본적인 사용법이 있습니다\n\n 다음을 통해 개발자에게 문의할 수 있습니다\n 개발자 블로그 : www.rhea31.blog.me\n".gray);
-            console.log("※ 명령어".white);
-            console.log(" 1)".gray + " ctrl+q ".white + "- 메인화면으로 돌아옵니다".gray);
-            console.log(" 2)".gray + " ctrl+w ".white + "- 현재 게임 로그를 띄웁니다".gray);
-            console.log(" 3)".gray + " ctrl+e ".white + "- 서버 정보를 보여줍니다".gray);
-            console.log(" 4)".gray + " ctrl+r ".white + "- 게임 로그를 초기화합니다".gray);
-            break;
-
-        case 1:
-            console.log("Game log".inverse);
-            for (var i = 0; i < server_log_queue.length(); i++) {
-                console.log(server_log_queue.pick(i));
-            }
-            break;
-
-        case 2:
-            console.log("Server status".inverse);
-            console.log("IP : ".gray + ip.white);
-            console.log("PORT : ".gray + port);
-            console.log("ENGINE VERSION : ".gray + engine_version);
-            console.log("OS : ".gray + (os.type()).white);
-            console.log("OS PLATFORM : ".gray + (os.platform()).white);
-            console.log("OS ARCHITECTURE : ".gray + (os.arch()).white);
-            console.log("OS VERSION : ".gray + (os.release()).white);
-            console.log("OS TIME : ".gray + (os.uptime()));
-            console.log("CPU : ".gray + ((os.cpus())[0].model).white);
-            console.log("CPU ENDIANNESS : ".gray + (os.endianness()).white);
-            console.log("FREE MEMORY : ".gray + (os.freemem()));
-            console.log("TOTAL MEMORY : ".gray + (os.totalmem()));
-
-            console.log(" - ctrl+q 로 돌아갑니다 - ".gray);
-            break;
-
-        case 3:
-            console.log("Game log clear".inverse);
-            for (var i = 0; i < server_log_queue.length(); i++) {
-                server_log_queue.dequeue();
-            }
-            console.log("초기화 완료".white);
-            console.log(" - ctrl+q 로 돌아갑니다 - ".gray);
-            break;
-
-        /*case 1:
-            console.log("다음을 입력해주십시오");
-
-            rl.prompt();
-            rl.once("line", (data) => {
-                console.log(data);
-                mode = 0;
-                console_mode();
-            });
-            break;*/
-    }
-}
-// #endregion
 
 /// Connection
 server.onConnection(function (dsocket) {
