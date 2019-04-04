@@ -1,4 +1,7 @@
-// ! Class Definition
+// ! If you don't know about "Node.js Buffer System",
+// ! please, don't touch this
+
+// * Class Definition
 class buffer {
     constructor() {
         this.u8 = 0;
@@ -20,15 +23,21 @@ class buffer {
     create(size) {
         return { buffer: Buffer.allocUnsafe(size), write_offset : 0, read_offset : 0 };
     }
+    load(buffer) {
+        return { buffer: buffer, write_offset : 0, read_offset : 0 };
+    }
     free(buffer) {
         buffer.buffer = null;
         buffer.read_offset = null;
         buffer.write_offset = null;
         buffer.mode = null;
     }
+    length(buffer) {
+        return (buffer.buffer).length;
+    }
 }
 
-// ! Function Definition
+// * Function Definition
 var read_function = []
 // #region Function's
 read_function.push((buffer)=>{buffer.read_offset++; return buffer.buffer.readUInt8(buffer.read_offset - 1);});
@@ -44,8 +53,8 @@ var write_function = []
 // #region Function's
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 1 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 1);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -54,8 +63,8 @@ write_function.push((buffer, value)=>{
 });
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 1 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((write.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((write.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 1);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -64,8 +73,8 @@ write_function.push((buffer, value)=>{
 });
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 2 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 2);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -74,8 +83,8 @@ write_function.push((buffer, value)=>{
 });
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 2 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 2);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -84,8 +93,8 @@ write_function.push((buffer, value)=>{
 });
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 4 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 4);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -94,8 +103,8 @@ write_function.push((buffer, value)=>{
 });
 write_function.push((buffer, value)=>{
     if (buffer.write_offset + 4 > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + 4);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -106,8 +115,8 @@ write_function.push((buffer, value)=>{
     value = value + '\0';
     var length = Buffer.byteLength(value);
     if (buffer.write_offset + length > (buffer.buffer).length) {
-        var temp = Buffer.allocUnsafe((buffer.buffer).length*2);
-        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length*2);
+        var temp = Buffer.allocUnsafe((buffer.buffer).length);
+        (buffer.buffer).copy(temp, 0, 0, (buffer.buffer).length);
         (buffer.buffer) = Buffer.allocUnsafe((buffer.buffer).length*2 + length);
         temp.copy((buffer.buffer), 0, 0, temp.length);
     }
@@ -117,5 +126,5 @@ write_function.push((buffer, value)=>{
 // #endregion
 
 
-// ! Module Exports
+// * Module Exports
 module.exports = buffer;

@@ -1,11 +1,10 @@
-var uuid_v4 = require('uuid-v4');
-function create(socket, name, space) {
-    //Interface
+// * Function Definition
+function create(socket) {
     return {
-        uuid: uuid_v4(), //UUID
-        name: name, //User name
-        socket: socket, //User's socket
-        space: space //User's space
+        uuid: socket.uuid,
+        socket: socket
     };
 }
-module.exports.create = create;
+
+// * Module Exports
+module.exports = create;

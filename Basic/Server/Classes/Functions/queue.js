@@ -1,3 +1,4 @@
+// * Easy Queue System
 class Queue {
     constructor() {
         this._arr = [];
