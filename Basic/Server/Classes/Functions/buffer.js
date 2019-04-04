@@ -40,13 +40,17 @@ class buffer {
 // * Function Definition
 var read_function = []
 // #region Function's
-read_function.push((buffer)=>{buffer.read_offset++; return buffer.buffer.readUInt8(buffer.read_offset - 1);});
-read_function.push((buffer)=>{buffer.read_offset++; return buffer.buffer.readInt8(buffer.read_offset - 1);});
-read_function.push((buffer)=>{buffer.read_offset+= 2; return buffer.buffer.readUInt16LE(buffer.read_offset - 2);});
-read_function.push((buffer)=>{buffer.read_offset+= 2; return buffer.buffer.readInt16LE(buffer.read_offset - 2);});
-read_function.push((buffer)=>{buffer.read_offset+= 4; return buffer.buffer.readUInt32LE(buffer.read_offset - 4);});
-read_function.push((buffer)=>{buffer.read_offset+= 4; return buffer.buffer.readInt32LE(buffer.read_offset - 4);});
-read_function.push((buffer)=>{var length = buffer_read(buffer, 2); buffer.read_offset += length + 1; return buffer.buffer.toString('utf-8', buffer.read_offset - length - 1, buffer.read_offset - 1);});
+read_function.push((buffer)=>{buffer.read_offset++; return buffer.buffer.readUInt8(buffer.read_offset-1);});
+read_function.push((buffer)=>{buffer.read_offset++; return buffer.buffer.readInt8(buffer.read_offset-1);});
+read_function.push((buffer)=>{buffer.read_offset+=2; return buffer.buffer.readUInt16LE(buffer.read_offset-2);});
+read_function.push((buffer)=>{buffer.read_offset+=2; return buffer.buffer.readInt16LE(buffer.read_offset-2);});
+read_function.push((buffer)=>{buffer.read_offset+=4; return buffer.buffer.readUInt32LE(buffer.read_offset-4);});
+read_function.push((buffer)=>{buffer.read_offset+=4; return buffer.buffer.readInt32LE(buffer.read_offset-4);});
+read_function.push((buffer)=>{
+    var length = read_function[2](buffer);
+    buffer.read_offset += length;
+    return buffer.buffer.toString('utf-8', buffer.read_offset - length, buffer.read_offset);
+});
 // #endregion
 
 var write_function = []

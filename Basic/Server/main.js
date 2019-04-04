@@ -16,11 +16,15 @@ server.onSomething((dsocket)=>{
     var new_user = user_prefab(dsocket);
     user_list.Add(new_user);
     console.log(`New Connection Received, UUID : ${new_user.uuid}`);
-    console.dir(user_list.users[new_user.uuid]);
 
-    // Data Comming
+    // Data In Comming
     dsocket.onMessage((data)=>{
-        //console.log(data);
+        var buffer = BM.load(data);
+        console.log(BM.read(buffer, BM.u16));
+        console.log(BM.read(buffer, BM.s16));
+        console.log(BM.read(buffer, BM.s16));
+        console.log(BM.read(buffer, BM.string));
+        console.log(BM.read(buffer, BM.s16));
     });
 
     // Socket Error
