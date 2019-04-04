@@ -118,14 +118,14 @@ if (ds_map_find_value(async_load, 'id') == socket) {
         }
         
         while (ds_queue_size(global.message_processing) != 0) {
-            with(obj_network) {
-                processing_buffer = ds_queue_dequeue(global.message_processing);
-                if not(buffer_get_size(processing_buffer) == 1){
-                    
-                    // 서버 관련 처리
-                    
+            if  ( global.master_instance != -1 ) {
+                with(global.master_instance) {
+                    recv_buffer = ds_queue_dequeue(global.message_processing);
+                    if not(buffer_get_size(recv_buffer) == 1){
+                        event_user(0); // Processing
+                    }
+                    buffer_delete(recv_buffer);
                 }
-                buffer_delete(processing_buffer);
             }
         }
     }

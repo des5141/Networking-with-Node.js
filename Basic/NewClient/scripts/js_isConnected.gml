@@ -1,4 +1,4 @@
-///SuperSocket_isConnected();
+///js_isConnected();
 if(instance_exists(sys_network)) {
     return sys_network.status;
 }else{

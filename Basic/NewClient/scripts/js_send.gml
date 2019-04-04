@@ -1,4 +1,4 @@
-///SuperSocket_send(buffer);
+///js_send(buffer);
 var offset = buffer_tell(argument0);
 buffer_seek(argument0, buffer_seek_start, 0);
 buffer_write(argument0, buffer_u32, offset);

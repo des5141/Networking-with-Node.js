@@ -1,4 +1,6 @@
-///SuperSocket(ip, port);
+///js_connect(ip, port);
+ping[0] = current_time;
+ping[1] = 0;
 global.reconnect_ip = argument0;
 global.reconnect_port = argument1;
 var ins = instance_create(0, 0, sys_network);
@@ -8,6 +10,7 @@ if(network_connect_raw(ins.socket, argument0, argument1) >= 0) {
     ins.status = 1; // connected!
     ping[0] = current_time;
     ping[1] = current_time;
+    global.master_instance = id;
 }else {
     instance_destroy(ins);
 }
