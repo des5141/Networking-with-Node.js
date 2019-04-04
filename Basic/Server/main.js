@@ -15,16 +15,19 @@ server.onSomething((dsocket)=>{
     // New Connection
     var new_user = user_prefab(dsocket);
     user_list.Add(new_user);
-    console.log(`New Connection Received, UUID : ${new_user.uuid}`);
+    //console.log(`New Connection Received, UUID : ${new_user.uuid}`);
 
     // Data In Comming
     dsocket.onMessage((data)=>{
-        var buffer = BM.load(data);
-        console.log(BM.read(buffer, BM.u16));
-        console.log(BM.read(buffer, BM.s16));
-        console.log(BM.read(buffer, BM.s16));
-        console.log(BM.read(buffer, BM.string));
-        console.log(BM.read(buffer, BM.s16));
+        var read_buffer = BM.load(data); // ! Data
+        var get_index1 = BM.read(read_buffer, BM.u8);
+        var get_index2 = BM.read(read_buffer, BM.u8);
+        var write_buffer = BM.create(1024);
+        BM.write(write_buffer, BM.u8, get_index1);
+        BM.write(write_buffer, BM.u8, get_index2);
+        dsocket.send(write_buffer);
+        BM.free(read_buffer);
+        BM.free(write_buffer);
     });
 
     // Socket Error

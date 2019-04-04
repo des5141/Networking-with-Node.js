@@ -127,19 +127,6 @@ if (ds_map_find_value(async_load, 'id') == socket) {
                     
                     // 서버 관련 처리
                     var check = true;
-                    switch(signal) {
-                        case SuperSocket.signal_heartbeat_first:
-                            var buffer = SuperSocket_createBuffer(1, SuperSocket.SendToServer, SuperSocket.MySpace);
-                            SuperSocket_send(buffer);
-                            ping[0] = current_time;
-                            check = false;
-                            break;
-                    
-                        case SuperSocket.signal_heartbeat_second:
-                            ping[1] = current_time - ping[0];
-                            check = false;
-                            break;
-                    }
                     if(check)
                         event_user(0);
                 }

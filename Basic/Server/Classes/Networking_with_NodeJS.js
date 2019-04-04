@@ -23,8 +23,8 @@ class server {
     onSomething(dsocket) {
         this.net.on('connection', function (socket) {
             socket.setNoDelay(true);
-            socket.setTimeout(5000);
-            socket.on('timeout', ()=>{socket.end();});
+            //socket.setTimeout(5000);
+            //socket.on('timeout', ()=>{socket.end();});
             dsocket(new Socket(socket));
         });
     }
@@ -80,7 +80,7 @@ class Socket {
     send(buffer) {
         var send_buffer = Buffer.allocUnsafe(buffer.write_offset + 2);
         (buffer.buffer).copy(send_buffer, 2, 0, buffer.write_offset);
-        send_buffer.writeUInt16LE(buffer.write_offset, 0);
+        send_buffer.writeUInt16LE(buffer.write_offset+2, 0);
         this.socket.write(send_buffer);
     }
 }
