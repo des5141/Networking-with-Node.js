@@ -9,17 +9,17 @@
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
-    <scripts name="Networking_with_SuperSocket">
-      <script>scripts\SuperSocket_init.gml</script>
-      <script>scripts\SuperSocket_connect.gml</script>
-      <script>scripts\SuperSocket_disconnect.gml</script>
-      <script>scripts\SuperSocket_createBuffer.gml</script>
-      <script>scripts\SuperSocket_write.gml</script>
-      <script>scripts\SuperSocket_send.gml</script>
-      <script>scripts\SuperSocket_read.gml</script>
-      <script>scripts\SuperSocket_status.gml</script>
-      <script>scripts\SuperSocket_reconnect.gml</script>
-      <script>scripts\SuperSocket_isConnected.gml</script>
+    <scripts name="Networking_with_NodeJs">
+      <script>scripts\js_init.gml</script>
+      <script>scripts\js_connect.gml</script>
+      <script>scripts\js_disconnect.gml</script>
+      <script>scripts\js_createBuffer.gml</script>
+      <script>scripts\js_write.gml</script>
+      <script>scripts\js_send.gml</script>
+      <script>scripts\js_read.gml</script>
+      <script>scripts\js_status.gml</script>
+      <script>scripts\js_reconnect.gml</script>
+      <script>scripts\js_isConnected.gml</script>
       <script>scripts\only_single.gml</script>
     </scripts>
   </scripts>

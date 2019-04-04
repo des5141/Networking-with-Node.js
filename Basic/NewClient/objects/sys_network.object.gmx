@@ -121,14 +121,9 @@ if (ds_map_find_value(async_load, 'id') == socket) {
             with(obj_network) {
                 processing_buffer = ds_queue_dequeue(global.message_processing);
                 if not(buffer_get_size(processing_buffer) == 1){
-                    var sendTo = buffer_read(processing_buffer, buffer_u16);
-                    var space_type = buffer_read(processing_buffer, buffer_s16);
-                    signal = buffer_read(processing_buffer, buffer_s16);
                     
                     // 서버 관련 처리
-                    var check = true;
-                    if(check)
-                        event_user(0);
+                    
                 }
                 buffer_delete(processing_buffer);
             }

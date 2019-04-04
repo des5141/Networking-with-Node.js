@@ -22,7 +22,7 @@ class server {
     }
     onSomething(dsocket) {
         this.net.on('connection', function (socket) {
-            socket.setNoDelay(true);
+            socket.setNoDelay(false);
             //socket.setTimeout(5000);
             //socket.on('timeout', ()=>{socket.end();});
             dsocket(new Socket(socket));

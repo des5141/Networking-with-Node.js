@@ -33,13 +33,13 @@ server.onSomething((dsocket)=>{
     // Socket Error
     dsocket.onError(()=>{
         user_list.RemoveBySocket(dsocket);
-        console.log("error");
+        //console.log("error");
     });
 
     // Socket End
     dsocket.onClose(()=>{
         user_list.RemoveBySocket(dsocket);
-        console.log("closed");
+        //console.log("closed");
     });
 });
 
