@@ -40,6 +40,7 @@ class Socket {
         this.before_data = -1;
         this.read_length = -1;
         this.read_mode = 0; // 0 is wait, 1 is reading
+        this.header_size = 4;
     }
     onMessage(func) {
         this.socket.on('data', (data)=>{
@@ -50,16 +51,16 @@ class Socket {
             // * Processing the data
             while(data.length > 0) {
                 // * if data waiting
-                if ((this.read_mode == 0) && (data.length >= 2)) {
-                    this.read_length = data.readUInt16LE(0); // ? Full Packet Size
+                if ((this.read_mode == 0) && (data.length >= this.header_size)) {
+                    this.read_length = data.readUInt32LE(0); // ! Change this !!!! If header_size was replaced!
                     this.read_mode = 1;
                 }
 
                 // * if data reading,
                 // * data length is long than read_length
                 if ((this.read_mode == 1) && (this.read_length <= data.length)) {
-                    var temp_buffer = Buffer.allocUnsafe(this.read_length-2); // * Make buffer for "func" Function
-                    data.copy(temp_buffer, 0, 2, this.read_length); // * Insert data into temp_buffer
+                    var temp_buffer = Buffer.allocUnsafe(this.read_length-this.header_size); // * Make buffer for "func" Function
+                    data.copy(temp_buffer, 0, this.header_size, this.read_length); // * Insert data into temp_buffer
                     func(temp_buffer); // * Running the crap data
 
                     var before_data = Buffer.allocUnsafe(data.length - this.read_length); // * Remove crapped data
@@ -78,9 +79,9 @@ class Socket {
     onError(func) {this.socket.on('error', ()=>{func(); this.socket.destroy();});}
     send_raw(data) {this.socket.write(data);}
     send(buffer) {
-        var send_buffer = Buffer.allocUnsafe(buffer.write_offset + 2);
-        (buffer.buffer).copy(send_buffer, 2, 0, buffer.write_offset);
-        send_buffer.writeUInt16LE(buffer.write_offset+2, 0);
+        var send_buffer = Buffer.allocUnsafe(buffer.write_offset + this.header_size);
+        (buffer.buffer).copy(send_buffer, this.header_size, 0, buffer.write_offset);
+        send_buffer.writeUInt32LE(buffer.write_offset+this.header_size, 0); // ! Change this !!!! If header_size was replaced!
         this.socket.write(send_buffer);
     }
 }
