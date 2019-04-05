@@ -99,14 +99,24 @@ class Socket {
             }
         });
     }
-    onClose(func) {this.socket.on('close', ()=>{func(); this.socket.destroy();});}
+    onClose(func) {
+        if (this.networking_type == true)
+            var type = 'close';
+        else
+            var type = 'disconnect'
+        this.socket.on(type, ()=>{func(); this.socket.destroy();});
+    }
     onError(func) {this.socket.on('error', ()=>{func(); this.socket.destroy();});}
     send_raw(data) {this.socket.write(data);}
     send(buffer) {
         var send_buffer = Buffer.allocUnsafe(buffer.write_offset + this.header_size);
         (buffer.buffer).copy(send_buffer, this.header_size, 0, buffer.write_offset);
         send_buffer.writeUInt32LE(buffer.write_offset+this.header_size, 0); // ! Change this !!!! If header_size was replaced!
-        this.socket.write(send_buffer);
+        
+        if (this.networking_type == true)
+            this.socket.write(send_buffer);
+        else
+            this.socket.send(send_buffer);
     }
 }
 
