@@ -11,21 +11,40 @@ class server {
         this.buffer_manager = require('./Functions/buffer');
         const event_emitter = require('events');
         this.net = require('net').createServer();
+	    this.sio_proxy = require('http').createServer();
+	    this.sio_net = require('socket.io').listen(this.sio_proxy);
         this.Emitter = new event_emitter();
     }
-    listen(ip, port) {
-        if (ip == "any")
+    listen(ip, port, sio_port) {
+        // ! TCP Server
+        this.net.on('listening', ()=>{
+            this.Emitter.emit(`start`);
+        });
+        this.net.on('error', (err)=>{
+            console.log(`ERROR! tcp failed - ${err}`);
+        });
+
+        // ! Socket.io
+        this.sio_proxy.on('error', function(err) {
+		    console.log(`ERROR! socket.io failed - ${err}`);
+	    });
+
+        // TODO: Start
+        if (ip == "any") {
             this.net.listen(port);
-        else
+			this.sio_proxy.listen(sio_port);
+        } else {
             this.net.listen(port, ip);
-        this.Emitter.emit(`start`);
+			this.sio_proxy.listen(sio_port, ip);
+        }
     }
     onSomething(dsocket) {
         this.net.on('connection', function (socket) {
             socket.setNoDelay(false);
-            //socket.setTimeout(5000);
-            //socket.on('timeout', ()=>{socket.end();});
-            dsocket(new Socket(socket));
+            dsocket(new Socket(socket, true));
+        });
+        this.sio_net.on('connection', function (socket) {
+            dsocket(new Socket(socket, false));
         });
     }
     uuid() {
@@ -34,16 +53,21 @@ class server {
 }
 
 class Socket {
-    constructor(socket) {
+    constructor(socket, type) {
         this.uuid = uuid_v4();
         this.socket = socket;
         this.before_data = -1;
         this.read_length = -1;
         this.read_mode = 0; // 0 is wait, 1 is reading
         this.header_size = 4;
+        this.networking_type = type; // true is tcp, false is socket.io
     }
     onMessage(func) {
-        this.socket.on('data', (data)=>{
+        if (this.networking_type == true)
+            var type = 'data';
+        else
+            var type = 'message';
+        this.socket.on(type, (data)=>{
             // * Before data loading
             if (this.before_data != -1)
                 data = this.before_data + data;
