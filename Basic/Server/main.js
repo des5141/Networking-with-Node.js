@@ -15,7 +15,7 @@ server.onSomething((dsocket)=>{
     // New Connection
     var new_user = user_prefab(dsocket);
     user_list.Add(new_user);
-
+    console.log("New user comming");
     // Data In Comming
     dsocket.onMessage((data)=>{
         var read_buffer = BM.load(data); // ! Data

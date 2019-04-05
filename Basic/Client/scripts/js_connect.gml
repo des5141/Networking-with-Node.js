@@ -24,6 +24,7 @@ if (global.connect_type  == 1) {
 
 /// Socket.io
 else if (global.connect_type == 2) {
-    html5_connect(argument0, argument1);
-    ins.status = 0; // connecting
+    show_message("html5 connect!");
+    html5_connect(argument0, 65534);
+    ins.status = 0;
 }

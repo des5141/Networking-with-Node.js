@@ -1,9 +1,3 @@
-/**
-Client-side GMS.IO HTML5 bindings for GameMaker Studio.
-Author: Dickson Law
-(C) GameGeisha Interactive, 2010-2014
-*/
-
 var adapter = {
 	status : -1,
 	socket : null,
@@ -19,7 +13,7 @@ function html5_connect(host, port) {
 		adapter.status = 1;
 	});
 	socket.on('connect_failed', function() {
-		adapter.status = -1;
+		adapter.status = -2;
 	});
 	socket.on('message', function(data) {
 		adapter.inbox.push(data);

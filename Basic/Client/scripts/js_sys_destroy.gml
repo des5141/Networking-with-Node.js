@@ -1,2 +1,3 @@
 /// js_sys_destroy();
-network_destroy(socket);
+if (global.connect_type == 1)
+    network_destroy(socket);
