@@ -36,7 +36,7 @@ BM.write(write_buffer, BM.u8, get_index1);     // buffer_write(write_buffer, buf
 
 * Based Event
 
-* ~~Support **Socket.io**~~ **: Not yet**
+* ~~Support **Socket.io**~~ **: Now developing**
 
 ### Version
 
