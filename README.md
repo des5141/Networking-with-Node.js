@@ -45,6 +45,8 @@ BM.write(write_buffer, BM.u8, get_index1);     // buffer_write(write_buffer, buf
 * 2019 04/04 - **Basic** is Remastered 
   
 > fast, ease, light, quick developing then before !
+>
+> 라이센스 변경 예정
 
 ## Support Git History
 
