@@ -5,37 +5,47 @@ const uuid_v4 = require('./Functions/uuid_v4');
 // * Class Definition
 class server {
     constructor() {
+        const event_emitter = require('events');
         this.user = require('./Functions/user');
         this.user_list = require('./Functions/user_list');
-        this.signal = require('./signal');
+        this.signal = require('./Signal/signal');
         this.buffer_manager = require('./Functions/buffer');
-        const event_emitter = require('events');
         this.net = require('net').createServer();
-	    this.sio_proxy = require('http').createServer();
-	    this.sio_net = require('socket.io').listen(this.sio_proxy);
+        this.sio_proxy = require('http').createServer();
+        this.sio_net = require('socket.io').listen(this.sio_proxy);
         this.Emitter = new event_emitter();
+        this.server_wait = false;
     }
     listen(ip, port, sio_port) {
         // ! TCP Server
-        this.net.on('listening', ()=>{
-            this.Emitter.emit(`start`);
+        this.net.on('listening', () => {
+            if (this.server_wait == true)
+                this.Emitter.emit(`start`);
+            else
+                this.server_wait = true;
         });
-        this.net.on('error', (err)=>{
+        this.net.on('error', (err) => {
             console.log(`ERROR! tcp failed - ${err}`);
         });
 
         // ! Socket.io
-        this.sio_proxy.on('error', function(err) {
-		    console.log(`ERROR! socket.io failed - ${err}`);
-	    });
+        this.sio_proxy.on('listening', () => {
+            if (this.server_wait == true)
+                this.Emitter.emit(`start`);
+            else
+                this.server_wait = true;
+        });
+        this.sio_proxy.on('error', (err) => {
+            console.log(`ERROR! socket.io failed - ${err}`);
+        });
 
         // TODO: Start
         if (ip == "any") {
             this.net.listen(port);
-			this.sio_proxy.listen(sio_port);
+            this.sio_proxy.listen(sio_port);
         } else {
             this.net.listen(port, ip);
-			this.sio_proxy.listen(sio_port, ip);
+            this.sio_proxy.listen(sio_port, ip);
         }
     }
     onSomething(dsocket) {
@@ -60,17 +70,17 @@ class Socket {
         this.read_length = -1;
         this.read_mode = 0; // 0 is wait, 1 is reading
         this.header_size = 4;
-        this.networking_type = type; // true is tcp, false is socket.io
+        this.networking_type = type; // true - net , false - Socket.io
     }
     onMessage(func) {
         if (this.networking_type == true) {
-            this.socket.on('data', (data)=>{
+            this.socket.on('data', (data) => {
                 // * Before data loading
                 if (this.before_data != -1)
                     data = this.before_data + data;
-                
+
                 // * Processing the data
-                while(data.length > 0) {
+                while (data.length > 0) {
                     // * if data waiting
                     if ((this.read_mode == 0) && (data.length >= this.header_size)) {
                         this.read_length = data.readUInt32LE(0); // ! Change this !!!! If header_size was replaced!
@@ -80,7 +90,7 @@ class Socket {
                     // * if data reading,
                     // * data length is long than read_length
                     if ((this.read_mode == 1) && (this.read_length <= data.length)) {
-                        var temp_buffer = Buffer.allocUnsafe(this.read_length-this.header_size); // * Make buffer for "func" Function
+                        var temp_buffer = Buffer.allocUnsafe(this.read_length - this.header_size); // * Make buffer for "func" Function
                         data.copy(temp_buffer, 0, this.header_size, this.read_length); // * Insert data into temp_buffer
                         func(temp_buffer); // * Running the crap data
 
@@ -95,15 +105,15 @@ class Socket {
                     break;
                 }
             });
-        }else {
-            this.sio_net.on('message', (data)=>{
+        } else {
+            this.sio_net.on('message', (data) => {
                 console.log(data);
                 // * Before data loading
                 if (this.before_data != -1)
                     data = this.before_data + data;
-                
+
                 // * Processing the data
-                while(data.length > 0) {
+                while (data.length > 0) {
                     // * if data waiting
                     if ((this.read_mode == 0) && (data.length >= this.header_size)) {
                         this.read_length = data.readUInt32LE(0); // ! Change this !!!! If header_size was replaced!
@@ -113,7 +123,7 @@ class Socket {
                     // * if data reading,
                     // * data length is long than read_length
                     if ((this.read_mode == 1) && (this.read_length <= data.length)) {
-                        var temp_buffer = Buffer.allocUnsafe(this.read_length-this.header_size); // * Make buffer for "func" Function
+                        var temp_buffer = Buffer.allocUnsafe(this.read_length - this.header_size); // * Make buffer for "func" Function
                         data.copy(temp_buffer, 0, this.header_size, this.read_length); // * Insert data into temp_buffer
                         func(temp_buffer); // * Running the crap data
 
@@ -135,15 +145,15 @@ class Socket {
             var type = 'close';
         else
             var type = 'disconnect'
-        this.socket.on(type, ()=>{func(); this.socket.destroy();});
+        this.socket.on(type, () => { func(); this.socket.destroy(); });
     }
-    onError(func) {this.socket.on('error', ()=>{func(); this.socket.destroy();});}
-    send_raw(data) {this.socket.write(data);}
+    onError(func) { this.socket.on('error', () => { func(); this.socket.destroy(); }); }
+    send_raw(data) { this.socket.write(data); }
     send(buffer) {
         var send_buffer = Buffer.allocUnsafe(buffer.write_offset + this.header_size);
         (buffer.buffer).copy(send_buffer, this.header_size, 0, buffer.write_offset);
-        send_buffer.writeUInt32LE(buffer.write_offset+this.header_size, 0); // ! Change this !!!! If header_size was replaced!
-        
+        send_buffer.writeUInt32LE(buffer.write_offset + this.header_size, 0); // ! Change this !!!! If header_size was replaced!
+
         if (this.networking_type == true)
             this.socket.write(send_buffer);
         else
