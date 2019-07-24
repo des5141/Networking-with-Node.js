@@ -1,53 +1,16 @@
-<div align="center">
-<a href="https://github.com/des5141/Networking-with-Node.js/wiki">
-<img alt="Go To Wiki" src="./Images/Run.gif" width="450" />
-</a>
-</div>
+# [StarrySky](https://github.com/liber31/StarrySky)
 
-# [Networking with Node.js](https://github.com/des5141/Networking-with-Node.js)
+**StarrySky** is a light weight, cross platform and server application framework. You can use it to make online game easier. this project is developed by Nodejs
 
-Can make online game with ease and quick
+* **Developer blog** : http://blog.naver.com/rhea31
+* **License** : http://www.apache.org/licenses/LICENSE-2.0
 
-1. Go to a file in **GitHub**
-2. Extract `Networking_with_NodeJs.gmez` in your **Project**
-3. Learning `How to use` in **[Wiki](https://github.com/des5141/Networking-with-Node.js/wiki)**
-4. Typing basic networking code in `Client`, `Server` and **Enjoy !**
+------
 
-> I upload new functions on my [blog](https://blog.naver.com/rhea31) about this repo  
-> And I also [@Dev_Liberty](https://twitter.com/Dev_Liberty) on twitter for updates.
+## Branch
 
-## Important
-
-### Point
-
-* Buffer fuctions is almost the same
-> GM:S is using `js_read` `js_write`, Node.js is using `BM.read` `BM.write`
-> 
-```js
-// Node.js
-var read_buffer = BM.load(data);               // load buffer
-var get_index1 = BM.read(read_buffer, BM.u8);  // buffer_read(read_buffer, buffer_u8);
-
-var write_buffer = BM.create(1024);            // buffer_create(1024, buffer_grow, 1);
-BM.write(write_buffer, BM.u8, get_index1);     // buffer_write(write_buffer, buffer_u8);
-```
-
-* Very easy to use
-
-* Based Event
-
-* ~~Support **Socket.io**~~ **: Now developing**
-
-### Version
-
-* 2019 01/21 - **Basic** , **Cluster** is Created
-
-* 2019 04/04 - **Basic** is Remastered 
-  
-* 2019 06/23 - 처음부터 모든걸 뜯어고치는 중
-> fast, ease, light, quick developing then before !
->
-> 라이센스 변경 예정
+* master - past version
+* typescript - now developing
 
 ## Support Git History
 
@@ -55,8 +18,12 @@ BM.write(write_buffer, BM.u8, get_index1);     // buffer_write(write_buffer, buf
 
 Based on these amazing projects:
 
-- Liberty🌠 by [Jeong Hyeon Kim](https://github.com/des5141)
+- liber31 by [Jeong Hyeon Kim](https://github.com/liber31)
 
 ## License
 
-Apache License 2.0
+Apache-2.0
+
+---
+
+Copyright 2019. by [liber31](https://github.com/liber31) all rights reserved.
