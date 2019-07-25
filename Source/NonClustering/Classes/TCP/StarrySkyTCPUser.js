@@ -14,6 +14,14 @@ function TCPUser (get, sock) {
     sock.write(data)
   }
 
+  // close or error
+  sock.on('close', _ => {
+    get.UserList.splice(get.UserList.indexOf(sock), 1)
+  })
+  sock.on('error', _ => {
+    get.UserList.splice(get.UserList.indexOf(sock), 1)
+  })
+
   get.UserList.push(sock)
   ConnectEvent(sock)
 }

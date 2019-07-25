@@ -14,6 +14,14 @@ function SocketioUser (get, sock) {
     sock.send(data)
   }
 
+  // close or error
+  sock.on('disconnect', _ => {
+    get.UserList.splice(get.UserList.indexOf(sock), 1)
+  })
+  sock.on('error', _ => {
+    get.UserList.splice(get.UserList.indexOf(sock), 1)
+  })
+
   get.UserList.push(sock)
   ConnectEvent(sock)
 }
