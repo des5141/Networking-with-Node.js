@@ -1,6 +1,6 @@
 # [StarrySky](https://github.com/liber31/StarrySky)
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Awesome](https://awesome.re/badge-flat.svg)](https://awesome.re)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Build status](https://travis-ci.com/liber31/StarrySky.svg?branch=typescript)]() [![Awesome](https://awesome.re/badge-flat.svg)](https://awesome.re) [![Gitter](https://badges.gitter.im/StarrySkyGitter/community.svg)](https://gitter.im/StarrySkyGitter/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 **StarrySky** is a light weight, cross platform and server application framework. You can use it to make online game easier. this project is developed by Nodejs
 
