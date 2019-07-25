@@ -1,12 +1,14 @@
 // main engine logic
 class Server {
   constructor () {
-    console.log('Hello StarrySky World!')
+    console.log('# Hello StarrySky World!')
 
     // load modules
-    this.global = { UserList: [] }
+    this.global = { UserList: [], SignalEvent: [] }
+    require('./StarrySkyLoadEvents.js')(this.global)
     this.tcp = new (require('./StarrySkyTCP.js'))(this.global)
     this.socketio = new (require('./StarrySkySocketio.js'))(this.global)
+    console.log('# Server Loaded')
     console.log(this.global)
   }
 
