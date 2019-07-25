@@ -5,6 +5,7 @@ function SocketioUser (get, sock) {
   // receive data
   sock.on('message', (data) => {
     data = JSON.parse(data)
+    get.SignalEvent[data.id](sock, data.msg)
   })
 
   // send data

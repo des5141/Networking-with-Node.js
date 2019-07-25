@@ -5,6 +5,7 @@ function TCPUser (get, sock) {
   // receive data
   sock.on('data', (data) => {
     data = JSON.parse(data)
+    get.SignalEvent[data.id](sock, data.msg)
   })
 
   // send data
