@@ -1,3 +1,3 @@
 module.exports = (sock) => {
-  console.log('hello')
+  console.log('Client is joined')
 }

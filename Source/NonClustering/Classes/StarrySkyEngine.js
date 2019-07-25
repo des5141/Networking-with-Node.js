@@ -4,7 +4,7 @@ class Server {
     console.log('Hello StarrySky World!')
 
     // load modules
-    this.global = { test: [] }
+    this.global = { UserList: [] }
     this.tcp = new (require('./StarrySkyTCP.js'))(this.global)
     this.socketio = new (require('./StarrySkySocketio.js'))(this.global)
     console.log(this.global)

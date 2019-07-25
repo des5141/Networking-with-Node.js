@@ -1,9 +1,10 @@
+var UserPreset = require('./TCP/StarrySkyTCPUser.js')
+
 // tcp server logic
 class TCPServer {
   constructor (get) {
     this.global = get
     this.net = require('net').createServer()
-    this.user_list = []
 
     // event emitter
     this.net.on('error', (err) => {
@@ -11,7 +12,7 @@ class TCPServer {
     })
 
     this.net.on('connection', (sock) => {
-
+      UserPreset(this.global, sock)
     })
   }
 

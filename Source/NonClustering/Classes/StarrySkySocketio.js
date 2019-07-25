@@ -1,3 +1,5 @@
+var UserPreset = require('./Socket.io/StarrySkySocketioUser.js')
+
 // socketio server logic
 class SocketioServer {
   constructor (get) {
@@ -5,7 +7,6 @@ class SocketioServer {
     this.http = require('http').createServer()
     this.socketio = require('socket.io').listen(this.http)
     this.socketio.set('log level', 0)
-    this.user_list = []
 
     // event emitter
     this.http.on('error', (err) => {
@@ -13,7 +14,7 @@ class SocketioServer {
     })
 
     this.socketio.on('connection', (sock) => {
-
+      UserPreset(this.global, sock)
     })
   }
 
