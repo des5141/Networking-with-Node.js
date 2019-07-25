@@ -1,0 +1,11 @@
+# .travis.yml 
+language: node_js
+node_js:
+  - 0.7
+before_install:
+  - npm install socket.io@0.9.18
+  - npm install colors
+branches:
+  only:
+    - master
+    - typescript
