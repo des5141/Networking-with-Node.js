@@ -4,8 +4,10 @@ class Server {
     console.log('Hello StarrySky World!')
 
     // load modules
-    this.tcp = new (require('./StarrySkyTCP.js'))()
-    this.socketio = new (require('./StarrySkySocketio.js'))()
+    this.global = { test: [] }
+    this.tcp = new (require('./StarrySkyTCP.js'))(this.global)
+    this.socketio = new (require('./StarrySkySocketio.js'))(this.global)
+    console.log(this.global)
   }
 
   listen (ip, tcpport, socketioport) {
