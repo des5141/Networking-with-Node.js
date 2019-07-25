@@ -1,5 +1,7 @@
 # [StarrySky](https://github.com/liber31/StarrySky)
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 **StarrySky** is a light weight, cross platform and server application framework. You can use it to make online game easier. this project is developed by Nodejs
 
 * **Developer blog** : http://blog.naver.com/rhea31
