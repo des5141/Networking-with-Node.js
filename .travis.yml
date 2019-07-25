@@ -7,5 +7,3 @@ before_install:
   - cd NonClustering
   - npm install socket.io@0.9.18
   - npm install colors
-script:
-  - node main.js
