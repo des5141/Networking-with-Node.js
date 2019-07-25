@@ -1,9 +1,10 @@
 # .travis.yml 
 language: node_js
 node_js:
-  - "8"
+  - "10"
 before_install:
   - cd Source
   - cd NonClustering
   - npm install socket.io@0.9.18
   - npm install colors
+script: 'true'
