@@ -13,7 +13,7 @@
 
 * master - past version
 * typescript - now developing
-* test
+* test - adding
 
 ## Support Git History
 
