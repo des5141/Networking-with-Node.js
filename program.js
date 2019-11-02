@@ -1,7 +1,7 @@
+const dir = __dirname;
 const cluster = require('cluster');
-cluster.schedulingPolicy = cluster.SCHED_NONE; // 워커 스케쥴을 OS에 맡긴다
+const scripts = require(`${dir}/Core/import.js`)(`${dir}/Signal`);
+const master = require(`${dir}/Core/master.js`);
+const worker = require(`${dir}/Core/worker.js`);
 
-const master = require('./Modules/cluster/master.js'); // master preset
-const worker = require('./Modules/cluster/worker.js'); // worker preset
-
-if (cluster.isMaster) { master(cluster); } else { worker(cluster); }
+if (cluster.isMaster) { master(cluster); } else { worker(cluster, scripts); }
