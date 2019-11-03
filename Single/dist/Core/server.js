@@ -6,9 +6,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var http = __importStar(require("http"));
-var io = __importStar(require("socket.io"));
+var socket_io_1 = __importDefault(require("socket.io"));
 var start_1 = require("../Event/start");
 var finish_1 = require("../Event/finish");
 var error_1 = require("../Event/error");
@@ -43,7 +46,7 @@ var Server = /** @class */ (function () {
     function Server() {
         var _this = this;
         this.ioProxy = http.createServer();
-        this.ioServer = io.listen(this.ioProxy);
+        this.ioServer = socket_io_1.default(this.ioProxy, { pingInterval: 4000 });
         this.ioProxy.on('error', function (err) {
             error_1.error(_this, err);
         });

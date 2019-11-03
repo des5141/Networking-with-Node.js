@@ -1,5 +1,5 @@
 import * as http from 'http';
-import * as io from 'socket.io';
+import io from 'socket.io';
 import { start } from '../Event/start';
 import { finish } from '../Event/finish';
 import { error } from '../Event/error';
@@ -36,7 +36,7 @@ class IOSocket {
 
 class Server {
     ioProxy = http.createServer();
-    ioServer = io.listen(this.ioProxy);
+    ioServer = io(this.ioProxy, { pingInterval: 4000 });
 
     constructor() {
         this.ioProxy.on('error', err => {
