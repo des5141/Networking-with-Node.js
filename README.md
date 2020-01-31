@@ -1,5 +1,7 @@
 # [StarrySky](https://github.com/liber31/StarrySky)
 
+[![Join the chat at https://gitter.im/StarrySkyGitter/community](https://badges.gitter.im/StarrySkyGitter/community.svg)](https://gitter.im/StarrySkyGitter/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **StarrySky** is a light weight, cross platform and server application framework. You can use it to make online game easier. this project is developed by Nodejs
 
 * **Developer blog** : http://blog.naver.com/rhea31
